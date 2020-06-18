@@ -1,5 +1,5 @@
 <template>
-  <div>统计项设置建设中...</div>
+  <div>统计项设置建设中...统计项设置建设中</div>
 </template>
 <script>
 export default {}
