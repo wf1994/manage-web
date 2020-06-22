@@ -15,7 +15,7 @@
                 labelAlign="left"
         >
           <h3>编制数量</h3>
-          <a-form-item label="编制数量名称">
+          <a-form-item :labelCol="{span: 8}" label="编制数量名称">
             <a-input
                     v-decorator="[
                 'ip',
@@ -33,7 +33,7 @@
           </a-form-item>
           <p>现有数量为当前维度数量相加得出</p>
           <h3>现有数量</h3>
-          <a-form-item label="现有数量名称">
+          <a-form-item :labelCol="{span: 8}" label="现有数量名称">
             <a-input
                     v-decorator="[
                 'port',
@@ -133,6 +133,7 @@
                 okText: '确定',
                 cancelText: '取消',
                 onOk() {
+
           console.log('OK')
         },
         onCancel() {
