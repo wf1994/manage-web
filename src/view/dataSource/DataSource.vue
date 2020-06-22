@@ -114,7 +114,7 @@
             />
           </a-form-item>
         </a-form>
-        <a-button type="primary" @click="showConfirm">保存</a-button>
+        <a-button style="background-color: #128075;border-color: #128075;display : block; margin: 0 auto; " type="primary" @click="showConfirm">保存</a-button>
       </a-col>
     </a-row>
   </div>

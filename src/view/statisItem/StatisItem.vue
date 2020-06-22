@@ -18,7 +18,7 @@
           <a-form-item :labelCol="{span: 8}" label="编制数量名称">
             <a-input
                     v-decorator="[
-                'ip',
+                'standardNum',
                 {
                   rules: [
                     {
@@ -36,7 +36,7 @@
           <a-form-item :labelCol="{span: 8}" label="现有数量名称">
             <a-input
                     v-decorator="[
-                'port',
+                'exisitNum',
                 {
                   rules: [
                     {
@@ -123,23 +123,44 @@
 <script>
   export default {
     beforeCreate() {
-      this.form = this.$form.createForm(this, { name: 'dataSourceForm' })
+      this.form = this.$form.createForm(this, { name: 'StatisItemForm' })
     },
     methods: {
       showConfirm() {
-        this.$confirm({
-          title: '保存统计项',
-          content: <div style="color:green;">确定保存该统计项设置吗？</div>,
-                okText: '确定',
-                cancelText: '取消',
-                onOk() {
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            console.log(this);
+            const _this = this
+            console.log('Received values of form: ', values);
+            this.$confirm({
+              title: '保存统计项',
+              content: <div style="color:green;">确定保存该统计项设置吗？</div>,
+            okText: '确定',
+                    cancelText: '取消',
+                    onOk () {
 
-          console.log('OK')
-        },
-        onCancel() {
-          console.log('Cancel')
+              _this.saveStatisItem(values)
+            },
+            onCancel() {
+              console.log('Cancel')
+            }
+          })
+          }
+        });
+      },
+      async saveStatisItem(values){
+        console.log('+++++++++++++++++')
+        const { data: res } = await this.$http.request({
+          url:'/saveStatisSet',
+          method:'post',
+          params:values
+        })
+        if(res.meta.status === 200){
+          this.$message.success('保存数据源成功')
         }
-      })
+        else {
+          this.$message.error('保存数据源失败')
+        }
       }
     }
   }
@@ -164,10 +185,6 @@
     background-color: #128075;
     border-color: #128075;
     vertical-align: middle;
-  }
-  button{
-    position: relative;
-    text-align: center;
   }
   
 </style>
