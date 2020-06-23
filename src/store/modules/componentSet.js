@@ -1,12 +1,9 @@
 const component = {
-    state: {
-        aaa: "1000"
-    },
-    getters: {
-    },
-    mutations: {   
-    },
-    actions: {
-    }
+  state: {
+    aaa: '1000'
+  },
+  getters: {},
+  mutations: {},
+  actions: {}
 }
-export default component;
+export default component

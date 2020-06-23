@@ -114,7 +114,12 @@
             />
           </a-form-item>
         </a-form>
-        <a-button style="background-color: #128075;border-color: #128075;display : block; margin: 0 auto; " type="primary" @click="showConfirm">保存</a-button>
+        <a-button
+          style="background-color: #128075;border-color: #128075;display : block; margin: 0 auto; "
+          type="primary"
+          @click="showConfirm"
+          >保存</a-button
+        >
       </a-col>
     </a-row>
   </div>
@@ -128,36 +133,34 @@ export default {
     showConfirm() {
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(this);
+          console.log(this)
           const _this = this
-          console.log('Received values of form: ', values);
+          console.log('Received values of form: ', values)
           this.$confirm({
             title: '保存数据源',
             content: <div style="color:green;">确定保存该数据源设置吗？</div>,
-          okText: '确定',
-                  cancelText: '取消',
-                  onOk () {
-
-            _this.saveDataSource(values)
-          },
-          onCancel() {
-            console.log('Cancel')
-          }
-        })
+            okText: '确定',
+            cancelText: '取消',
+            onOk() {
+              _this.saveDataSource(values)
+            },
+            onCancel() {
+              console.log('Cancel')
+            }
+          })
         }
-      });
+      })
     },
-    async saveDataSource(values){
+    async saveDataSource(values) {
       console.log('+++++++++++++++++')
       const { data: res } = await this.$http.request({
-        url:'/saveDataSource',
-        method:'post',
-        params:values
+        url: '/saveDataSource',
+        method: 'post',
+        params: values
       })
-      if(res.meta.status === 200){
+      if (res.meta.status === 200) {
         this.$message.success('保存数据源成功')
-      }
-      else {
+      } else {
         this.$message.error('保存数据源失败')
       }
     }

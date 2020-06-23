@@ -13,7 +13,9 @@ import {
   Table,
   Pagination,
   Modal,
-  Message
+  Message,
+  Dropdown,
+  Tabs
 } from 'ant-design-vue'
 
 // 全局注册antd组件
@@ -30,6 +32,8 @@ Vue.use(Select)
 Vue.use(Table)
 Vue.use(Pagination)
 Vue.use(Modal)
+Vue.use(Dropdown)
+Vue.use(Tabs)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = Message
