@@ -12,7 +12,7 @@
       <a-col :span="4">
         <a-button type="primary" @click="searchByDimensionName">查询</a-button>
       </a-col>
-      <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
+      <a-col :span="6" :offset="10" :style="{ textAlign: 'right' }">
         <a-button
           type="primary"
           @click="handleShowAddDimension"
@@ -25,8 +25,10 @@
     <a-row>
       <a-col :span="24">
         <a-table
+          :rowKey="row => row.id"
           :columns="dimensionColumns"
           :data-source="dimensionListData"
+          @expand="tableExpand"
           :row-selection="rowSelection"
           :scroll="{ y: 600 }"
         >
@@ -46,12 +48,13 @@
             </a-dropdown>
           </span>
           <a-table
+            :rowKey="row => row.id"
             slot="expandedRowRender"
             :columns="vectorColumns"
-            :data-source="innerData"
+            :data-source="vectorData"
             :pagination="false"
           >
-            <span slot="operation">
+            <span slot="vectorOperation" slot-scoped="vectorOperation">
               <a-dropdown :trigger="['click']">
                 <a-menu slot="overlay">
                   <a-menu-item>
@@ -79,7 +82,74 @@
       cancelText="取消"
     >
       <a-form
-        :form="form"
+        :form="addDimensionForm"
+        :label-col="{ span: 5 }"
+        :wrapper-col="{ span: 19 }"
+        labelAlign="left"
+      >
+        <a-form-item label="维度名称">
+          <a-input
+            v-decorator="[
+              'dimensionName',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '维度名称不能为空！'
+                  }
+                ]
+              }
+            ]"
+            placeholder="请输入维度名称..."
+          />
+        </a-form-item>
+        <a-form-item label="维度分类">
+          <a-input
+            v-decorator="[
+              'dimensionType',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '维度分类不能为空！'
+                  }
+                ]
+              }
+            ]"
+            placeholder="请输入维度分类..."
+          />
+        </a-form-item>
+        <a-form-item label="字段名">
+          <a-textarea
+            v-decorator="[
+              'fieldName',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '字段名不能为空！'
+                  }
+                ]
+              }
+            ]"
+            placeholder="请输入字段名..."
+            :rows="4"
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+    <!-- 修改维度Modal -->
+    <a-modal
+      title="新增维度"
+      :visible="editDimensionVisible"
+      :confirm-loading="editDimensionLoading"
+      @ok="handleAddDimension"
+      @cancel="handleEditDimensionCancel"
+      okText="确定"
+      cancelText="取消"
+    >
+      <a-form
+        :form="editDimensionForm"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 19 }"
         labelAlign="left"
@@ -138,74 +208,61 @@
   </div>
 </template>
 <script>
-const dimensionColumns = [
-  { title: '维度名称', dataIndex: 'dimensionName', key: 'dimensionName' },
-  { title: '维度类型', dataIndex: 'dimensionType', key: 'dimensionType' },
-  { title: '字段名', dataIndex: 'fieldName', key: 'fieldName' },
-  { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
-  {
-    title: '操作',
-    key: 'operation',
-    scopedSlots: { customRender: 'operation' }
-  }
-]
-
-const dimensionListData = []
-for (let i = 0; i < 100; ++i) {
-  dimensionListData.push({
-    key: i,
-    dimensionName: 'Screem',
-    dimensionType: 'iOS',
-    fieldName: '10.3.4.5654',
-    createTime: 500
-  })
-}
-
-const vectorColumns = [
-  { title: '向量名称', dataIndex: 'vectorName', key: 'vectorName' },
-  { title: '属性条件', dataIndex: 'condition', key: 'condition' },
-  {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    key: 'createTime'
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    key: 'operation',
-    scopedSlots: { customRender: 'operation' }
-  }
-]
-
-const innerData = []
-for (let i = 0; i < 3; ++i) {
-  innerData.push({
-    key: i,
-    vectorName: '2014-12-24 23:12:00',
-    condition: 'This is production name',
-    createTime: 'Upgraded: 56'
-  })
-}
-
 export default {
   data() {
     return {
       searchDimensionName: '', // 查询维度名称
-      dimensionListData, // 维度向量列表数据
-      dimensionColumns, // 维度列
-      vectorColumns, // 向量列
-      innerData,
-      addDimensionVisible: false,
-      addDimensionLoading: false
+      dimensionListData: [], // 维度向量列表数据
+      dimensionColumns: [
+        { title: '维度名称', dataIndex: 'dimensionName', key: 'dimensionName' },
+        { title: '维度类型', dataIndex: 'dimensionType', key: 'dimensionType' },
+        { title: '字段名', dataIndex: 'fieldName', key: 'fieldName' },
+        { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
+        {
+          title: '操作',
+          key: 'operation',
+          scopedSlots: { customRender: 'operation' }
+        }
+      ], // 维度列
+      vectorColumns: [
+        { title: '向量名称', dataIndex: 'vectorName', key: 'vectorName' },
+        { title: '属性条件', dataIndex: 'condition', key: 'condition' },
+        {
+          title: '创建时间',
+          dataIndex: 'createTime',
+          key: 'createTime'
+        },
+        {
+          title: '操作',
+          dataIndex: 'vectorOperation',
+          key: 'vectorOperation',
+          scopedSlots: { customRender: 'vectorOperation' }
+        }
+      ], // 向量列
+      vectorData: [],
+      addDimensionVisible: false, // 添加维度Modal显示
+      addDimensionLoading: false, // 添加维度确定按钮loading
+      editDimensionVisible: false, // 修改维度Modal显示
+      editDimensionLoading: false // 修改维度确定按钮loading
     }
   },
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: 'addDimensionForm' })
+    this.addDimensionForm = this.$form.createForm(this, {
+      name: 'addDimensionForm'
+    })
+    this.editDimensionForm = this.$form.createForm(this, {
+      name: 'editDimensionForm'
+    })
   },
   created() {
     this.getDimensionList()
   },
   methods: {
+    // table展开操作
+    tableExpand(expanded, record) {
+      console.log(expanded)
+      this.vectorData = record.children
+    },
     // 通过维度名称查询列表
     async searchByDimensionName() {
       const { data: res } = await this.$http.request({
@@ -214,7 +271,12 @@ export default {
         params: { dimensionName: this.searchDimensionName }
       })
       if (res.meta.status === 200) {
-        this.dimensionListData = res.data
+        this.dimensionListData = res.data.map(item => {
+          return {
+            ...item,
+            key: Number(item.id)
+          }
+        })
         this.$message.success('查询成功！')
       } else {
         this.$message.error('查询失败！')
@@ -233,7 +295,7 @@ export default {
     },
     // 新增维度Modal提交
     handleAddDimension(id) {
-      this.form.validateFields(async (err, values) => {
+      this.addDimensionForm.validateFields(async (err, values) => {
         // 如果表单没有错误
         if (!err) {
           console.log('values=============', values)
@@ -262,7 +324,54 @@ export default {
     handleAddDimensionCancel() {
       this.addDimensionVisible = false
       this.addDimensionLoading = false
-      this.form.resetFields()
+      this.addDimensionForm.resetFields()
+    },
+    // 修改维度按钮点击事件
+    async handleShowEditDimension(row) {
+      this.editDimensionVisible = true
+      const { data: res } = await this.$http.request({
+        url: `/getDimension/${row.id}`,
+        methods: 'get'
+      })
+      console.log('res===', res)
+      // if(res.meta.status === 200){
+
+      // }
+      this.editDimensionForm.setFieldsValue({
+        dimensionName: res.data.dimensionName,
+        dimensionType: res.data.dimensionType,
+        fieldName: res.data.fieldName
+      })
+      console.log('row===', row)
+    },
+    // 修改维度提交事件
+    handleEditDimension() {
+      this.editDimensionForm.validateFields(async (err, values) => {
+        if (!err) {
+          this.editDimensionLoading = true
+          console.log(values)
+          const { data: res } = await this.$http.request({
+            url: '/editDimension',
+            methods: 'put',
+            params: values
+          })
+
+          if (res.meta.status === 200) {
+            this.editDimensionVisible = false
+            this.editDimensionLoading = false
+            this.$message.success('修改维度成功！')
+          } else {
+            this.editDimensionLoading = false
+            this.$message.error('修改维度失败！')
+          }
+        }
+      })
+    },
+    // 修改维度Modal取消
+    handleEditDimensionCancel() {
+      this.editDimensionVisible = false
+      this.editDimensionLoading = false
+      this.editDimensionForm.resetFields()
     },
     // 获取维度向量列表
     async getDimensionList() {
@@ -272,6 +381,20 @@ export default {
       })
       if (res.meta.status === 200) {
         this.dimensionListData = res.data
+        console.log('this.dimensionListData', this.dimensionListData)
+        // let temp = []
+        // res.data.map(item => {
+        //   temp = temp.concat(item.children)
+        //   temp = temp.map(child => {
+        //     return {
+        //       ...child,
+        //       key: Number(child.id)
+        //     }
+        //   })
+        //   // console.log('item.children++++++++++++', item.children)
+        // })
+        // this.vectorData = temp
+        // console.log('temp++++++++++++', temp)
         console.log('维度列表获取成功')
       } else {
         this.$message.error('维度向量列表获取失败！')
@@ -290,7 +413,7 @@ export default {
         },
         getCheckboxProps: record => ({
           props: {
-            disabled: record.name === 'Disabled User', // Column configuration not to be checked
+            disabled: record.name === 'Disabled User',
             name: record.name
           }
         })
