@@ -36,3 +36,5 @@ Vue.use(Modal)
 Vue.use(Dropdown)
 Vue.use(Tabs)
 Vue.use(Radio)
+Vue.prototype.$confirm = Modal.confirm
+Vue.prototype.$message = Message
