@@ -124,7 +124,7 @@
     </a-row>
   </div>
 </template>
-<script>
+<script type="text/jsx">
 export default {
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'dataSourceForm' })
