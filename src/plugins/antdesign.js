@@ -16,7 +16,8 @@ import {
   Message,
   Dropdown,
   Tabs,
-  Radio
+  Radio,
+  FormModel
 } from 'ant-design-vue'
 
 // 全局注册antd组件
@@ -36,5 +37,7 @@ Vue.use(Modal)
 Vue.use(Dropdown)
 Vue.use(Tabs)
 Vue.use(Radio)
+Vue.use(FormModel)
+
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = Message

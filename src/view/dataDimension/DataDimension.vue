@@ -44,7 +44,9 @@
                 <a-menu-item @click="handleShowEditDimension(row)">
                   修改
                 </a-menu-item>
-                <a-menu-item @click="removeDimensionByIds(row.dimensionId)">
+                <a-menu-item
+                  @click="handleShowRemoveDimensionConfirm(row.dimensionId)"
+                >
                   删除
                 </a-menu-item>
               </a-menu>
@@ -60,13 +62,17 @@
             :data-source="vectorData"
             :pagination="false"
           >
-            <span slot="vectorOperation" slot-scoped="vectorOperation">
+            <span slot="vectorOperation" slot-scope="text, vectorRow">
               <a-dropdown :trigger="['click']">
                 <a-menu slot="overlay">
-                  <a-menu-item>
+                  <a-menu-item
+                    @click="handleShowEditVector(vectorRow.vectorId)"
+                  >
                     修改
                   </a-menu-item>
-                  <a-menu-item>
+                  <a-menu-item
+                    @click="handleShowRemoveVectorConfirm(vectorRow.vectorId)"
+                  >
                     删除
                   </a-menu-item>
                 </a-menu>
@@ -217,7 +223,7 @@
     <!-- 新增向量Modal -->
     <a-modal
       title="新增向量"
-      width="50%"
+      width="40%"
       :visible="addVectorVisible"
       :confirm-loading="addVectorLoading"
       @ok="handleAddVector"
@@ -225,56 +231,46 @@
       okText="确定"
       cancelText="取消"
     >
-      <a-form :form="addVectorForm" labelAlign="left">
-        <a-form-item label="向量名称">
-          <a-input
-            v-decorator="[
-              'vectorName',
-              {
-                rules: [
-                  {
-                    required: true,
-                    message: '向量名称不能为空！'
-                  }
-                ]
-              }
-            ]"
-            placeholder="请输入维度名称..."
-          />
-        </a-form-item>
-        <a-form-item
-          :label-col="{ span: 0 }"
-          :wrapper-col="{ span: 5 }"
-          class="conditionType"
-        >
-          <a-radio-group v-decorator="['conditionType']">
-            <a-radio :style="radioStyle" value="精准属性">
+      <a-form-model
+        ref="addVectorFormRef"
+        :model="addVectorForm"
+        :rules="addVectorFormRules"
+        labelAlign="left"
+        :labelCol="{ span: 6 }"
+        :wrapperCol="{ span: 18 }"
+      >
+        <a-form-model-item ref="vectorName" label="向量名称" prop="vectorName">
+          <a-input v-model="addVectorForm.vectorName" />
+        </a-form-model-item>
+        <a-form-model-item label="条件类型" prop="conditionType">
+          <a-radio-group
+            v-model="addVectorForm.conditionType"
+            @change="handleRadioChange"
+          >
+            <a-radio value="0">
               精准属性
             </a-radio>
-            <a-radio :style="radioStyle" value="范围属性">
+            <a-radio value="1">
               范围属性
             </a-radio>
           </a-radio-group>
-        </a-form-item>
-        <div class="condition">
-          <a-form-item>
-            <a-input
-              v-decorator="[
-                'fieldName',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '字段名不能为空！'
-                    }
-                  ]
-                }
-              ]"
-              placeholder="请输入字段名..."
-            />
-          </a-form-item>
+        </a-form-model-item>
+        <a-form-model-item
+          v-if="isConditionShow"
+          label="属性条件"
+          prop="condition"
+        >
+          <a-input v-model="addVectorForm.condition" />
+        </a-form-model-item>
+        <div v-else>
+          <a-form-model-item label="属性条件下限" prop="conditionMin">
+            <a-input v-model="addVectorForm.conditionMin"></a-input>
+          </a-form-model-item>
+          <a-form-model-item label="属性条件上限" prop="conditionMax">
+            <a-input v-model="addVectorForm.conditionMax"></a-input>
+          </a-form-model-item>
         </div>
-      </a-form>
+      </a-form-model>
     </a-modal>
     <!-- 修改向量Modal -->
     <a-modal
@@ -286,65 +282,46 @@
       okText="确定"
       cancelText="取消"
     >
-      <a-form
-        :form="editVectorForm"
-        :label-col="{ span: 5 }"
-        :wrapper-col="{ span: 19 }"
+      <a-form-model
+        ref="editVectorFormRef"
+        :model="editVectorForm"
+        :rules="editVectorFormRules"
         labelAlign="left"
+        :labelCol="{ span: 6 }"
+        :wrapperCol="{ span: 18 }"
       >
-        <a-form-item label="维度名称">
-          <a-input
-            v-decorator="[
-              'dimensionName',
-              {
-                rules: [
-                  {
-                    required: true,
-                    message: '维度名称不能为空！'
-                  }
-                ],
-                initialValue: editDimensionFormData.dimensionName
-              }
-            ]"
-            placeholder="请输入维度名称..."
-          />
-        </a-form-item>
-        <a-form-item label="维度分类">
-          <a-input
-            v-decorator="[
-              'dimensionType',
-              {
-                rules: [
-                  {
-                    required: true,
-                    message: '维度分类不能为空！'
-                  }
-                ],
-                initialValue: editDimensionFormData.dimensionType
-              }
-            ]"
-            placeholder="请输入维度分类..."
-          />
-        </a-form-item>
-        <a-form-item label="字段名">
-          <a-textarea
-            v-decorator="[
-              'fieldName',
-              {
-                rules: [
-                  {
-                    required: true,
-                    message: '字段名不能为空！'
-                  }
-                ],
-                initialValue: editDimensionFormData.fieldName
-              }
-            ]"
-            placeholder="请输入字段名..."
-            :rows="4"
-          />
-        </a-form-item>
-      </a-form>
+        <a-form-model-item ref="vectorName" label="向量名称" prop="vectorName">
+          <a-input v-model="editVectorForm.vectorName" />
+        </a-form-model-item>
+        <a-form-model-item label="条件类型" prop="conditionType">
+          <a-radio-group
+            v-model="editVectorForm.conditionType"
+            @change="handleRadioChange"
+          >
+            <a-radio value="0">
+              精准属性
+            </a-radio>
+            <a-radio value="1">
+              范围属性
+            </a-radio>
+          </a-radio-group>
+        </a-form-model-item>
+        <a-form-model-item
+          v-if="isConditionShow"
+          label="属性条件"
+          prop="condition"
+        >
+          <a-input v-model="editVectorForm.condition" />
+        </a-form-model-item>
+        <div v-else>
+          <a-form-model-item label="属性条件下限" prop="conditionMin">
+            <a-input v-model="editVectorForm.conditionMin"></a-input>
+          </a-form-model-item>
+          <a-form-model-item label="属性条件上限" prop="conditionMax">
+            <a-input v-model="editVectorForm.conditionMax"></a-input>
+          </a-form-model-item>
+        </div>
+      </a-form-model>
     </a-modal>
   </div>
 </template>
@@ -389,12 +366,84 @@ export default {
       editDimensionFormData: {}, // 修改维度回显数据
       addVectorVisible: false, // 新增向量Modal显示
       addVectorLoading: false, // 新增向量确定按钮loading
+      editVectorVisible: false, // 修改向量Modal显示
+      editVectorLoading: false, // 修改向量确定按钮loading
       selectedRowKeys: [], // 选中的行的id数组
-      radioStyle: {
-        display: 'block',
-        height: '60px',
-        lineHeight: '60px'
-      }
+      isConditionShow: true,
+      addVectorForm: {
+        vectorName: '',
+        conditionType: '0',
+        condition: '',
+        conditionMin: '',
+        conditionMax: ''
+      },
+      addVectorFormRules: {
+        vectorName: [
+          {
+            required: true,
+            message: '向量名称不能为空！',
+            trigger: 'blur'
+          }
+        ],
+        conditionType: [
+          {
+            required: true,
+            message: '条件类型不能为空！'
+          }
+        ],
+        condition: [
+          {
+            required: true,
+            message: '属性条件不能为空！'
+          }
+        ],
+        conditionMin: [
+          {
+            required: true,
+            message: '属性条件下限值不能为空！'
+          }
+        ],
+        conditionMax: [
+          {
+            required: true,
+            message: '属性条件上限值不能为空！'
+          }
+        ]
+      },
+      editVectorFormRules: {
+        vectorName: [
+          {
+            required: true,
+            message: '向量名称不能为空！',
+            trigger: 'blur'
+          }
+        ],
+        conditionType: [
+          {
+            required: true,
+            message: '条件类型不能为空！'
+          }
+        ],
+        condition: [
+          {
+            required: true,
+            message: '属性条件不能为空！'
+          }
+        ],
+        conditionMin: [
+          {
+            required: true,
+            message: '属性条件下限值不能为空！'
+          }
+        ],
+        conditionMax: [
+          {
+            required: true,
+            message: '属性条件上限值不能为空！'
+          }
+        ]
+      },
+      editVectorForm: {}
     }
   },
   beforeCreate() {
@@ -403,9 +452,6 @@ export default {
     })
     this.editDimensionForm = this.$form.createForm(this, {
       name: 'editDimensionForm'
-    })
-    this.addVectorForm = this.$form.createForm(this, {
-      name: 'addVectorForm'
     })
   },
   created() {
@@ -472,6 +518,7 @@ export default {
           if (res.meta.status === 200) {
             this.addDimensionVisible = false
             this.addDimensionLoading = false
+            this.getDimensionList()
             this.$message.success('新增维度成功！')
           } else {
             // 新增失败
@@ -533,6 +580,7 @@ export default {
       } else {
         this.$message.error('删除维度失败！')
       }
+      this.getDimensionList()
     },
     // 修改维度按钮点击事件
     handleShowEditDimension(row) {
@@ -576,6 +624,7 @@ export default {
           this.editDimensionVisible = false
           this.editDimensionLoading = false
           this.editDimensionFormData = {}
+          this.getDimensionList()
         }
       })
     },
@@ -590,11 +639,155 @@ export default {
     handleShowAddVector() {
       this.addVectorVisible = true
     },
+    // 切换条件类型Radio
+    handleRadioChange(e) {
+      console.log('e.target.value', e.target.value)
+      const radioValue = e.target.value
+      this.isConditionShow = radioValue === '0'
+    },
     // 新增向量Modal取消
     handleAddVectorCancel() {
       this.addVectorVisible = false
       this.addVectorLoading = false
-      this.addVectorForm.resetFields()
+      this.isConditionShow = true
+      this.$refs.addVectorFormRef.resetFields()
+    },
+    // 新增向量提交事件
+    handleAddVector() {
+      console.log('this.addVectorForm', this.addVectorForm)
+      this.$refs.addVectorFormRef.validate(async valid => {
+        if (!valid) {
+          return null
+        }
+        console.log(this)
+        this.addVectorLoading = true
+        let params = {}
+        if (!this.isConditionShow) {
+          params = {
+            vectorName: this.addVectorForm.vectorName,
+            conditionType: this.addVectorForm.conditionType,
+            condition: `${this.addVectorForm.conditionMin},${this.addVectorForm.conditionMax}`
+          }
+        } else {
+          params = {
+            vectorName: this.addVectorForm.vectorName,
+            conditionType: this.addVectorForm.conditionType,
+            condition: this.addVectorForm.condition
+          }
+        }
+        const { data: res } = await this.$http.request({
+          url: '/addVector',
+          methods: 'post',
+          params
+        })
+        if (res.meta.status === 200) {
+          this.$message.success('新增向量成功！')
+        } else {
+          this.$message.error('新增向量失败！')
+        }
+        this.addVectorVisible = false
+        this.addVectorLoading = false
+        this.$refs.addVectorFormRef.resetFields()
+        this.addVectorForm = {
+          vectorName: '',
+          conditionType: '0',
+          condition: '',
+          conditionMin: '',
+          conditionMax: ''
+        }
+        this.getDimensionList()
+      })
+    },
+    // 修改向量Modal显示
+    async handleShowEditVector(id) {
+      console.log('row.id', id)
+      this.editVectorVisible = true
+      const { data: res } = await this.$http.request({
+        url: `getVector/${id}`,
+        methods: 'get'
+      })
+      if (res.meta.status === 200) {
+        this.editVectorForm = res.data
+      }
+    },
+    // 修改向量提交事件
+    handleEditVector() {
+      console.log('this.editVectorForm', this.editVectorForm)
+      this.$refs.editVectorFormRef.validate(async valid => {
+        if (!valid) {
+          return null
+        }
+        console.log(this)
+        this.editVectorLoading = true
+        let params = {}
+        if (!this.isConditionShow) {
+          params = {
+            id: this.editVectorForm.id,
+            vectorName: this.editVectorForm.vectorName,
+            conditionType: this.editVectorForm.conditionType,
+            condition: `${this.editVectorForm.conditionMin},${this.editVectorForm.conditionMax}`
+          }
+        } else {
+          params = {
+            id: this.editVectorForm.id,
+            vectorName: this.editVectorForm.vectorName,
+            conditionType: this.editVectorForm.conditionType,
+            condition: this.editVectorForm.condition
+          }
+        }
+        const { data: res } = await this.$http.request({
+          url: '/editVector',
+          methods: 'put',
+          params
+        })
+        if (res.meta.status === 200) {
+          this.$message.success('修改向量成功！')
+        } else {
+          this.$message.error('修改向量失败！')
+        }
+        this.editVectorVisible = false
+        this.editVectorLoading = false
+        this.$refs.editVectorFormRef.resetFields()
+        this.editVectorForm = {}
+        this.getDimensionList()
+      })
+    },
+    // 修改向量Modal取消
+    handleEditVectorCancel() {
+      this.editVectorVisible = false
+      this.editVectorLoading = false
+      this.$refs.editVectorFormRef.resetFields()
+      this.editVectorForm = {}
+    },
+    // 根据ID删除向量
+    handleShowRemoveVectorConfirm(id) {
+      console.log(id)
+      const _this = this
+      this.$confirm({
+        title: '删除向量',
+        content: '确定删除该向量吗？删除后将不可恢复，请谨慎操作！',
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk() {
+          _this.removeVectorById(id)
+        },
+        onCancel() {
+          _this.$message.info('已取消删除操作！')
+        }
+      })
+    },
+    // 根据ID删除向量确定
+    async removeVectorById(id) {
+      const { data: res } = await this.$http.request({
+        url: `/removeVector/${id}`,
+        methods: 'delete'
+      })
+      if (res.meta.status === 200) {
+        this.$message.success('删除向量成功！')
+      } else {
+        this.$message.error('删除向量失败！')
+      }
     },
     // 获取维度向量列表
     async getDimensionList() {
@@ -642,16 +835,4 @@ export default {
   }
 }
 </script>
-<style lang="less" scoped>
-.conditionType {
-  width: 20%;
-  margin-bottom: 0;
-  display: inline-block;
-  position: relative;
-}
-.condition {
-  position: absolute;
-  left: 20px;
-  top: 0;
-}
-</style>
+<style lang="less" scoped></style>
