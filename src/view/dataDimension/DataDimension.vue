@@ -38,6 +38,9 @@
           <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
               <a-menu slot="overlay">
+                <a-menu-item @click="handleShowAddVector">
+                  添加向量
+                </a-menu-item>
                 <a-menu-item @click="handleShowEditDimension(row)">
                   修改
                 </a-menu-item>
@@ -146,13 +149,145 @@
       title="修改维度"
       :visible="editDimensionVisible"
       :confirm-loading="editDimensionLoading"
-      @ok="handleAddDimension"
+      @ok="handleEditDimension"
       @cancel="handleEditDimensionCancel"
       okText="确定"
       cancelText="取消"
     >
       <a-form
         :form="editDimensionForm"
+        :label-col="{ span: 5 }"
+        :wrapper-col="{ span: 19 }"
+        labelAlign="left"
+      >
+        <a-form-item label="维度名称">
+          <a-input
+            v-decorator="[
+              'dimensionName',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '维度名称不能为空！'
+                  }
+                ],
+                initialValue: editDimensionFormData.dimensionName
+              }
+            ]"
+            placeholder="请输入维度名称..."
+          />
+        </a-form-item>
+        <a-form-item label="维度分类">
+          <a-input
+            v-decorator="[
+              'dimensionType',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '维度分类不能为空！'
+                  }
+                ],
+                initialValue: editDimensionFormData.dimensionType
+              }
+            ]"
+            placeholder="请输入维度分类..."
+          />
+        </a-form-item>
+        <a-form-item label="字段名">
+          <a-textarea
+            v-decorator="[
+              'fieldName',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '字段名不能为空！'
+                  }
+                ],
+                initialValue: editDimensionFormData.fieldName
+              }
+            ]"
+            placeholder="请输入字段名..."
+            :rows="4"
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+    <!-- 新增向量Modal -->
+    <a-modal
+      title="新增向量"
+      width="50%"
+      :visible="addVectorVisible"
+      :confirm-loading="addVectorLoading"
+      @ok="handleAddVector"
+      @cancel="handleAddVectorCancel"
+      okText="确定"
+      cancelText="取消"
+    >
+      <a-form :form="addVectorForm" labelAlign="left">
+        <a-form-item label="向量名称">
+          <a-input
+            v-decorator="[
+              'vectorName',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '向量名称不能为空！'
+                  }
+                ]
+              }
+            ]"
+            placeholder="请输入维度名称..."
+          />
+        </a-form-item>
+        <a-form-item
+          :label-col="{ span: 0 }"
+          :wrapper-col="{ span: 5 }"
+          class="conditionType"
+        >
+          <a-radio-group v-decorator="['conditionType']">
+            <a-radio :style="radioStyle" value="精准属性">
+              精准属性
+            </a-radio>
+            <a-radio :style="radioStyle" value="范围属性">
+              范围属性
+            </a-radio>
+          </a-radio-group>
+        </a-form-item>
+        <div class="condition">
+          <a-form-item>
+            <a-input
+              v-decorator="[
+                'fieldName',
+                {
+                  rules: [
+                    {
+                      required: true,
+                      message: '字段名不能为空！'
+                    }
+                  ]
+                }
+              ]"
+              placeholder="请输入字段名..."
+            />
+          </a-form-item>
+        </div>
+      </a-form>
+    </a-modal>
+    <!-- 修改向量Modal -->
+    <a-modal
+      title="修改向量"
+      :visible="editVectorVisible"
+      :confirm-loading="editVectorLoading"
+      @ok="handleEditVector"
+      @cancel="handleEditVectorCancel"
+      okText="确定"
+      cancelText="取消"
+    >
+      <a-form
+        :form="editVectorForm"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 19 }"
         labelAlign="left"
@@ -224,7 +359,6 @@ export default {
         { title: '维度类型', dataIndex: 'dimensionType', key: 'dimensionType' },
         { title: '字段名', dataIndex: 'fieldName', key: 'fieldName' },
         { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
-        { title: 'id', dataIndex: 'dimensionId', key: 'dimensionId' },
         {
           title: '操作',
           key: 'operation',
@@ -253,7 +387,14 @@ export default {
       editDimensionVisible: false, // 修改维度Modal显示
       editDimensionLoading: false, // 修改维度确定按钮loading
       editDimensionFormData: {}, // 修改维度回显数据
-      selectedRowKeys: [] // 选中的行的id数组
+      addVectorVisible: false, // 新增向量Modal显示
+      addVectorLoading: false, // 新增向量确定按钮loading
+      selectedRowKeys: [], // 选中的行的id数组
+      radioStyle: {
+        display: 'block',
+        height: '60px',
+        lineHeight: '60px'
+      }
     }
   },
   beforeCreate() {
@@ -262,6 +403,9 @@ export default {
     })
     this.editDimensionForm = this.$form.createForm(this, {
       name: 'editDimensionForm'
+    })
+    this.addVectorForm = this.$form.createForm(this, {
+      name: 'addVectorForm'
     })
   },
   created() {
@@ -442,6 +586,16 @@ export default {
       this.editDimensionFormData = {}
       this.editDimensionForm.resetFields()
     },
+    // 新增向量Modal显示
+    handleShowAddVector() {
+      this.addVectorVisible = true
+    },
+    // 新增向量Modal取消
+    handleAddVectorCancel() {
+      this.addVectorVisible = false
+      this.addVectorLoading = false
+      this.addVectorForm.resetFields()
+    },
     // 获取维度向量列表
     async getDimensionList() {
       const { data: res } = await this.$http.request({
@@ -488,4 +642,16 @@ export default {
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.conditionType {
+  width: 20%;
+  margin-bottom: 0;
+  display: inline-block;
+  position: relative;
+}
+.condition {
+  position: absolute;
+  left: 20px;
+  top: 0;
+}
+</style>
