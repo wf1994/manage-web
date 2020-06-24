@@ -36,9 +36,3 @@ Vue.use(Modal)
 Vue.use(Dropdown)
 Vue.use(Tabs)
 Vue.use(Radio)
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
-Vue.prototype.$confirm = Modal.confirm
-Vue.prototype.$message = Message
