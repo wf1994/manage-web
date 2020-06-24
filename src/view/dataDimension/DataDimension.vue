@@ -25,17 +25,18 @@
     <a-row>
       <a-col :span="24">
         <a-table
-          :rowKey="row => row.id"
+          :rowKey="record => record.dimensionId"
           :columns="dimensionColumns"
-          :data-source="dimensionListData"
+          :data-source="computeDimensionListData"
           @expand="tableExpand"
+          :expandedRowKeys="expandedRowKeys"
           :row-selection="rowSelection"
           :scroll="{ y: 600 }"
         >
-          <span slot="operation">
+          <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
               <a-menu slot="overlay">
-                <a-menu-item>
+                <a-menu-item @click="handleShowEditDimension(row)">
                   修改
                 </a-menu-item>
                 <a-menu-item>
@@ -48,7 +49,7 @@
             </a-dropdown>
           </span>
           <a-table
-            :rowKey="row => row.id"
+            :rowKey="record => record.vectorId"
             slot="expandedRowRender"
             :columns="vectorColumns"
             :data-source="vectorData"
@@ -218,6 +219,7 @@ export default {
         { title: '维度类型', dataIndex: 'dimensionType', key: 'dimensionType' },
         { title: '字段名', dataIndex: 'fieldName', key: 'fieldName' },
         { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
+        { title: 'id', dataIndex: 'dimensionId', key: 'dimensionId' },
         {
           title: '操作',
           key: 'operation',
@@ -240,6 +242,7 @@ export default {
         }
       ], // 向量列
       vectorData: [],
+      expandedRowKeys: [],
       addDimensionVisible: false, // 添加维度Modal显示
       addDimensionLoading: false, // 添加维度确定按钮loading
       editDimensionVisible: false, // 修改维度Modal显示
@@ -260,8 +263,20 @@ export default {
   methods: {
     // table展开操作
     tableExpand(expanded, record) {
-      console.log(expanded)
-      this.vectorData = record.children
+      console.log(expanded, record)
+      if (expanded) {
+        this.expandedRowKeys = []
+        this.expandedRowKeys.push(record.dimensionId)
+      } else {
+        this.expandedRowKeys = []
+      }
+      this.vectorData = record.vectorList.map(item => {
+        return {
+          ...item,
+          key: item.vectorId
+        }
+      })
+      console.log(this.vectorData)
     },
     // 通过维度名称查询列表
     async searchByDimensionName() {
@@ -382,19 +397,6 @@ export default {
       if (res.meta.status === 200) {
         this.dimensionListData = res.data
         console.log('this.dimensionListData', this.dimensionListData)
-        // let temp = []
-        // res.data.map(item => {
-        //   temp = temp.concat(item.children)
-        //   temp = temp.map(child => {
-        //     return {
-        //       ...child,
-        //       key: Number(child.id)
-        //     }
-        //   })
-        //   // console.log('item.children++++++++++++', item.children)
-        // })
-        // this.vectorData = temp
-        // console.log('temp++++++++++++', temp)
         console.log('维度列表获取成功')
       } else {
         this.$message.error('维度向量列表获取失败！')
@@ -402,6 +404,20 @@ export default {
     }
   },
   computed: {
+    computeDimensionListData() {
+      const tempList = this.dimensionListData.map(item => {
+        return {
+          // dimensionType: item.dimensionType,
+          // fieldName: item.fieldName,
+          // dimensionId: item.dimensionId,
+          // createTime: item.createTime,
+          // dimensionName: item.dimensionName,
+          ...item,
+          key: item.dimensionId
+        }
+      })
+      return tempList
+    },
     rowSelection() {
       return {
         onChange: (selectedRowKeys, selectedRows) => {
