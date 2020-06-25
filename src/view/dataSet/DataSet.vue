@@ -16,7 +16,7 @@
         <a-button
           type="primary"
           @click="showModal"
-          :style="{ marginright: '25px' }"
+          :style="{ marginRight: '15px' }"
           >新增</a-button
         >
         <a-button type="info" @click="showModalDelete()">删除</a-button>
@@ -60,7 +60,7 @@
       cancelText="取消"
     >
       <a-form
-        :form="addDataSetform"
+        :form="addDataSetForm"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 19 }"
         labelAlign="left"
@@ -86,7 +86,7 @@
         </a-form-item>
         <a-Form-Item name="radio-group" label="数据集类型">
           <a-Radio-Group
-            defaultValue="表"
+            option.initialValue="表"
             v-decorator="[
               'dataType',
               {
@@ -175,18 +175,33 @@
             placeholder="请输入数据集名称..."
           ></a-input>
         </a-form-item>
-        <a-Form-Item name="radio-group" label="数据集类型">
-          <a-Radio-Group
-            defaultValue="表"
+        <a-form-item label="ID名称">
+          <a-input
+            :style="{
+              width: '300px'
+            }"
+            disabled
             v-decorator="[
-              'dataType',
+              'id',
               {
                 rules: [
                   {
                     required: true,
-                    message: '数据集类型不能为空！'
+                    message: '数据集名称不能为空！'
                   }
                 ],
+                initialValue: editDataSetFormData.id
+              }
+            ]"
+            placeholder="请输入数据集名称..."
+          ></a-input>
+        </a-form-item>
+        <a-Form-Item name="radio-group" label="数据集类型">
+          <a-Radio-Group
+            option.initialValue="表"
+            v-decorator="[
+              'dataType',
+              {
                 initialValue: editDataSetFormData.dataType
               }
             ]"
@@ -262,11 +277,11 @@ export default {
     }
   },
   beforeCreate() {
-    this.addDataSetForm = this.$form.createForm(this, {
-      name: 'addDataSetForm'
-    })
     this.editDataSetForm = this.$form.createForm(this, {
       name: 'editDataSetForm'
+    })
+    this.addDataSetForm = this.$form.createForm(this, {
+      name: 'addDataSetForm'
     })
   },
   created() {
@@ -295,11 +310,12 @@ export default {
           if (res.meta.status === 200) {
             this.addDataSetVisible = false
             this.addDataSetLoading = false
-            this.$message.success('新增维度成功！')
+            this.$message.success('新增数据集成功！')
+            this.getDataSetList()
           } else {
             // 新增失败
             this.addDataSetLoading = false
-            this.$message.error('新增维度失败！')
+            this.$message.error('新增数据集失败！')
           }
         }
       })
@@ -367,9 +383,9 @@ export default {
       if (res.meta.status === 200) {
         this.DataSetData = res.data
         console.log('this.DataSetData', this.DataSetData)
-        console.log('维度列表获取成功')
+        console.log('数据集列表获取成功')
       } else {
-        this.$message.error('维度向量列表获取失败！')
+        this.$message.error('数据集列表获取失败！')
       }
     },
     //  通过数据集名称查询列表
@@ -399,8 +415,31 @@ export default {
     // 点击修改按钮出现modal
     handleShowEdit(row) {
       this.editDataSetVisible = true
-      this.editDataSetFormData = row
-      console.log('row===', row)
+      this.getDataSet(row)
+      // this.editDataSetFormData = row
+      // console.log('row===', row)
+    },
+    //
+    async getDataSet(row) {
+      console.log('row', row)
+      const { data: res } = await this.$http.request({
+        url: `/getDataSet/:id`,
+        methods: 'get',
+        params: {
+          id: row.id
+        }
+      })
+      console.log('res===', res)
+      if (res.meta.status === 200) {
+        this.editDataSetForm.setFieldsValue({
+          id: res.data.id,
+          dataSetName: res.data.dataSetName,
+          dataType: res.data.dataType,
+          dataContent: res.data.dataContent
+        })
+      } else {
+        this.$message.error('获取数据集失败！')
+      }
     },
     // 修改数据集Modal提交
     handleEditOk() {
@@ -409,13 +448,16 @@ export default {
         if (!err) {
           // 确定按钮loading状态开启
           console.log('values=============', values)
+          console.log(
+            'editDataSetFormDataId=============',
+            this.editDataSetFormData.id
+          )
           this.editDataSetLoading = true
           const { data: res } = await this.$http.request({
             url: `/editDataSet`,
             methods: 'put',
             params: {
-              ...values,
-              id: this.editDataSetFormData.id
+              ...values
             }
           })
 
@@ -424,11 +466,12 @@ export default {
             this.editDataSetVisible = false
             this.editDataSetLoading = false
             this.editDataSetFormData = {}
-            this.$message.success('新增维度成功！')
+            this.getDataSetList()
+            this.$message.success('新增数据集成功！')
           } else {
             // 修改失败
             this.editDataSetLoading = false
-            this.$message.error('新增维度失败！')
+            this.$message.error('新增数据集失败！')
           }
         }
       })
@@ -439,6 +482,34 @@ export default {
       this.editDataSetLoading = false
       this.editDataSetFormData = {}
       this.editDataSetForm.resetFields()
+    },
+    // 单条数据集的删除
+    RowDelete() {
+      const _this = this
+      const args = arguments
+      let params = []
+      if (args.length === 0) {
+        params = this.selectedRowKeys
+      } else {
+        params = [args[0]]
+      }
+      if (params.length !== 0) {
+        this.$confirm({
+          title: '删除数据集',
+          content: '确定删除该数据集吗？删除后将不可恢复，请谨慎操作！',
+          okText: '确定',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk() {
+            _this.removeDataSetByIds(params)
+          },
+          onCancel() {
+            _this.$message.info('已取消删除操作！')
+          }
+        })
+      } else {
+        _this.$message.info('请选择数据集进行删除！')
+      }
     }
   },
   computed: {
