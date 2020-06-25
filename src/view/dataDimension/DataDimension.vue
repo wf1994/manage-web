@@ -59,8 +59,9 @@
             :rowKey="record => record.vectorId"
             slot="expandedRowRender"
             :columns="vectorColumns"
-            :data-source="vectorData"
+            :data-source="row.vectorList"
             :pagination="false"
+            slot-scope="row"
           >
             <span slot="vectorOperation" slot-scope="text, vectorRow">
               <a-dropdown :trigger="['click']">
@@ -601,17 +602,36 @@ export default {
     // 通过ids删除维度提交
     async removeDimensionByIds(ids) {
       console.log('params', ids)
-      const { data: res } = await this.$http.post('removeDimension', {
-        ids,
-        paramsSerializer: params => {
-          return this.$qs.stringify(params, { indices: false })
-        }
-      })
+      // const { data: res } = await this.$http.post(
+      //   'removeDimension',
+      //   { ids },
+      //   {
+      //     headers: {
+      //       'Content-Type': 'application/x-www-form-urlencoded'
+      //     }
+      //   }
+      // )
+      const { data: res } = await this.$http
+        .request({
+          url: 'removeDimension',
+          methods: 'post',
+          params: {
+            ids
+          },
+          paramsSerializer: params => {
+            return this.$qs.stringify(params, { indices: false })
+          }
+        })
+        .catch(error => {
+          this.$message.error('删除维度失败！' + error)
+          this.selectedRowKeys = []
+        })
       if (res.meta.status === 200) {
         this.$message.success('删除维度成功！')
       } else {
         this.$message.error('删除维度失败！')
       }
+
       this.getDimensionList()
     },
     // 修改维度按钮点击事件
@@ -620,7 +640,9 @@ export default {
       const { data: res } = await this.$http.request({
         url: 'getDimension',
         methods: 'get',
-        id
+        params: {
+          id
+        }
       })
       console.log('res===', res)
       if (res.meta.status === 200) {
@@ -642,7 +664,7 @@ export default {
           console.log(values)
           const params = {
             ...values,
-            id: this.editDimensionFormData.dimensionId
+            id: this.editDimensionFormData.id
           }
           const { data: res } = await this.$http.post(
             'editDimension',
@@ -748,7 +770,18 @@ export default {
       })
       console.log(res.data)
       if (res.meta.status === 200) {
-        this.editVectorForm = res.data
+        if (res.data.conditionType === '0') {
+          this.editVectorForm = res.data
+        } else {
+          this.editVectorForm = {
+            conditionMin: res.data.condition.split(',')[0],
+            createTime: res.data.createTime,
+            vectorId: res.data.vectorId,
+            vectorName: res.data.vectorName,
+            conditionType: res.data.conditionType,
+            conditionMax: res.data.condition.split(',')[1]
+          }
+        }
       }
     },
     // 修改向量提交事件
