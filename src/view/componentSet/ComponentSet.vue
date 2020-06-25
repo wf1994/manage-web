@@ -15,7 +15,7 @@
         <a-button @click="searchByComponentName" class="searchWord">查询</a-button>
       </a-col>
       <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
-        <a-button  @click="doAddComponent" class="addButton">新增</a-button>
+        <a-button @click="doAddComponent" class="addButton">新增</a-button>
         <a-button class="delButton">删除</a-button>
       </a-col>
     </a-row>
@@ -25,6 +25,7 @@
       <a-col :span="24">
         <a-table
           class="table"
+          :rowKey="row => row.id"
           :columns="componentColumns"
           :data-source="componentListData"
           :row-selection="rowSelection"
@@ -37,7 +38,7 @@
                 <a-menu-item>删除</a-menu-item>
               </a-menu>
               <a @click="e => e.preventDefault()">
-                <a-icon type="dash" ></a-icon>
+                <a-icon type="dash"></a-icon>
               </a>
             </a-dropdown>
           </span>
@@ -63,26 +64,16 @@
 </template>
 <script>
 const componentColumns = [
-  { title: '组件名称', dataIndex: 'componentName', key: 'componentName' },
+  { title: '组件名称', dataIndex: 'component_name', key: 'component_name' },
   { title: '维度', dataIndex: 'dimensions', key: 'dimensions' },
   { title: '统计项', dataIndex: 'statisItem', key: 'statisItem' },
-  { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
+  { title: '创建时间', dataIndex: 'create_time', key: 'create_time' },
   {
     title: '操作',
     key: 'operation',
     scopedSlots: { customRender: 'operation' }
   }
 ]
-const componentListData = []
-for (let i = 0; i < 5; ++i) {
-  componentListData.push({
-    key: i,
-    componentName: 'Screem',
-    dimensions: 'iOS',
-    statisItem: '10.3.4.5654',
-    createTime: 500
-  })
-}
 
 export default {
   data() {
@@ -90,12 +81,12 @@ export default {
       pageSize: 20,
       current: 4,
       searchComponentName: '', // 查询组件名称
-      componentListData, // 组件列表数据
+      componentListData:[], // 组件列表数据
       componentColumns // 组件列
     }
   },
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: 'addDimensionForm' })
+    
   },
   created() {
     this.getComponentList()
@@ -104,12 +95,27 @@ export default {
     onShowSizeChange(current, pageSize) {
       console.log(current, pageSize)
     },
+    // 获取组件列表
+    async getComponentList() {
+      const { data: res } = await this.$http.request({
+        url: '/getComponentList',
+        methods: 'get'
+      })
+      
+      if (res.meta.status === 200) {
+        this.componentListData = res.data
+        // console.log('res.data======================='+res.data)
+        console.log('组件列表获取成功')
+      } else {
+        this.$message.error('组件列表获取失败！')
+      }
+    },
     // 通过组件名称查询列表
     async searchByComponentName() {
       const { data: res } = await this.$http.request({
         url: '/filterComponentList',
         methods: 'get',
-        params: { componentName: this.searchComponentName }
+        params: { component_name: this.searchComponentName }
       })
       if (res.meta.status === 200) {
         this.componentListData = res.data
@@ -125,19 +131,6 @@ export default {
         this.getComponentList()
       }
     },
-    // 获取组件列表
-    async getComponentList() {
-      const { data: res } = await this.$http.request({
-        url: '/getComponentList',
-        methods: 'get'
-      })
-      if (res.meta.status === 200) {
-        this.componentListData = res.data
-        console.log('组件列表获取成功')
-      } else {
-        this.$message.error('组件列表获取失败！')
-      }
-    }
   },
   computed: {
     rowSelection() {
