@@ -19,7 +19,7 @@ import {
   Radio,
   FormModel
 } from 'ant-design-vue'
-
+import '../theme.less'
 // 全局注册antd组件
 Vue.use(Button)
 Vue.use(Layout)

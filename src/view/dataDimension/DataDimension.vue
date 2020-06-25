@@ -38,10 +38,10 @@
           <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
               <a-menu slot="overlay">
-                <a-menu-item @click="handleShowAddVector">
+                <a-menu-item @click="handleShowAddVector(row.dimensionId)">
                   添加向量
                 </a-menu-item>
-                <a-menu-item @click="handleShowEditDimension(row)">
+                <a-menu-item @click="handleShowEditDimension(row.dimensionId)">
                   修改
                 </a-menu-item>
                 <a-menu-item
@@ -389,6 +389,7 @@ export default {
       editVectorLoading: false, // 修改向量确定按钮loading
       selectedRowKeys: [], // 选中的行的id数组
       isConditionShow: true, // 属性条件切换
+      addVectorDimensionId: '', // 添加向量传的维度id
       // 新增向量表单数据
       addVectorForm: {
         vectorName: '',
@@ -544,7 +545,10 @@ export default {
           console.log('values=============', values)
           // 确定按钮loading状态开启
           this.addDimensionLoading = true
-          const { data: res } = await this.$http.post('addDimension', values)
+          const { data: res } = await this.$http.post(
+            'addDimension',
+            this.$qs.stringify(values)
+          )
 
           // 新增成功
           if (res.meta.status === 200) {
@@ -597,12 +601,8 @@ export default {
     // 通过ids删除维度提交
     async removeDimensionByIds(ids) {
       console.log('params', ids)
-      const { data: res } = await this.$http.request({
-        url: '/removeDimension',
-        methods: 'post',
-        params: {
-          ids
-        },
+      const { data: res } = await this.$http.post('removeDimension', {
+        ids,
         paramsSerializer: params => {
           return this.$qs.stringify(params, { indices: false })
         }
@@ -615,23 +615,24 @@ export default {
       this.getDimensionList()
     },
     // 修改维度按钮点击事件
-    handleShowEditDimension(row) {
+    async handleShowEditDimension(id) {
       this.editDimensionVisible = true
-      // const { data: res } = await this.$http.request({
-      //   url: `/getDimension/${row.id}`,
-      //   methods: 'get'
-      // })
-      // console.log('res===', res)
-      // if(res.meta.status === 200){
-
-      // }
+      const { data: res } = await this.$http.request({
+        url: 'getDimension',
+        methods: 'get',
+        id
+      })
+      console.log('res===', res)
+      if (res.meta.status === 200) {
+        this.editDimensionFormData = res.data
+      } else {
+        this.$message.info('查询维度信息失败！')
+      }
       // this.editDimensionForm.setFieldsValue({
       //   dimensionName: 'weqr',
       //   dimensionType: 'weqr',
       //   fieldName: 'weqr'
       // })
-      this.editDimensionFormData = row
-      console.log('row===', row)
     },
     // 修改维度提交事件
     handleEditDimension() {
@@ -639,10 +640,14 @@ export default {
         if (!err) {
           this.editDimensionLoading = true
           console.log(values)
-          const { data: res } = await this.$http.post('editDimension', {
+          const params = {
             ...values,
             id: this.editDimensionFormData.dimensionId
-          })
+          }
+          const { data: res } = await this.$http.post(
+            'editDimension',
+            this.$qs.stringify(params)
+          )
 
           if (res.meta.status === 200) {
             this.$message.success('修改维度成功！')
@@ -664,8 +669,9 @@ export default {
       this.editDimensionForm.resetFields()
     },
     // 新增向量Modal显示
-    handleShowAddVector() {
+    handleShowAddVector(id) {
       this.addVectorVisible = true
+      this.addVectorDimensionId = id
     },
     // 切换条件类型Radio
     handleRadioChange(e) {
@@ -678,6 +684,7 @@ export default {
       this.addVectorVisible = false
       this.addVectorLoading = false
       this.isConditionShow = true
+      this.addVectorDimensionId = ''
       this.$refs.addVectorFormRef.resetFields()
     },
     // 新增向量提交事件
@@ -692,18 +699,23 @@ export default {
         let params = {}
         if (!this.isConditionShow) {
           params = {
+            dimensionId: this.addVectorDimensionId,
             vectorName: this.addVectorForm.vectorName,
             conditionType: this.addVectorForm.conditionType,
             condition: `${this.addVectorForm.conditionMin},${this.addVectorForm.conditionMax}`
           }
         } else {
           params = {
+            dimensionId: this.addVectorDimensionId,
             vectorName: this.addVectorForm.vectorName,
             conditionType: this.addVectorForm.conditionType,
             condition: this.addVectorForm.condition
           }
         }
-        const { data: res } = await this.$http.post('addVector', params)
+        const { data: res } = await this.$http.post(
+          'addVector',
+          this.$qs.stringify(params)
+        )
         if (res.meta.status === 200) {
           this.$message.success('新增向量成功！')
         } else {
@@ -711,6 +723,7 @@ export default {
         }
         this.addVectorVisible = false
         this.addVectorLoading = false
+        this.addVectorDimensionId = ''
         this.$refs.addVectorFormRef.resetFields()
         this.addVectorForm = {
           vectorName: '',
@@ -727,9 +740,13 @@ export default {
       console.log('row.id', id)
       this.editVectorVisible = true
       const { data: res } = await this.$http.request({
-        url: `getVector/${id}`,
-        methods: 'get'
+        url: 'getVector',
+        methods: 'get',
+        params: {
+          id
+        }
       })
+      console.log(res.data)
       if (res.meta.status === 200) {
         this.editVectorForm = res.data
       }
@@ -746,20 +763,23 @@ export default {
         let params = {}
         if (!this.isConditionShow) {
           params = {
-            id: this.editVectorForm.id,
+            id: this.editVectorForm.vectorId,
             vectorName: this.editVectorForm.vectorName,
             conditionType: this.editVectorForm.conditionType,
             condition: `${this.editVectorForm.conditionMin},${this.editVectorForm.conditionMax}`
           }
         } else {
           params = {
-            id: this.editVectorForm.id,
+            id: this.editVectorForm.vectorId,
             vectorName: this.editVectorForm.vectorName,
             conditionType: this.editVectorForm.conditionType,
             condition: this.editVectorForm.condition
           }
         }
-        const { data: res } = await this.$http.post('editVector', params)
+        const { data: res } = await this.$http.post(
+          'editVector',
+          this.$qs.stringify(params)
+        )
         if (res.meta.status === 200) {
           this.$message.success('修改向量成功！')
         } else {
@@ -800,14 +820,18 @@ export default {
     // 根据ID删除向量确定
     async removeVectorById(id) {
       const { data: res } = await this.$http.request({
-        url: `removeVector/${id}`,
-        methods: 'get'
+        url: 'removeVector',
+        methods: 'get',
+        params: {
+          id
+        }
       })
       if (res.meta.status === 200) {
         this.$message.success('删除向量成功！')
       } else {
         this.$message.error('删除向量失败！')
       }
+      this.getDimensionList()
     },
     // 获取维度向量列表
     async getDimensionList() {
