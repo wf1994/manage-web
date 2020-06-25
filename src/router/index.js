@@ -6,6 +6,7 @@ import DataSet from '../view/dataSet/DataSet.vue'
 import DataDimension from '../view/dataDimension/DataDimension.vue'
 import ComponentSet from '../view/componentSet/ComponentSet.vue'
 import StatisItem from '../view/statisItem/StatisItem.vue'
+import ComponentAdd from '../view/componentAdd/ComponentAdd.vue'
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,10 @@ const routes = [
       {
         path: '/statisItem',
         component: StatisItem
+      },
+      {
+        path: '/componentAdd',
+        component: ComponentAdd
       },
     ]
   }

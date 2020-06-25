@@ -16,7 +16,7 @@
       </a-col>
       <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
         <a-button @click="doAddComponent" class="addButton">新增</a-button>
-        <a-button class="delButton">删除</a-button>
+        <a-button class="delButton" @click="delComponent()">删除</a-button>
       </a-col>
     </a-row>
     <div class="back-space-30"></div>
@@ -25,17 +25,18 @@
       <a-col :span="24">
         <a-table
           class="table"
-          :rowKey="row => row.id"
+          :rowKey="record => record.id"
           :columns="componentColumns"
-          :data-source="componentListData"
+          :data-source="computeComponentListData"
           :row-selection="rowSelection"
           :pagination="false"
         >
-          <span slot="operation">
+        <!-- <span slot="text" slot-scope="text, row">{{ row }}</span> -->
+          <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
               <a-menu slot="overlay">
                 <a-menu-item>修改</a-menu-item>
-                <a-menu-item>删除</a-menu-item>
+                <a-menu-item @click="delComponent(row.id)">删除</a-menu-item>
               </a-menu>
               <a @click="e => e.preventDefault()">
                 <a-icon type="dash"></a-icon>
@@ -66,28 +67,31 @@
 const componentColumns = [
   { title: '组件名称', dataIndex: 'component_name', key: 'component_name' },
   { title: '维度', dataIndex: 'dimensions', key: 'dimensions' },
-  { title: '统计项', dataIndex: 'statisItem', key: 'statisItem' },
+  { title: '统计项', dataIndex: 'item', key: 'item' },
   { title: '创建时间', dataIndex: 'create_time', key: 'create_time' },
   {
     title: '操作',
     key: 'operation',
     scopedSlots: { customRender: 'operation' }
-  }
+  },
+  // {
+  //   title: '操作2',
+  //   key: 'operation2',
+  //   scopedSlots: { customRender: 'text' }
+  // }
 ]
-
 export default {
   data() {
     return {
       pageSize: 20,
       current: 4,
       searchComponentName: '', // 查询组件名称
-      componentListData:[], // 组件列表数据
-      componentColumns // 组件列
+      componentListData: [], // 组件列表数据
+      componentColumns, // 组件列
+      selectedRowKeys: [] // 选中的行的id数组
     }
   },
-  beforeCreate() {
-    
-  },
+  beforeCreate() {},
   created() {
     this.getComponentList()
   },
@@ -101,10 +105,12 @@ export default {
         url: '/getComponentList',
         methods: 'get'
       })
-      
+
       if (res.meta.status === 200) {
         this.componentListData = res.data
-        // console.log('res.data======================='+res.data)
+        //join
+        // res.data.dimensions.join(".")
+        // console.log('res.data======================='+res.data.dimensions)
         console.log('组件列表获取成功')
       } else {
         this.$message.error('组件列表获取失败！')
@@ -131,11 +137,71 @@ export default {
         this.getComponentList()
       }
     },
+    // 删除维度确认框显示
+    delComponent() {
+      const _this = this
+      const args = arguments
+      let params = []
+      if (args.length === 0) {
+        params = this.selectedRowKeys
+      } else {
+        params = [args[0]]
+        console.log(`单选的params是${params}`)
+      }
+      console.log("parmes======="+params)
+      if (params.length !== 0) {
+        this.$confirm({
+          title: '删除组件',
+          content: '确定删除该组件吗？删除后将不可恢复，请谨慎操作！',
+          okText: '确定',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk() {
+            _this.removeComponentByIds(params)
+          },
+          onCancel() {
+            _this.$message.info('已取消删除操作！')
+          }
+        })
+      } else {
+        _this.$message.info('请选择组件进行删除！')
+      }
+    },
+    // 通过ids删除组件提交
+    async removeComponentByIds(ids) {
+      console.log('params', ids)
+      const { data: res } = await this.$http.request({
+        url: '/removeComponent',
+        methods: 'post',
+        params: {
+          ids
+        },
+        paramsSerializer: params => {
+          return this.$qs.stringify(params, { indices: false })
+        }
+      })
+      if (res.meta.status === 200) {
+        this.$message.success('删除组件成功！')
+      } else {
+        this.$message.error('删除组件失败！')
+      }
+      this.getComponentList()
+    }
   },
   computed: {
+    computeComponentListData() {
+      const tempList = this.componentListData.map(item => {
+        return {
+          ...item,
+          key: item.componentId
+        }
+      })
+      return tempList
+    },
     rowSelection() {
       return {
         onChange: (selectedRowKeys, selectedRows) => {
+          this.selectedRowKeys = selectedRowKeys
           console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             'selectedRows: ',
