@@ -116,20 +116,28 @@
           />
         </a-form-item>
         <a-form-item label="维度分类">
-          <a-input
+          <a-select
             v-decorator="[
               'dimensionType',
               {
-                rules: [
-                  {
-                    required: true,
-                    message: '维度分类不能为空！'
-                  }
-                ]
+                rules: [{ required: true, message: '维度分类不能为空！' }]
               }
             ]"
-            placeholder="请输入维度分类..."
-          />
+            placeholder="请选择维度分类..."
+            @change="handleSelectChange"
+          >
+            <a-select-option value="">
+              请选择
+            </a-select-option>
+            <a-select-option
+              v-for="item in dimensionTypeList"
+              :value="item.id"
+              :key="item.id"
+            >
+              {{ item.dataSetName }} -
+              {{ item.dataType === 0 ? '表' : 'SQL' }}
+            </a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="字段名">
           <a-textarea
@@ -184,21 +192,29 @@
           />
         </a-form-item>
         <a-form-item label="维度分类">
-          <a-input
+          <a-select
             v-decorator="[
               'dimensionType',
               {
-                rules: [
-                  {
-                    required: true,
-                    message: '维度分类不能为空！'
-                  }
-                ],
+                rules: [{ required: true, message: '维度分类不能为空！' }],
                 initialValue: editDimensionFormData.dimensionType
               }
             ]"
-            placeholder="请输入维度分类..."
-          />
+            placeholder="请选择维度分类..."
+            @change="handleSelectChange"
+          >
+            <a-select-option value="">
+              请选择
+            </a-select-option>
+            <a-select-option
+              v-for="item in dimensionTypeList"
+              :value="item.id"
+              :key="item.id"
+            >
+              {{ item.dataSetName }} -
+              {{ item.dataType === 0 ? '表' : 'SQL' }}
+            </a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="字段名">
           <a-textarea
@@ -331,6 +347,8 @@ export default {
     return {
       searchDimensionName: '', // 查询维度名称
       dimensionListData: [], // 维度向量列表数据
+      dimensionTypeList: [], // 维度类型下拉框列表
+      // 维度列
       dimensionColumns: [
         { title: '维度名称', dataIndex: 'dimensionName', key: 'dimensionName' },
         { title: '维度类型', dataIndex: 'dimensionType', key: 'dimensionType' },
@@ -341,7 +359,8 @@ export default {
           key: 'operation',
           scopedSlots: { customRender: 'operation' }
         }
-      ], // 维度列
+      ],
+      // 向量列
       vectorColumns: [
         { title: '向量名称', dataIndex: 'vectorName', key: 'vectorName' },
         { title: '属性条件', dataIndex: 'condition', key: 'condition' },
@@ -356,7 +375,7 @@ export default {
           key: 'vectorOperation',
           scopedSlots: { customRender: 'vectorOperation' }
         }
-      ], // 向量列
+      ],
       vectorData: [], // 向量列表数据
       expandedRowKeys: [], // 展开行
       addDimensionVisible: false, // 添加维度Modal显示
@@ -369,7 +388,8 @@ export default {
       editVectorVisible: false, // 修改向量Modal显示
       editVectorLoading: false, // 修改向量确定按钮loading
       selectedRowKeys: [], // 选中的行的id数组
-      isConditionShow: true,
+      isConditionShow: true, // 属性条件切换
+      // 新增向量表单数据
       addVectorForm: {
         vectorName: '',
         conditionType: '0',
@@ -443,7 +463,7 @@ export default {
           }
         ]
       },
-      editVectorForm: {}
+      editVectorForm: {} // 修改向量表单数据
     }
   },
   beforeCreate() {
@@ -496,23 +516,35 @@ export default {
         this.getDimensionList()
       }
     },
+    // 维度分类数据Select下拉列表获取
+    async getDimensionTypeList() {
+      const { data: res } = await this.$http.request({
+        url: '/getDataSetList',
+        methods: 'get'
+      })
+      if (res.meta.status === 200) {
+        this.dimensionTypeList = res.data
+      } else {
+        this.$message.info('未查询到维度类型！')
+      }
+    },
+    handleSelectChange(value) {
+      console.log('select-value', value)
+    },
     // 新增维度Moda显示
     handleShowAddDimension() {
       this.addDimensionVisible = true
+      this.getDimensionTypeList()
     },
     // 新增维度Modal提交
-    handleAddDimension(id) {
+    handleAddDimension() {
       this.addDimensionForm.validateFields(async (err, values) => {
         // 如果表单没有错误
         if (!err) {
           console.log('values=============', values)
           // 确定按钮loading状态开启
           this.addDimensionLoading = true
-          const { data: res } = await this.$http.request({
-            url: `/getDataSetData/${id}`,
-            methods: 'get',
-            params: values
-          })
+          const { data: res } = await this.$http.post('addDimension', values)
 
           // 新增成功
           if (res.meta.status === 200) {
@@ -607,13 +639,9 @@ export default {
         if (!err) {
           this.editDimensionLoading = true
           console.log(values)
-          const { data: res } = await this.$http.request({
-            url: '/editDimension',
-            methods: 'put',
-            params: {
-              ...values,
-              id: this.editDimensionFormData.dimensionId
-            }
+          const { data: res } = await this.$http.post('editDimension', {
+            ...values,
+            id: this.editDimensionFormData.dimensionId
           })
 
           if (res.meta.status === 200) {
@@ -675,11 +703,7 @@ export default {
             condition: this.addVectorForm.condition
           }
         }
-        const { data: res } = await this.$http.request({
-          url: '/addVector',
-          methods: 'post',
-          params
-        })
+        const { data: res } = await this.$http.post('addVector', params)
         if (res.meta.status === 200) {
           this.$message.success('新增向量成功！')
         } else {
@@ -735,11 +759,7 @@ export default {
             condition: this.editVectorForm.condition
           }
         }
-        const { data: res } = await this.$http.request({
-          url: '/editVector',
-          methods: 'put',
-          params
-        })
+        const { data: res } = await this.$http.post('editVector', params)
         if (res.meta.status === 200) {
           this.$message.success('修改向量成功！')
         } else {
@@ -780,8 +800,8 @@ export default {
     // 根据ID删除向量确定
     async removeVectorById(id) {
       const { data: res } = await this.$http.request({
-        url: `/removeVector/${id}`,
-        methods: 'delete'
+        url: `removeVector/${id}`,
+        methods: 'get'
       })
       if (res.meta.status === 200) {
         this.$message.success('删除向量成功！')
@@ -792,7 +812,7 @@ export default {
     // 获取维度向量列表
     async getDimensionList() {
       const { data: res } = await this.$http.request({
-        url: '/getDimensionList',
+        url: 'getDimensionList',
         methods: 'get'
       })
       if (res.meta.status === 200) {
