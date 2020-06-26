@@ -32,7 +32,10 @@
           :data-source="computeDimensionListData"
           @expand="tableExpand"
           :expandedRowKeys="expandedRowKeys"
-          :row-selection="rowSelection"
+          :row-selection="{
+            selectedRowKeys: selectedRowKeys,
+            onChange: onChange
+          }"
           :scroll="{ y: 600 }"
         >
           <span slot="operation" slot-scope="row">
@@ -562,6 +565,7 @@ export default {
             this.addDimensionLoading = false
             this.$message.error('新增维度失败！')
           }
+          this.addDimensionForm.resetFields()
         }
       })
     },
@@ -576,6 +580,7 @@ export default {
       const _this = this
       const args = arguments
       let params = []
+      console.log('this.selectedRowKeys========', this.selectedRowKeys)
       if (args.length === 0) {
         params = this.selectedRowKeys
       } else {
@@ -627,15 +632,17 @@ export default {
           this.selectedRowKeys = []
         })
       if (res.meta.status === 200) {
+        this.selectedRowKeys = []
         this.$message.success('删除维度成功！')
       } else {
+        this.selectedRowKeys = []
         this.$message.error('删除维度失败！')
       }
-
       this.getDimensionList()
     },
     // 修改维度按钮点击事件
     async handleShowEditDimension(id) {
+      this.getDimensionTypeList()
       this.editDimensionVisible = true
       const { data: res } = await this.$http.request({
         url: 'getDimension',
@@ -650,6 +657,7 @@ export default {
       } else {
         this.$message.info('查询维度信息失败！')
       }
+      this.selectedRowKeys = []
       // this.editDimensionForm.setFieldsValue({
       //   dimensionName: 'weqr',
       //   dimensionType: 'weqr',
@@ -679,7 +687,9 @@ export default {
           this.editDimensionVisible = false
           this.editDimensionLoading = false
           this.editDimensionFormData = {}
+          this.editDimensionForm.resetFields()
           this.getDimensionList()
+          this.selectedRowKeys = []
         }
       })
     },
@@ -772,7 +782,9 @@ export default {
       if (res.meta.status === 200) {
         if (res.data.conditionType === '0') {
           this.editVectorForm = res.data
+          this.isConditionShow = true
         } else {
+          this.isConditionShow = false
           this.editVectorForm = {
             conditionMin: res.data.condition.split(',')[0],
             createTime: res.data.createTime,
@@ -820,6 +832,7 @@ export default {
         }
         this.editVectorVisible = false
         this.editVectorLoading = false
+        this.isConditionShow = true
         this.$refs.editVectorFormRef.resetFields()
         this.editVectorForm = {}
         this.getDimensionList()
@@ -879,6 +892,20 @@ export default {
       } else {
         this.$message.error('维度向量列表获取失败！')
       }
+    },
+    // rowSelection() {
+    //   return {
+    //     selectedRowKeys: this.selectedRowKeys,
+    //     onChange: selectedRowKeys => {
+    //       this.selectedRowKeys = selectedRowKeys
+    //       console.log('typeof rowkeys===', selectedRowKeys instanceof Array)
+    //       console.log(`selectedRowKeys: ${selectedRowKeys}`)
+    //     }
+    //   }
+    // }
+    onChange(selectedRowKeys) {
+      this.selectedRowKeys = selectedRowKeys
+      console.log('seledtedRowKys===', selectedRowKeys)
     }
   },
   computed: {
@@ -890,24 +917,6 @@ export default {
         }
       })
       return tempList
-    },
-    rowSelection() {
-      return {
-        onChange: (selectedRowKeys, selectedRows) => {
-          this.selectedRowKeys = selectedRowKeys
-          console.log(
-            `selectedRowKeys: ${selectedRowKeys}`,
-            'selectedRows: ',
-            selectedRows
-          )
-        },
-        getCheckboxProps: record => ({
-          props: {
-            disabled: record.name === 'Disabled User',
-            name: record.name
-          }
-        })
-      }
     }
   }
 }
