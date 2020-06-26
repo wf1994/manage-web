@@ -201,7 +201,7 @@
               'dimensionType',
               {
                 rules: [{ required: true, message: '维度分类不能为空！' }],
-                initialValue: editDimensionFormData.dimensionType
+                initialValue: Number(editDimensionFormData.dimensionType)
               }
             ]"
             placeholder="请选择维度分类..."
@@ -659,9 +659,7 @@ export default {
       }
       this.selectedRowKeys = []
       // this.editDimensionForm.setFieldsValue({
-      //   dimensionName: 'weqr',
-      //   dimensionType: 'weqr',
-      //   fieldName: 'weqr'
+      //   dimensionType: Number(res.data.dimensionType)
       // })
     },
     // 修改维度提交事件
@@ -669,7 +667,7 @@ export default {
       this.editDimensionForm.validateFields(async (err, values) => {
         if (!err) {
           this.editDimensionLoading = true
-          console.log(values)
+          console.log('value==========', values)
           const params = {
             ...values,
             id: this.editDimensionFormData.id
