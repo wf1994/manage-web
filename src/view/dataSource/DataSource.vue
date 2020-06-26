@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding: 15px 40px">
     <a-row type="flex" justify="start" align="middle">
       <a-col :span="4">
         <i class="title-icon"></i>
@@ -115,11 +115,12 @@
           </a-form-item>
         </a-form>
         <a-button
-          style="background-color: #128075;border-color: #128075;display : block; margin: 0 auto; "
+          class="saveButton"
           type="primary"
           @click="showConfirm"
-          >保存</a-button
-        >
+          >
+          保存
+        </a-button>
       </a-col>
     </a-row>
   </div>
@@ -182,5 +183,9 @@ export default {
 }
 .form-row {
   margin-top: 15px;
+}
+.saveButton{
+  display : block;
+  margin: 0 auto;
 }
 </style>
