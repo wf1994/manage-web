@@ -15,7 +15,7 @@
         <a-button @click="searchByComponentName" class="searchWord">查询</a-button>
       </a-col>
       <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
-        <a-button @click="doAddComponent" class="addButton">新增</a-button>
+        <a-button  class="addButton" @click="goTo()">新增</a-button>
         <a-button class="delButton" @click="delComponent()">删除</a-button>
       </a-col>
     </a-row>
@@ -96,6 +96,12 @@ export default {
     this.getComponentList()
   },
   methods: {
+    //新增跳转页面
+    goTo(){
+      this.$router.push({
+        name: 'ComponentAdd'
+      })
+    },
     onShowSizeChange(current, pageSize) {
       console.log(current, pageSize)
     },

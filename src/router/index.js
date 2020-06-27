@@ -39,6 +39,7 @@ const routes = [
       },
       {
         path: '/componentAdd',
+        name: "ComponentAdd",
         component: ComponentAdd
       }
     ]
