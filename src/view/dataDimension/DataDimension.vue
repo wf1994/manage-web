@@ -34,22 +34,21 @@
           :expandedRowKeys="expandedRowKeys"
           :row-selection="{
             selectedRowKeys: selectedRowKeys,
+            selectedRows: selectedRows,
             onChange: onChange
           }"
           :scroll="{ y: 600 }"
         >
           <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
-              <a-menu slot="overlay">
+              <a-menu slot="overlay" :style="{ textAlign: 'center' }">
                 <a-menu-item @click="handleShowAddVector(row.dimensionId)">
                   添加向量
                 </a-menu-item>
                 <a-menu-item @click="handleShowEditDimension(row.dimensionId)">
                   修改
                 </a-menu-item>
-                <a-menu-item
-                  @click="handleShowRemoveDimensionConfirm(row.dimensionId)"
-                >
+                <a-menu-item @click="handleShowRemoveDimensionConfirm(row)">
                   删除
                 </a-menu-item>
               </a-menu>
@@ -68,14 +67,14 @@
           >
             <span slot="vectorOperation" slot-scope="text, vectorRow">
               <a-dropdown :trigger="['click']">
-                <a-menu slot="overlay">
+                <a-menu slot="overlay" :style="{ textAlign: 'center' }">
                   <a-menu-item
                     @click="handleShowEditVector(vectorRow.vectorId)"
                   >
                     修改
                   </a-menu-item>
                   <a-menu-item
-                    @click="handleShowRemoveVectorConfirm(vectorRow.vectorId)"
+                    @click="handleShowRemoveVectorConfirm(vectorRow)"
                   >
                     删除
                   </a-menu-item>
@@ -354,33 +353,66 @@ export default {
       dimensionTypeList: [], // 维度类型下拉框列表
       // 维度列
       dimensionColumns: [
-        { title: '维度名称', dataIndex: 'dimensionName', key: 'dimensionName' },
-        { title: '维度类型', dataIndex: 'dimensionType', key: 'dimensionType' },
-        { title: '字段名', dataIndex: 'fieldName', key: 'fieldName' },
-        { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
+        {
+          title: '维度名称',
+          dataIndex: 'dimensionName',
+          key: 'dimensionName',
+          align: 'center'
+        },
+        {
+          title: '维度类型',
+          dataIndex: 'dimensionType',
+          key: 'dimensionType',
+          align: 'center'
+        },
+        {
+          title: '字段名',
+          dataIndex: 'fieldName',
+          key: 'fieldName',
+          align: 'center'
+        },
+        {
+          title: '创建时间',
+          dataIndex: 'createTime',
+          key: 'createTime',
+          align: 'center'
+        },
         {
           title: '操作',
           key: 'operation',
-          scopedSlots: { customRender: 'operation' }
+          scopedSlots: { customRender: 'operation' },
+          align: 'center'
         }
       ],
       // 向量列
       vectorColumns: [
-        { title: '向量名称', dataIndex: 'vectorName', key: 'vectorName' },
-        { title: '属性条件', dataIndex: 'condition', key: 'condition' },
+        {
+          title: '向量名称',
+          dataIndex: 'vectorName',
+          key: 'vectorName',
+          align: 'center'
+        },
+        {
+          title: '属性条件',
+          dataIndex: 'condition',
+          key: 'condition',
+          align: 'center'
+        },
         {
           title: '创建时间',
           dataIndex: 'createTime',
-          key: 'createTime'
+          key: 'createTime',
+          align: 'center'
         },
         {
           title: '操作',
           dataIndex: 'vectorOperation',
           key: 'vectorOperation',
-          scopedSlots: { customRender: 'vectorOperation' }
+          scopedSlots: { customRender: 'vectorOperation' },
+          align: 'center'
         }
       ],
-      vectorData: [], // 向量列表数据
+      // vectorData: [], // 向量列表数据
       expandedRowKeys: [], // 展开行
       addDimensionVisible: false, // 添加维度Modal显示
       addDimensionLoading: false, // 添加维度确定按钮loading
@@ -392,6 +424,7 @@ export default {
       editVectorVisible: false, // 修改向量Modal显示
       editVectorLoading: false, // 修改向量确定按钮loading
       selectedRowKeys: [], // 选中的行的id数组
+      selectedRows: [], // 选中行的数据
       isConditionShow: true, // 属性条件切换
       addVectorDimensionId: '', // 添加向量传的维度id
       // 新增向量表单数据
@@ -402,6 +435,7 @@ export default {
         conditionMin: '',
         conditionMax: ''
       },
+      // 新增向量表单校验规则
       addVectorFormRules: {
         vectorName: [
           {
@@ -435,6 +469,7 @@ export default {
           }
         ]
       },
+      // 修改向量表单校验规则
       editVectorFormRules: {
         vectorName: [
           {
@@ -472,9 +507,11 @@ export default {
     }
   },
   beforeCreate() {
+    // 新增维度表单注册
     this.addDimensionForm = this.$form.createForm(this, {
       name: 'addDimensionForm'
     })
+    // 修改维度表单组册
     this.editDimensionForm = this.$form.createForm(this, {
       name: 'editDimensionForm'
     })
@@ -483,22 +520,20 @@ export default {
     this.getDimensionList()
   },
   methods: {
-    // table展开操作
+    // 维度table展开操作
     tableExpand(expanded, record) {
-      console.log(expanded, record)
       if (expanded) {
         this.expandedRowKeys = []
         this.expandedRowKeys.push(record.dimensionId)
       } else {
         this.expandedRowKeys = []
       }
-      this.vectorData = record.vectorList.map(item => {
-        return {
-          ...item,
-          key: item.vectorId
-        }
-      })
-      console.log(this.vectorData)
+      // this.vectorData = record.vectorList.map(item => {
+      //   return {
+      //     ...item,
+      //     key: item.vectorId
+      //   }
+      // })
     },
     // 通过维度名称查询列表
     async searchByDimensionName() {
@@ -533,6 +568,7 @@ export default {
         this.$message.info('未查询到维度类型！')
       }
     },
+    // 维度类型下拉框选择事件
     handleSelectChange(value) {
       console.log('select-value', value)
     },
@@ -543,10 +579,10 @@ export default {
     },
     // 新增维度Modal提交
     handleAddDimension() {
+      // 表单数据校验
       this.addDimensionForm.validateFields(async (err, values) => {
         // 如果表单没有错误
         if (!err) {
-          console.log('values=============', values)
           // 确定按钮loading状态开启
           this.addDimensionLoading = true
           const { data: res } = await this.$http.post(
@@ -571,25 +607,49 @@ export default {
     },
     // 新增维度Modal取消
     handleAddDimensionCancel() {
+      // 关闭Modal
       this.addDimensionVisible = false
+      // 关闭loading状态
       this.addDimensionLoading = false
+      // 重置表单域
       this.addDimensionForm.resetFields()
     },
     // 删除维度确认框显示
     handleShowRemoveDimensionConfirm() {
+      // 接收this对象，因为在$confirm()中无法取到this
       const _this = this
+      // 函数参数对象
       const args = arguments
+      // 待拼装参数
       let params = []
-      console.log('this.selectedRowKeys========', this.selectedRowKeys)
+      // 该函数未传入参数，说明是点击的多选删除，将已选则行的数据直接赋值给params
       if (args.length === 0) {
         params = this.selectedRowKeys
+        // 该函数传入一个参数，说明是点击的行内删除，将获取的行的数据拼成数组赋值给params
       } else {
-        params = [args[0]]
+        params = [args[0].dimensionId]
+        // 用作删除显示维度名称
+        this.selectedRows = [args[0]]
       }
+      // 删除提示中，具体的维度名称
+      const removeText = this.selectedRows
+        .map(item => item.dimensionName)
+        .join('、')
+      // 点击删除前校验时候已选择删除项
       if (params.length !== 0) {
         this.$confirm({
           title: '删除维度',
-          content: '确定删除该维度吗？删除后将不可恢复，请谨慎操作！',
+          content: (
+            <div>
+              <p>
+                确定删除：<a>{removeText}</a>
+                &nbsp;吗？
+              </p>
+              <p>
+                <em>删除后无法恢复，请谨慎操作！</em>
+              </p>
+            </div>
+          ),
           okText: '确定',
           okType: 'danger',
           cancelText: '取消',
@@ -606,7 +666,6 @@ export default {
     },
     // 通过ids删除维度提交
     async removeDimensionByIds(ids) {
-      console.log('params', ids)
       // const { data: res } = await this.$http.post(
       //   'removeDimension',
       //   { ids },
@@ -616,6 +675,7 @@ export default {
       //     }
       //   }
       // )
+      // 传递数组，需要将参数转化成json字符串
       const { data: res } = await this.$http
         .request({
           url: 'removeDimension',
@@ -632,16 +692,17 @@ export default {
           this.selectedRowKeys = []
         })
       if (res.meta.status === 200) {
-        this.selectedRowKeys = []
         this.$message.success('删除维度成功！')
       } else {
-        this.selectedRowKeys = []
         this.$message.error('删除维度失败！')
       }
+      // 清空已选行
+      this.selectedRowKeys = []
       this.getDimensionList()
     },
     // 修改维度按钮点击事件
     async handleShowEditDimension(id) {
+      // 获取维度分类列表
       this.getDimensionTypeList()
       this.editDimensionVisible = true
       const { data: res } = await this.$http.request({
@@ -651,23 +712,18 @@ export default {
           id
         }
       })
-      console.log('res===', res)
       if (res.meta.status === 200) {
         this.editDimensionFormData = res.data
       } else {
         this.$message.info('查询维度信息失败！')
       }
       this.selectedRowKeys = []
-      // this.editDimensionForm.setFieldsValue({
-      //   dimensionType: Number(res.data.dimensionType)
-      // })
     },
     // 修改维度提交事件
     handleEditDimension() {
       this.editDimensionForm.validateFields(async (err, values) => {
         if (!err) {
           this.editDimensionLoading = true
-          console.log('value==========', values)
           const params = {
             ...values,
             id: this.editDimensionFormData.id
@@ -684,7 +740,9 @@ export default {
           }
           this.editDimensionVisible = false
           this.editDimensionLoading = false
+          // 修改维度回显数据清空
           this.editDimensionFormData = {}
+          // 重置修改维度表单域
           this.editDimensionForm.resetFields()
           this.getDimensionList()
           this.selectedRowKeys = []
@@ -705,8 +763,8 @@ export default {
     },
     // 切换条件类型Radio
     handleRadioChange(e) {
-      console.log('e.target.value', e.target.value)
       const radioValue = e.target.value
+      // 0:精准条件=>isConditionShow:true; 1:范围条件=>isConditionShow:false
       this.isConditionShow = radioValue === '0'
     },
     // 新增向量Modal取消
@@ -719,14 +777,13 @@ export default {
     },
     // 新增向量提交事件
     handleAddVector() {
-      console.log('this.addVectorForm', this.addVectorForm)
       this.$refs.addVectorFormRef.validate(async valid => {
         if (!valid) {
           return null
         }
-        console.log(this)
         this.addVectorLoading = true
         let params = {}
+        // 根据条件类型，拼装不同的参数
         if (!this.isConditionShow) {
           params = {
             dimensionId: this.addVectorDimensionId,
@@ -767,7 +824,6 @@ export default {
     },
     // 修改向量Modal显示
     async handleShowEditVector(id) {
-      console.log('row.id', id)
       this.editVectorVisible = true
       const { data: res } = await this.$http.request({
         url: 'getVector',
@@ -776,11 +832,13 @@ export default {
           id
         }
       })
-      console.log(res.data)
       if (res.meta.status === 200) {
+        // 根据条件类型，进行数据回显
+        // 精准条件
         if (res.data.conditionType === '0') {
           this.editVectorForm = res.data
           this.isConditionShow = true
+          // 范围条件
         } else {
           this.isConditionShow = false
           this.editVectorForm = {
@@ -796,12 +854,10 @@ export default {
     },
     // 修改向量提交事件
     handleEditVector() {
-      console.log('this.editVectorForm', this.editVectorForm)
       this.$refs.editVectorFormRef.validate(async valid => {
         if (!valid) {
           return null
         }
-        console.log(this)
         this.editVectorLoading = true
         let params = {}
         if (!this.isConditionShow) {
@@ -844,17 +900,23 @@ export default {
       this.editVectorForm = {}
     },
     // 根据ID删除向量
-    handleShowRemoveVectorConfirm(id) {
-      console.log(id)
+    handleShowRemoveVectorConfirm(row) {
       const _this = this
       this.$confirm({
         title: '删除向量',
-        content: '确定删除该向量吗？删除后将不可恢复，请谨慎操作！',
+        content: (
+          <div>
+            <p>
+              确定删除：<a>{row.vectorName}</a>&nbsp;吗？
+            </p>
+            <em>删除后不可恢复，请谨慎操作！</em>
+          </div>
+        ),
         okText: '确定',
         okType: 'danger',
         cancelText: '取消',
         onOk() {
-          _this.removeVectorById(id)
+          _this.removeVectorById(row.vectorId)
         },
         onCancel() {
           _this.$message.info('已取消删除操作！')
@@ -885,8 +947,6 @@ export default {
       })
       if (res.meta.status === 200) {
         this.dimensionListData = res.data
-        console.log('this.dimensionListData', this.dimensionListData)
-        console.log('维度列表获取成功')
       } else {
         this.$message.error('维度向量列表获取失败！')
       }
@@ -901,12 +961,14 @@ export default {
     //     }
     //   }
     // }
-    onChange(selectedRowKeys) {
+    // 表格多选事件
+    onChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
-      console.log('seledtedRowKys===', selectedRowKeys)
+      this.selectedRows = selectedRows
     }
   },
   computed: {
+    // 维度列表数据
     computeDimensionListData() {
       const tempList = this.dimensionListData.map(item => {
         return {
