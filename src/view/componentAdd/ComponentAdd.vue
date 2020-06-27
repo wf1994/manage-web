@@ -34,20 +34,14 @@
                 }
               ]"
               placeholder="请选择图形"
-              :value="value"
-              :change="drawMychart()"
+              @change="getChartOption"
             >
-              <el-option
-                v-for="item in chartOptionData"
-                :key="item.value"
-                :label="item.label"
-                :value="item.label"
-              ></el-option>
+              <a-select-option v-for="item in chartOptionData" :key="item.value">{{ item.label }}</a-select-option>
             </a-select>
           </a-form-item>
           <div class="line"></div>
           <!-- 分隔线 -->
-          <a-form-item label="X轴纬度">
+          <!-- <a-form-item label="X轴纬度">
             <a-select
               v-decorator="[
                 'chartOption',
@@ -65,8 +59,8 @@
                 :value="item.label"
               ></el-option>
             </a-select>
-          </a-form-item>
-          <a-form-item label="xxx向量">
+          </a-form-item>-->
+          <!-- <a-form-item label="xxx向量">
             <a-checkbox-group @change="onChange">
               <a-row>
                 <a-col :span="8">
@@ -87,9 +81,9 @@
               </a-row>
             </a-checkbox-group>
           </a-form-item>
-          <div class="line"></div>
+          <div class="line"></div>-->
           <!-- 分隔线 -->
-          <a-form-item label="Y轴纬度">
+          <!-- <a-form-item label="Y轴纬度">
             <a-select
               v-decorator="[
                 'chartOption',
@@ -107,8 +101,8 @@
                 :value="item.label"
               ></el-option>
             </a-select>
-          </a-form-item>
-          <a-form-item label="xxx向量">
+          </a-form-item>-->
+          <!-- <a-form-item label="xxx向量">
             <a-checkbox-group @change="onChange">
               <a-row>
                 <a-col :span="8">
@@ -129,9 +123,9 @@
               </a-row>
             </a-checkbox-group>
           </a-form-item>
-          <div class="line"></div>
+          <div class="line"></div>-->
           <!-- 分隔线 -->
-          <a-form-item label="统计项">
+          <!-- <a-form-item label="统计项">
             <a-select
               v-decorator="[
                 'chartOption',
@@ -149,22 +143,10 @@
                 :value="item.label"
               ></el-option>
             </a-select>
-          </a-form-item>
+          </a-form-item>-->
         </a-form>
-        <a-button
-          class="saveButton"
-          type="primary"
-          @click="showConfirm"
-          >
-          确定
-        </a-button>
-        <a-button
-          class="Button2"
-          type="primary"
-          @click="showConfirm"
-          >
-          取消
-        </a-button>
+        <!-- <a-button class="saveButton" type="primary" @click="showConfirm">确定</a-button> -->
+        <!-- <a-button class="Button2" type="primary" @click="showConfirm">取消</a-button> -->
       </div>
     </div>
 
@@ -180,7 +162,7 @@
       >组件预览</div>
 
       <!-- 样式设置 -->
-      <div class="">样式设置</div>
+      <div class>样式设置</div>
     </div>
   </div>
 </template>
@@ -196,8 +178,12 @@ export default {
     return {
       plainOptions,
       options,
-      chartOptionData: [] //基础图表下拉框列表
+      chartOptionData: [], //基础图表下拉框列表
+      currentOption: {}
     }
+  },
+  beforeCreate() {
+    this.form = this.$form.createForm(this, { name: 'dataSourceForm' })
   },
   created() {
     this.getChartOptionData()
@@ -208,27 +194,52 @@ export default {
   methods: {
     // 获取基础图表下拉框列表,第一次选择下拉框的图后，先生成一次预览图
     async getChartOptionData() {
-      const res = await this.$http.request({
+      const { data: res } = await this.$http.request({
         methods: 'get',
         url: 'getChartSelectList'
       })
-      if (res.status === 200) {
+      if (res.meta.status === 200) {
         this.chartOptionData = res.data.map(item => {
           return {
             value: item.chartId,
             label: item.chartName
           }
         })
+        console.log(`this.chartOptionData是${this.chartOptionData}`)
       } else {
         //失败返回啥
+      }
+    },
+    //根据 ID 查询基础图表 option,怎么把chartId传到这里？
+    async getChartOption(value) {
+      console.log(`点击后的value是${value}`)
+      const { data: res } = await this.$http.request({
+        methods: 'get',
+        url: 'getChartOption',
+        params: { id: value }
+      })
+      if (res.meta.status === 200) {
+        //   let tempData = eval("("+res.data[0].chartOption+")")
+          let tempData = eval(`(${res.data[0].chartOption})`)
+        //   let str = tempData.replace(/\s*/g,"").replace(/[\r\n]/g,"")
+         console.log(`tempData是------${tempData}`)
+        //   this.currentOption = res[0].chartOption
+        this.currentOption = tempData
+        console.log(`currentOption是${this.currentOption.tooltip}`)
+        this.$message.success('成功')
+        this.drawMychart()
+      } else {
+        this.$message.error('失败')
       }
     },
     //画图
     drawMychart() {
       //初始化echarts实例
-      // myChart = this.$echarts.init(document.getElementById('mychart'))
+      let myChart
+      myChart && myChart.dispose()
+      myChart = this.$echarts.init(document.getElementById('mychart'))
       //获取下拉框的option
-      //myChart.setOption(option)
+      myChart.setOption(this.currentOption)
     }
   }
 }
@@ -260,12 +271,12 @@ export default {
   height: 1px;
   width: 640px;
 }
-.saveButton{
+.saveButton {
   margin: 0 auto;
 }
 .Button2 {
-    background: #FFFFFF;
-    border: 1px solid #D1D3D8;
-    color: gray;
+  background: #ffffff;
+  border: 1px solid #d1d3d8;
+  color: gray;
 }
 </style>
