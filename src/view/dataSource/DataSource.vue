@@ -92,9 +92,6 @@
               <a-select-option value="kingbase">
                 金仓数据库
               </a-select-option>
-              <a-select-option value="other">
-                其他数据库
-              </a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="数据库名称">
