@@ -41,111 +41,106 @@
           </a-form-item>
           <div class="line"></div>
           <!-- 分隔线 -->
-          <!-- <a-form-item label="X轴纬度">
+          <a-form-item label="X轴纬度" v-if="isConditionShowX">
             <a-select
               v-decorator="[
-                'chartOption',
+                'xDimension',
                 {
                   rules: [{ required: true, message: '纬度不能为空！' }]
                 }
               ]"
               placeholder="请选择纬度"
-              :value="value"
+              @change="showVector"
             >
-              <el-option
-                v-for="item in chartOptionData"
-                :key="item.value"
-                :label="item.label"
-                :value="item.label"
-              ></el-option>
+              <a-select-opt-group
+                v-for="(item, index) in xDimensionData"
+                :key="index"
+                :label="item.dimensionType"
+              >
+                <a-select-option
+                  v-for="children in item.dimensionList"
+                  :key="children.id"
+                  :value="children.id+','+item.dimensionTypeId"
+                >{{ children.dimensionName }}</a-select-option>
+              </a-select-opt-group>
             </a-select>
-          </a-form-item>-->
-          <!-- <a-form-item label="xxx向量">
-            <a-checkbox-group @change="onChange">
-              <a-row>
-                <a-col :span="8">
-                  <a-checkbox value="A">A</a-checkbox>
-                </a-col>
-                <a-col :span="8">
-                  <a-checkbox value="B">B</a-checkbox>
-                </a-col>
-                <a-col :span="8">
-                  <a-checkbox value="C">C</a-checkbox>
-                </a-col>
-                <a-col :span="8">
-                  <a-checkbox value="D">D</a-checkbox>
-                </a-col>
-                <a-col :span="8">
-                  <a-checkbox value="E">E</a-checkbox>
-                </a-col>
-              </a-row>
+          </a-form-item>
+          <a-form-item label="xxx向量" v-if="isConditionShowX">
+            <a-checkbox-group
+              v-decorator="[
+                'xVector',
+                {
+                  rules: [{ required: true, message: '向量不能为空！' }]
+                }
+              ]"
+            >
+              <a-checkbox
+                v-for="item in xVectorData"
+                :key="item.id"
+                :value="item.id"
+              >{{ item.vectorName }}</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
-          <div class="line"></div>-->
+          <div class="line"></div>
           <!-- 分隔线 -->
-          <!-- <a-form-item label="Y轴纬度">
+          <a-form-item label="Y轴纬度" v-if="isConditionShowY">
             <a-select
               v-decorator="[
-                'chartOption',
+                'yDimension',
                 {
                   rules: [{ required: true, message: '纬度不能为空！' }]
                 }
               ]"
               placeholder="请选择纬度"
-              :value="value"
+              @change="showVectorY"
             >
-              <el-option
-                v-for="item in chartOptionData"
-                :key="item.value"
-                :label="item.label"
-                :value="item.label"
-              ></el-option>
+              <a-select-opt-group
+                v-for="(item, index) in xDimensionData"
+                :key="index"
+                :label="item.dimensionType"
+              >
+                <a-select-option
+                  v-for="children in item.dimensionList"
+                  :key="children.id"
+                  :value="children.id+','+item.dimensionTypeId"
+                >{{ children.dimensionName }}</a-select-option>
+              </a-select-opt-group>
             </a-select>
-          </a-form-item>-->
-          <!-- <a-form-item label="xxx向量">
-            <a-checkbox-group @change="onChange">
-              <a-row>
-                <a-col :span="8">
-                  <a-checkbox value="A">A</a-checkbox>
-                </a-col>
-                <a-col :span="8">
-                  <a-checkbox value="B">B</a-checkbox>
-                </a-col>
-                <a-col :span="8">
-                  <a-checkbox value="C">C</a-checkbox>
-                </a-col>
-                <a-col :span="8">
-                  <a-checkbox value="D">D</a-checkbox>
-                </a-col>
-                <a-col :span="8">
-                  <a-checkbox value="E">E</a-checkbox>
-                </a-col>
-              </a-row>
+          </a-form-item>
+          <a-form-item label="xxx向量" v-if="isConditionShowY">
+            <a-checkbox-group
+              v-decorator="[
+                'yVector',
+                {
+                  rules: [{ required: true, message: '向量不能为空！' }]
+                }
+              ]"
+            >
+              <a-checkbox
+                v-for="item in yVectorData"
+                :key="item.id"
+                :value="item.id"
+              >{{ item.vectorName }}</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
-          <div class="line"></div>-->
+          <div class="line"></div>
           <!-- 分隔线 -->
-          <!-- <a-form-item label="统计项">
+          <a-form-item label="统计项">
             <a-select
               v-decorator="[
-                'chartOption',
+                'statisItem',
                 {
                   rules: [{ required: true, message: '统计项不能为空！' }]
                 }
               ]"
               placeholder="请选择统计项"
-              :value="value"
             >
-              <el-option
-                v-for="item in chartOptionData"
-                :key="item.value"
-                :label="item.label"
-                :value="item.label"
-              ></el-option>
+              <a-select-option value="currentNum">现有数量</a-select-option>
+              <a-select-option value="standardNum">编制数量</a-select-option>
             </a-select>
-          </a-form-item>-->
+          </a-form-item>
         </a-form>
-        <!-- <a-button class="saveButton" type="primary" @click="showConfirm">确定</a-button> -->
+        <a-button class="saveButton" type="primary" @click="showConfirm">确定</a-button>
         <!-- <a-button class="Button2" type="primary" @click="showConfirm">取消</a-button> -->
       </div>
     </div>
@@ -167,19 +162,17 @@
   </div>
 </template>
 <script>
-const plainOptions = ['Apple', 'Pear', 'Orange']
-const options = [
-  { label: 'Apple', value: 'Apple' },
-  { label: 'Pear', value: 'Pear' },
-  { label: 'Orange', value: 'Orange' }
-]
 export default {
   data() {
     return {
-      plainOptions,
-      options,
+      isConditionShowX: true, //x轴纬度、向量显示
+      isConditionShowY: true, //x轴纬度、向量显示
       chartOptionData: [], //基础图表下拉框列表
-      currentOption: {}
+      currentOption: {},
+      xDimensionData: [], //下拉框x纬度
+      xVectorData: [], //指定x纬度的向量
+      yDimensionData: [], //下拉框y纬度
+      yVectorData: [] //指定y纬度的向量
     }
   },
   beforeCreate() {
@@ -187,6 +180,7 @@ export default {
   },
   created() {
     this.getChartOptionData()
+    this.getDimensionData()
   },
   mounted() {
     //   this.drawMychart()
@@ -205,12 +199,12 @@ export default {
             label: item.chartName
           }
         })
-        console.log(`this.chartOptionData是${this.chartOptionData}`)
+        // console.log(`this.chartOptionData是${this.chartOptionData}`)
       } else {
-        //失败返回啥
+        this.$message.error('失败')
       }
     },
-    //根据 ID 查询基础图表 option,怎么把chartId传到这里？
+    //根据 ID 查询基础图表 option,传入chartId
     async getChartOption(value) {
       console.log(`点击后的value是${value}`)
       const { data: res } = await this.$http.request({
@@ -219,15 +213,21 @@ export default {
         params: { id: value }
       })
       if (res.meta.status === 200) {
-        //   let tempData = eval("("+res.data[0].chartOption+")")
-          let tempData = eval(`(${res.data[0].chartOption})`)
+        //   eval(("{}"))  用法
+        let tempData = eval(`(${res.data[0].chartOption})`)
         //   let str = tempData.replace(/\s*/g,"").replace(/[\r\n]/g,"")
-         console.log(`tempData是------${tempData}`)
+        // console.log(`tempData是------${tempData}`)
         //   this.currentOption = res[0].chartOption
         this.currentOption = tempData
-        console.log(`currentOption是${this.currentOption.tooltip}`)
+        // console.log(`currentOption是${this.currentOption.tooltip}`)
         this.$message.success('成功')
         this.drawMychart()
+        //判断一维还是二维
+        let tempCondition = eval(`(${res.data[0].dimensionforchart})`)
+        if (tempCondition.length != 2) {
+          this.isConditionShowY = false
+        }
+        // console.log(this.isConditionShowX)
       } else {
         this.$message.error('失败')
       }
@@ -240,6 +240,147 @@ export default {
       myChart = this.$echarts.init(document.getElementById('mychart'))
       //获取下拉框的option
       myChart.setOption(this.currentOption)
+    },
+
+    //获取维度下拉框列表
+    async getDimensionData() {
+      const { data: res } = await this.$http.request({
+        methods: 'get',
+        url: 'getDimensionSelectList'
+      })
+      if (res.meta.status === 200) {
+        this.xDimensionData = res.data
+        // console.log(`dimensionList是${this.xDimensionData.dimensionList.dimensionName}`)
+      } else {
+        this.$message.error('失败')
+      }
+    },
+    //根据维度 ID 查询X向量
+    async showVector(value) {
+      console.log(`点击后的value是${value}`)
+      let id = value.split(',')[0]
+      const { data: res } = await this.$http.request({
+        methods: 'get',
+        url: 'getVectorList',
+        params: { id }
+      })
+      if (res.meta.status === 200) {
+        console.log(`根据纬度id查询向量${res.data}`)
+        this.xVectorData = res.data
+        this.$message.success('成功')
+      } else {
+        this.$message.error('失败')
+      }
+    },
+    //根据维度 ID 查询Y向量
+    async showVectorY(value) {
+      console.log(`点击后的value是${value}`)
+      let id = value.split(',')[0]
+      const { data: res } = await this.$http.request({
+        methods: 'get',
+        url: 'getVectorList',
+        params: { id }
+      })
+      if (res.meta.status === 200) {
+        console.log(`根据纬度id查询向量${res.data}`)
+        this.yVectorData = res.data
+        this.$message.success('成功')
+      } else {
+        this.$message.error('失败')
+      }
+    },
+    //接口27，获取图表数据
+    // async previewChart(){
+    //   let params
+    //   if(isConditionShowY){
+    //     //
+    //   }else {
+    //     params = {
+    //       dataId:
+    //     }
+    //   }
+    //   const { data: res } = await this.$http.request({
+    //     methods: 'get',
+    //     url: 'previewChart',
+    //     params: {
+    //     }
+    //   })
+    // },
+
+    //保存所有设置数据
+    showConfirm() {
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log(this)
+          const _this = this
+          console.log('Received values of form: ', values)
+
+          let parmes = {}
+          let dimensionXId = values.xDimension.split(',')[1]
+          let dimensionYId = values.yDimension.split(',')[1]
+          //判断x纬度和y纬度是否同一个数据集
+          if (dimensionXId !== dimensionYId) {
+            return this.$message.error('请选择同一数据集下纬度!')
+          }
+          if (this.isConditionShowY) {
+            parmes = {
+              dataId: values.xDimension.split(',')[1],
+              chartId: values.chartOption,
+              dimensions: [
+                {
+                  dimensionId: dimensionXId,
+                  dimensionXY: 'x',
+                  vectorList: values.xVector
+                },
+                {
+                  dimensionId: dimensionYId,
+                  dimensionXY: 'y',
+                  vectorList: values.yVector
+                }
+              ],
+              statisItem: values.statisItem
+            }
+          } else {
+            parmes = {
+              dataId: values.xDimension.split(',')[1],
+              chartId: values.chartOption,
+              dimensions: [
+                {
+                  dimensionId: dimensionXId,
+                  dimensionXY: 'x',
+                  vectorList: values.xVector
+                }
+              ],
+              statisItem: values.statisItem
+            }
+          }
+          this.$confirm({
+            title: '保存数据源',
+            content: <div style="color:green;">确定保存该设置吗？</div>,
+            okText: '确定',
+            cancelText: '取消',
+            onOk() {
+              _this.saveDataSource(parmes)
+            },
+            onCancel() {
+              console.log('Cancel')
+            }
+          })
+        }
+      })
+    },
+    //保存图表组件
+    async saveDataSource(values) {
+      const { data: res } = await this.$http.request({
+        url: '/saveChart',
+        method: 'post',
+        params: values
+      })
+      if (res.meta.status === 200) {
+        this.$message.success('保存数据源成功')
+      } else {
+        this.$message.error('保存数据源失败')
+      }
     }
   }
 }
