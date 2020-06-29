@@ -28,7 +28,11 @@
           :rowKey="record => record.id"
           :columns="DataSetColumns"
           :data-source="computeDataSetData"
-          :row-selection="rowSelection"
+          :row-selection="{
+            selectedRowKeys: selectedRowKeys,
+            selectedRows: selectedRows,
+            onChange: onChange
+          }"
           :scroll="{ y: 600 }"
         >
           <span slot="operation" slot-scope="row">
@@ -37,7 +41,7 @@
                 <a-menu-item @click="handleShowEdit(row)">
                   修改
                 </a-menu-item>
-                <a-menu-item @click="RowDelete(row.id)">
+                <a-menu-item @click="RowDelete(row)">
                   删除
                 </a-menu-item>
               </a-menu>
@@ -49,7 +53,7 @@
         </a-table>
       </a-col>
     </a-row>
-    <!-- 新增维度Modal -->
+    <!-- 新增数据集Modal -->
     <a-modal
       title="新增数据集"
       :visible="addDataSetVisible"
@@ -260,20 +264,21 @@ export default {
         { title: '数据集类型', dataIndex: 'dataType', key: 'dataType' },
         { title: '数据集内容', dataIndex: 'dataContent', key: 'dataContent' },
         { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
-        { title: 'id', dataIndex: 'id', key: 'id' },
+        // { title: 'id', dataIndex: 'id', key: 'id' },
         {
           title: '操作',
           key: 'operation',
           scopedSlots: { customRender: 'operation' }
         }
       ],
-      // 维度列
+      // 数据集列
       addDataSetVisible: false, // 添加数据集Modal显示
       addDataSetLoading: false, // 添加数据集确定按钮loading
-      editDataSetVisible: false, // 修改维度Modal显示
-      editDataSetLoading: false, // 修改维度确定按钮loading
-      editDataSetFormData: {}, // 修改维度回显数据
-      selectedRowKeys: [] // 选中的行的id数组
+      editDataSetVisible: false, // 修改数据集Modal显示
+      editDataSetLoading: false, // 修改数据集确定按钮loading
+      editDataSetFormData: {}, // 修改数据集回显数据
+      selectedRowKeys: [], // 选中的行的id数组
+      selectedRows: [] // 选中行的数据
     }
   },
   beforeCreate() {
@@ -317,6 +322,7 @@ export default {
             this.addDataSetLoading = false
             this.$message.error('新增数据集失败！')
           }
+          this.addDataSetForm.resetFields()
         }
       })
     },
@@ -328,18 +334,38 @@ export default {
     },
     // 删除数据集modal显示
     showModalDelete() {
+      // 接收this对象，因为在$confirm()中无法取到this
       const _this = this
+      // 函数参数对象
       const args = arguments
+      // 待拼装参数
       let params = []
+      // 该函数未传入参数，说明是点击的多选删除，将已选则行的数据直接赋值给params
       if (args.length === 0) {
         params = this.selectedRowKeys
+        console.log(params)
       } else {
         params = [args[0]]
+        this.selectedRows = [args[0]]
       }
+      // 删除提示中，具体的维度名称
+      const removeText = this.selectedRows
+        .map(item => item.dataSetName)
+        .join('、')
       if (params.length !== 0) {
         this.$confirm({
           title: '删除数据集',
-          content: '确定删除该数据集吗？删除后将不可恢复，请谨慎操作！',
+          content: (
+            <div>
+              <p>
+                确定删除：<a>{removeText}</a>
+                &nbsp;吗？
+              </p>
+              <p>
+                <em>删除后无法恢复，请谨慎操作！</em>
+              </p>
+            </div>
+          ),
           okText: '确定',
           okType: 'danger',
           cancelText: '取消',
@@ -357,22 +383,29 @@ export default {
     // 通过ids删除数据集提交
     async removeDataSetByIds(ids) {
       console.log('params', ids)
-      const { data: res } = await this.$http.request({
-        url: '/removeDataSet',
-        methods: 'post',
-        params: {
-          ids
-        },
-        paramsSerializer: params => {
-          return this.$qs.stringify(params, { indices: false })
-        }
-      })
+      const { data: res } = await this.$http
+        .request({
+          url: '/removeDataSet',
+          methods: 'post',
+          params: {
+            ids
+          },
+          paramsSerializer: params => {
+            return this.$qs.stringify(params, { indices: false })
+          }
+        })
+        // 返回的错误信息用catch接
+        .catch(error => {
+          this.$message.error('删除维度失败！' + error)
+          this.selectedRowKeys = []
+        })
       if (res.meta.status === 200) {
         this.$message.success('删除数据集成功！')
-        this.getDataSetList()
       } else {
         this.$message.error('删除数据集失败！')
       }
+      this.selectedRowKeys = []
+      this.getDataSetList()
     },
     // 获取列表数据
     async getDataSetList() {
@@ -405,7 +438,7 @@ export default {
         this.$message.error('查询失败！')
       }
     },
-    // 清除查询维度名称
+    // 清除查询数据集名称
     clearsearchDataSetName(e) {
       if (e.type === 'click') {
         this.searchDataSetName = ''
@@ -431,12 +464,13 @@ export default {
       })
       console.log('res===', res)
       if (res.meta.status === 200) {
-        this.editDataSetForm.setFieldsValue({
-          id: res.data.id,
-          dataSetName: res.data.dataSetName,
-          dataType: res.data.dataType,
-          dataContent: res.data.dataContent
-        })
+        this.editDataSetFormData = res.data
+        // this.editDataSetForm.setFieldsValue({
+        //   id: res.data.id,
+        //   dataSetName: res.data.dataSetName,
+        //   dataType: res.data.dataType,
+        //   dataContent: res.data.dataContent
+        // })
       } else {
         this.$message.error('获取数据集失败！')
       }
@@ -463,16 +497,17 @@ export default {
 
           // 修改成功
           if (res.meta.status === 200) {
-            this.editDataSetVisible = false
-            this.editDataSetLoading = false
-            this.editDataSetFormData = {}
-            this.getDataSetList()
-            this.$message.success('新增数据集成功！')
+            this.$message.success('修改数据集成功！')
           } else {
             // 修改失败
-            this.editDataSetLoading = false
-            this.$message.error('新增数据集失败！')
+            this.$message.error('修改数据集失败！')
           }
+          this.editDataSetLoading = false
+          this.editDataSetVisible = false
+          this.editDataSetFormData = {}
+          this.editDataSetForm.resetFields()
+          this.getDataSetList()
+          this.selectedRowKeys = []
         }
       })
     },
@@ -510,6 +545,10 @@ export default {
       } else {
         _this.$message.info('请选择数据集进行删除！')
       }
+    },
+    onChange(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
     }
   },
   computed: {
@@ -521,25 +560,25 @@ export default {
         }
       })
       return tempList
-    },
-    rowSelection() {
-      return {
-        onChange: (selectedRowKeys, selectedRows) => {
-          this.selectedRowKeys = selectedRowKeys
-          console.log(
-            `selectedRowKeys: ${selectedRowKeys}`,
-            'selectedRows: ',
-            selectedRows
-          )
-        },
-        getCheckboxProps: record => ({
-          props: {
-            disabled: record.name === 'Disabled User', // Column configuration not to be checked
-            name: record.name
-          }
-        })
-      }
     }
+    // rowSelection() {
+    //   return {
+    //     onChange: (selectedRowKeys, selectedRows) => {
+    //       this.selectedRowKeys = selectedRowKeys
+    //       console.log(
+    //         `selectedRowKeys: ${selectedRowKeys}`,
+    //         'selectedRows: ',
+    //         selectedRows
+    //       )
+    //     },
+    //     getCheckboxProps: record => ({
+    //       props: {
+    //         disabled: record.name === 'Disabled User', // Column configuration not to be checked
+    //         name: record.name
+    //       }
+    //     })
+    //   }
+    // }
   }
 }
 </script>
