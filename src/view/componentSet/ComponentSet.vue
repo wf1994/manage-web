@@ -35,7 +35,7 @@
           <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
               <a-menu slot="overlay">
-                <a-menu-item>修改</a-menu-item>
+                <a-menu-item @click="editComponent(row.id)">修改</a-menu-item>
                 <a-menu-item @click="delComponent(row.id)">删除</a-menu-item>
               </a-menu>
               <a @click="e => e.preventDefault()">
@@ -142,6 +142,14 @@ export default {
         this.searchComponentName = ''
         this.getComponentList()
       }
+    },
+    //修改
+    editComponent(id) {
+      // console.log(`修改id============${id}`)
+      this.$router.push({
+        name: 'ComponentAdd',
+        params: { chartId: id }
+      })
     },
     // 删除维度确认框显示
     delComponent() {

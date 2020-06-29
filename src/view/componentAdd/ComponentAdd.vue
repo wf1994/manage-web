@@ -19,7 +19,8 @@
                       required: true,
                       message: '组件名称不能为空！'
                     }
-                  ]
+                  ],
+                  initialValue: ediFormData.dimensionType
                 }
               ]"
               placeholder="请输入组件名称"
@@ -30,7 +31,8 @@
               v-decorator="[
                 'chartOption',
                 {
-                  rules: [{ required: true, message: '图形不能为空！' }]
+                  rules: [{ required: true, message: '图形不能为空！' }],
+                  initialValue: ediFormData.dimensionType
                 }
               ]"
               placeholder="请选择图形"
@@ -46,7 +48,8 @@
               v-decorator="[
                 'xDimension',
                 {
-                  rules: [{ required: true, message: '纬度不能为空！' }]
+                  rules: [{ required: true, message: '纬度不能为空！' }],
+                  initialValue: ediFormData.dimensionType
                 }
               ]"
               placeholder="请选择纬度"
@@ -70,7 +73,8 @@
               v-decorator="[
                 'xVector',
                 {
-                  rules: [{ required: true, message: '向量不能为空！' }]
+                  rules: [{ required: true, message: '向量不能为空！' }],
+                  initialValue: []
                 }
               ]"
             >
@@ -88,7 +92,8 @@
               v-decorator="[
                 'yDimension',
                 {
-                  rules: [{ required: true, message: '纬度不能为空！' }]
+                  rules: [{ required: true, message: '纬度不能为空！' }],
+                  initialValue: ediFormData.dimensionType
                 }
               ]"
               placeholder="请选择纬度"
@@ -112,7 +117,8 @@
               v-decorator="[
                 'yVector',
                 {
-                  rules: [{ required: true, message: '向量不能为空！' }]
+                  rules: [{ required: true, message: '向量不能为空！' }],
+                  initialValue: ediFormData.dimensionType
                 }
               ]"
             >
@@ -130,7 +136,8 @@
               v-decorator="[
                 'statisItem',
                 {
-                  rules: [{ required: true, message: '统计项不能为空！' }]
+                  rules: [{ required: true, message: '统计项不能为空！' }],
+                  initialValue: ediFormData.dimensionType
                 }
               ]"
               placeholder="请选择统计项"
@@ -147,6 +154,7 @@
 
     <!-- 组件预览 -->
     <div class="pull-right">
+      <a-button type="primary" @click="previewChart">组件预览</a-button>
       <div
         id="mychart"
         :style="{
@@ -154,7 +162,7 @@
                     height: '70%',
                     marginTop: '20px'
                 }"
-      >组件预览</div>
+      ></div>
 
       <!-- 样式设置 -->
       <div class>样式设置</div>
@@ -172,20 +180,44 @@ export default {
       xDimensionData: [], //下拉框x纬度
       xVectorData: [], //指定x纬度的向量
       yDimensionData: [], //下拉框y纬度
-      yVectorData: [] //指定y纬度的向量
+      yVectorData: [], //指定y纬度的向量
+      chartId: '',
+      ediFormData: {}//编辑表单
     }
   },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'dataSourceForm' })
+    // console.log(this.$route.params.chartId)
+    this.chartId = this.$route.params.chartId
+    console.log(`beforeCreate的时候${this.chartId}`)
   },
   created() {
     this.getChartOptionData()
     this.getDimensionData()
+    if(this.$route.params.chartId){
+      // console.log(`created的时候this.chartId========${this.chartId}`)
+      this.getChartData(this.$route.params.chartId)
+    }
   },
   mounted() {
     //   this.drawMychart()
   },
   methods: {
+    //根据 ID 查询组件信息
+    async getChartData(id) {
+      console.log(`this.chartId========${this.chartId}`)
+      const { data: res } = await this.$http.request({
+        methods: 'get',
+        url: 'getComponent',
+        params: { id }
+      })
+      if (res.meta.status === 200) {
+        console.log("id查询组件信息返回======"+res.data)
+        this.ediFormData = res.data
+      } else {
+        this.$message.error('失败')
+      }
+    },
     // 获取基础图表下拉框列表,第一次选择下拉框的图后，先生成一次预览图
     async getChartOptionData() {
       const { data: res } = await this.$http.request({
@@ -290,39 +322,21 @@ export default {
       }
     },
     //接口27，获取图表数据
-    // async previewChart(){
-    //   let params
-    //   if(isConditionShowY){
-    //     //
-    //   }else {
-    //     params = {
-    //       dataId:
-    //     }
-    //   }
-    //   const { data: res } = await this.$http.request({
-    //     methods: 'get',
-    //     url: 'previewChart',
-    //     params: {
-    //     }
-    //   })
-    // },
-
-    //保存所有设置数据
-    showConfirm() {
+    previewChart() {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log(this)
           const _this = this
           console.log('Received values of form: ', values)
-
           let parmes = {}
           let dimensionXId = values.xDimension.split(',')[1]
-          let dimensionYId = values.yDimension.split(',')[1]
-          //判断x纬度和y纬度是否同一个数据集
-          if (dimensionXId !== dimensionYId) {
-            return this.$message.error('请选择同一数据集下纬度!')
-          }
+          let dimensionYId =
+            values && values.yDimension && values.yDimension.split(',')[1]
           if (this.isConditionShowY) {
+            //判断x纬度和y纬度是否同一个数据集
+            if (dimensionXId !== dimensionYId) {
+              return this.$message.error('请选择同一数据集下纬度!')
+            }
             parmes = {
               dataId: values.xDimension.split(',')[1],
               chartId: values.chartOption,
@@ -352,6 +366,105 @@ export default {
                 }
               ],
               statisItem: values.statisItem
+            }
+          }
+          console.log(`点击前的parmes是${parmes}`)
+          this.$confirm({
+            title: '保存数据源',
+            content: <div style="color:green;">确定按照此配置预览吗？</div>,
+            okText: '确定',
+            cancelText: '取消',
+            onOk() {
+              _this.getPreviewChartOption(parmes)
+            },
+            onCancel() {
+              console.log('Cancel')
+            }
+          })
+        }
+      })
+    },
+    //获取图表数据
+    async getPreviewChartOption(parmes) {
+      console.log('点击后的parmes看这里-------' + JSON.stringify(parmes))
+      // const { data: res } = await this.$http.get(
+      //     'previewChart',
+      //     this.$qs.stringify(parmes)
+      //   )
+      //qs.stringify()将对象 序列化成URL的形式，以&进行拼接
+      const { data: res } = await this.$http.request({
+        methods: 'get',
+        url: 'previewChart',
+        params: parmes,
+        paramsSerializer: params => {
+          return this.$qs.stringify(params, { indices: false })
+        }
+        // params: JSON.stringify(parmes)
+      })
+      if (res.meta.status === 200) {
+        // let tempData = eval(`(${res.data[0].chartOption})`)
+        this.currentOption.source = res.source
+        this.$message.success('成功')
+        this.drawMychart()
+      } else {
+        this.$message.error('失败')
+      }
+    },
+
+    //保存所有设置数据
+    showConfirm() {
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log(this)
+          const _this = this
+          console.log('Received values of form: ', values)
+          let parmes = {}
+          let dimensionXId = values.xDimension.split(',')[1]
+          let dimensionYId = values.yDimension.split(',')[1]
+          //判断x纬度和y纬度是否同一个数据集
+          if (dimensionXId !== dimensionYId) {
+            return this.$message.error('请选择同一数据集下纬度!')
+          }
+          if (this.isConditionShowY) {
+            parmes = {
+              componentName: values.componentName,
+              chartId: values.chartOption,
+              // chartName:,
+              dimensions: [
+                {
+                  id: values.xDimension.split(',')[0], //纬度id
+                  dimensionXY: 'x',
+                  // dimensionName: ,这个去掉
+                  dimensionTypeId: dimensionXId, //纬度类型id
+                  vectorList: values.xVector //向量ID
+                },
+                {
+                  id: values.yDimension.split(',')[0], //纬度id
+                  dimensionXY: 'y',
+                  // dimensionName: ,这个去掉
+                  dimensionTypeId: dimensionYId, //纬度类型id
+                  vectorList: values.yVector //向量ID
+                }
+              ],
+              statisItem: values.statisItem,
+              chartOption: this.currentOption
+            }
+          } else {
+            parmes = {
+              componentName: values.componentName,
+              chartId: values.chartOption,
+              // chartName:,
+              dimensions: [
+                {
+                  id: values.xDimension.split(',')[0], //纬度id
+                  dimensionXY: 'x',
+                  // dimensionName: ,这个去掉
+                  dimensionTypeId: dimensionXId, //纬度类型id
+                  vectorList: values.xVector //向量ID
+                }
+              ],
+              statisItem: values.statisItem,
+              chartOption: this.currentOption
             }
           }
           this.$confirm({
