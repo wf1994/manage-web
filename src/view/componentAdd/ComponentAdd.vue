@@ -361,7 +361,7 @@ export default {
               chartId: values.chartOption,
               dimensions: JSON.stringify([
                 {
-                  dimensionId: values.yDimension.split(',')[0],
+                  dimensionId: values.xDimension.split(',')[0],
                   dimensionXY: 'x',
                   vectorList: values.xVector
                 }
@@ -434,7 +434,7 @@ export default {
               componentName: values.componentName,
               chartId: values.chartOption,
               // chartName:,
-              dimensions: [
+              dimensions: JSON.stringify([
                 {
                   id: values.xDimension.split(',')[0], //纬度id，拼接数组第一个
                   dimensionXY: 'x',
@@ -449,7 +449,7 @@ export default {
                   dimensionTypeId: dimensionYId, //纬度类型id
                   vectorList: values.yVector //向量ID
                 }
-              ],
+              ]),
               statisItem: values.statisItem,
               chartOption: this.currentOption
             }
@@ -458,7 +458,7 @@ export default {
               componentName: values.componentName,
               chartId: values.chartOption,
               // chartName:,
-              dimensions: [
+              dimensions: JSON.stringify([
                 {
                   id: values.xDimension.split(',')[0], //纬度id
                   dimensionXY: 'x',
@@ -466,7 +466,7 @@ export default {
                   dimensionTypeId: dimensionXId, //纬度类型id
                   vectorList: values.xVector //向量ID
                 }
-              ],
+              ]),
               statisItem: values.statisItem,
               chartOption: this.currentOption
             }
