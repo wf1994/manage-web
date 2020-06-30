@@ -451,7 +451,7 @@ export default {
                 }
               ]),
               statisItem: values.statisItem,
-              chartOption: this.currentOption
+              chartOption: JSON.stringify(this.currentOption)
             }
           } else {
             parmes = {
@@ -468,7 +468,7 @@ export default {
                 }
               ]),
               statisItem: values.statisItem,
-              chartOption: this.currentOption
+              chartOption: JSON.stringify(this.currentOption)
             }
           }
           this.$confirm({
