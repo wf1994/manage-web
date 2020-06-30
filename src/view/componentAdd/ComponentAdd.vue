@@ -253,7 +253,7 @@ export default {
         this.currentOption = tempData
         // console.log(`currentOption是${this.currentOption.tooltip}`)
         this.$message.success('成功')
-        this.drawMychart()
+        this.drawMychart(this.currentOption)
         //判断一维还是二维
         let tempCondition = eval(`(${res.data[0].dimensionforchart})`)
         if (tempCondition.length != 2) {
@@ -265,13 +265,13 @@ export default {
       }
     },
     //画图
-    drawMychart() {
+    drawMychart(option) {
       //初始化echarts实例
       let myChart
       myChart && myChart.dispose()
       myChart = this.$echarts.init(document.getElementById('mychart'))
       //获取下拉框的option
-      myChart.setOption(this.currentOption)
+      myChart.setOption(option)
     },
 
     //获取维度下拉框列表
@@ -407,9 +407,9 @@ export default {
         // let tempData = eval(`(${res.data[0].chartOption})`)
         this.currentOption.source = res.source
         this.$message.success('成功')
-        console.log("zxy的数据==================="+this.currentOption.source)
-        console.log("zxy的option===================="+JSON.stringify(this.currentOption))
-        this.drawMychart()
+        // this.previewOption = this.currentOption
+        let previewOption = this.currentOption
+        this.drawMychart(previewOption)
       } else {
         this.$message.error('失败')
       }
