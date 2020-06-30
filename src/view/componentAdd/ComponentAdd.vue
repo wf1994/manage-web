@@ -407,6 +407,8 @@ export default {
         // let tempData = eval(`(${res.data[0].chartOption})`)
         this.currentOption.source = res.source
         this.$message.success('成功')
+        console.log("zxy的数据==================="+this.currentOption.source)
+        console.log("zxy的option===================="+JSON.stringify(this.currentOption))
         this.drawMychart()
       } else {
         this.$message.error('失败')
