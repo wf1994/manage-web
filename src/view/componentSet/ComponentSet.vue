@@ -15,7 +15,7 @@
         <a-button @click="searchByComponentName" class="searchWord">查询</a-button>
       </a-col>
       <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
-        <a-button  class="addButton" @click="goTo()">新增</a-button>
+        <a-button class="addButton" @click="goTo()">新增</a-button>
         <a-button class="delButton" @click="delComponent()">删除</a-button>
       </a-col>
     </a-row>
@@ -29,9 +29,9 @@
           :columns="componentColumns"
           :data-source="computeComponentListData"
           :row-selection="rowSelection"
-          :pagination="false"
+          :pagination="true"
         >
-        <!-- <span slot="text" slot-scope="text, row">{{ row }}</span> -->
+          <!-- <span slot="text" slot-scope="text, row">{{ row }}</span> -->
           <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
               <a-menu slot="overlay">
@@ -47,7 +47,7 @@
       </a-col>
     </a-row>
     <!-- 分页 -->
-    <a-row>
+    <!-- <a-row>
       <a-col :span="24">
         <a-pagination
           class="pull-right footer"
@@ -60,7 +60,7 @@
           @showSizeChange="onShowSizeChange"
         />
       </a-col>
-    </a-row>
+    </a-row>-->
   </div>
 </template>
 <script>
@@ -73,7 +73,7 @@ const componentColumns = [
     title: '操作',
     key: 'operation',
     scopedSlots: { customRender: 'operation' }
-  },
+  }
   // {
   //   title: '操作2',
   //   key: 'operation2',
@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     //新增跳转页面
-    goTo(){
+    goTo() {
       this.$router.push({
         name: 'ComponentAdd'
       })
@@ -162,7 +162,7 @@ export default {
         params = [args[0]]
         console.log(`单选的params是${params}`)
       }
-      console.log("parmes======="+params)
+      console.log('parmes=======' + params)
       if (params.length !== 0) {
         this.$confirm({
           title: '删除组件',

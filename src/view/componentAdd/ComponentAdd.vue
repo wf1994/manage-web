@@ -7,7 +7,7 @@
       </div>
       <div>
         <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" labelAlign="left">
-          <a-form-item label="组件名称">
+          <a-form-item label="组件名称" :style="{ marginTop: '29px' }">
             <!-- 通过ant-design-vue去获取表单的数据是使用v-decorator的方式去给每个项去注册，
             这样才能通过组件去拉取表单的数据，同时对必填项做校验-->
             <a-input
@@ -24,6 +24,7 @@
                 }
               ]"
               placeholder="请输入组件名称"
+              :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
             />
           </a-form-item>
           <a-form-item label="图形">
@@ -37,13 +38,14 @@
               ]"
               placeholder="请选择图形"
               @change="getChartOption"
+              :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
             >
               <a-select-option v-for="item in chartOptionData" :key="item.value">{{ item.label }}</a-select-option>
             </a-select>
           </a-form-item>
           <div class="line"></div>
           <!-- 分隔线 -->
-          <a-form-item label="X轴纬度" v-if="isConditionShowX">
+          <a-form-item label="X轴纬度" v-if="isConditionShowX" :style="{ marginTop: '29px' }">
             <a-select
               v-decorator="[
                 'xDimension',
@@ -54,6 +56,7 @@
               ]"
               placeholder="请选择纬度"
               @change="showVector"
+              :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
             >
               <a-select-opt-group
                 v-for="(item, index) in xDimensionData"
@@ -77,6 +80,7 @@
                   initialValue: []
                 }
               ]"
+              :style="{ marginLeft: '115px' }"
             >
               <a-checkbox
                 v-for="item in xVectorData"
@@ -87,7 +91,7 @@
           </a-form-item>
           <div class="line"></div>
           <!-- 分隔线 -->
-          <a-form-item label="Y轴纬度" v-if="isConditionShowY">
+          <a-form-item label="Y轴纬度" v-if="isConditionShowY" :style="{ marginTop: '29px' }">
             <a-select
               v-decorator="[
                 'yDimension',
@@ -98,6 +102,7 @@
               ]"
               placeholder="请选择纬度"
               @change="showVectorY"
+              :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
             >
               <a-select-opt-group
                 v-for="(item, index) in xDimensionData"
@@ -121,6 +126,7 @@
                   initialValue: ediFormData.dimensionType
                 }
               ]"
+              :style="{ marginLeft: '115px' }"
             >
               <a-checkbox
                 v-for="item in yVectorData"
@@ -131,7 +137,7 @@
           </a-form-item>
           <div class="line"></div>
           <!-- 分隔线 -->
-          <a-form-item label="统计项">
+          <a-form-item label="统计项" :style="{ marginTop: '29px' }">
             <a-select
               v-decorator="[
                 'statisItem',
@@ -141,6 +147,7 @@
                 }
               ]"
               placeholder="请选择统计项"
+              :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
             >
               <a-select-option value="currentNum">现有数量</a-select-option>
               <a-select-option value="standardNum">编制数量</a-select-option>
@@ -153,19 +160,19 @@
     </div>
 
     <!-- 组件预览 -->
-    <div class="pull-right">
-      <a-button type="primary" @click="previewChart">组件预览</a-button>
+    <div class="pull-right previewDiv">
+      <a-button type="primary" @click="previewChart" >组件预览</a-button>
       <div
         id="mychart"
         :style="{
-                    width: '70%',
-                    height: '70%',
-                    marginTop: '20px'
+                    width: '90%',
+                    height: '90%',
+                    margin: '0 auto'
                 }"
       ></div>
 
       <!-- 样式设置 -->
-      <div class>样式设置</div>
+      <!-- <div class>样式设置</div> -->
     </div>
   </div>
 </template>
@@ -182,7 +189,7 @@ export default {
       yDimensionData: [], //下拉框y纬度
       yVectorData: [], //指定y纬度的向量
       chartId: '',
-      ediFormData: {}//编辑表单
+      ediFormData: {} //编辑表单
     }
   },
   beforeCreate() {
@@ -194,7 +201,7 @@ export default {
   created() {
     this.getChartOptionData()
     this.getDimensionData()
-    if(this.$route.params.chartId){
+    if (this.$route.params.chartId) {
       // console.log(`created的时候this.chartId========${this.chartId}`)
       this.getChartData(this.$route.params.chartId)
     }
@@ -212,7 +219,7 @@ export default {
         params: { id }
       })
       if (res.meta.status === 200) {
-        console.log("id查询组件信息返回======"+res.data)
+        console.log('id查询组件信息返回======' + res.data)
         this.ediFormData = res.data
       } else {
         this.$message.error('失败')
@@ -424,7 +431,8 @@ export default {
           console.log('Received values of form: ', values)
           let parmes = {}
           let dimensionXId = values.xDimension.split(',')[1]
-          let dimensionYId = values && values.yDimension && values.yDimension.split(',')[1]
+          let dimensionYId =
+            values && values.yDimension && values.yDimension.split(',')[1]
 
           if (this.isConditionShowY) {
             //判断x纬度和y纬度是否同一个数据集
@@ -534,11 +542,20 @@ export default {
   width: 640px;
 }
 .saveButton {
+  display: block;
   margin: 0 auto;
 }
 .Button2 {
   background: #ffffff;
   border: 1px solid #d1d3d8;
   color: gray;
+}
+.previewDiv {
+  margin-top: 15px;
+  margin-right: 50px;
+  width: 692px;
+  height: 300px;
+  box-shadow: 0 2px 6px 0 rgba(0,0,0,0.08);
+  border-radius: 2px;
 }
 </style>
