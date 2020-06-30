@@ -491,7 +491,10 @@ export default {
       const { data: res } = await this.$http.request({
         url: '/saveChart',
         method: 'post',
-        params: values
+        params: values,
+        paramsSerializer: params => {
+          return this.$qs.stringify(params, { indices: false })
+        }
       })
       if (res.meta.status === 200) {
         this.$message.success('保存数据源成功')
