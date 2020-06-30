@@ -77,7 +77,7 @@
                 'xVector',
                 {
                   rules: [{ required: true, message: '向量不能为空！' }],
-                  initialValue: []
+                  initialValue: ['1','4']
                 }
               ]"
               :style="{ marginLeft: '115px' }"
@@ -173,6 +173,7 @@
 
       <!-- 样式设置 -->
       <!-- <div class>样式设置</div> -->
+      <colorPicker v-model="color" />
     </div>
   </div>
 </template>
@@ -180,6 +181,7 @@
 export default {
   data() {
     return {
+      color: '#ff0000',
       isConditionShowX: true, //x轴纬度、向量显示
       isConditionShowY: true, //x轴纬度、向量显示
       chartOptionData: [], //基础图表下拉框列表
