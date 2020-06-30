@@ -340,32 +340,34 @@ export default {
             parmes = {
               dataId: values.xDimension.split(',')[1],
               chartId: values.chartOption,
-              dimensions: [
+              dimensions: JSON.stringify([
                 {
-                  dimensionId: dimensionXId,
+                  dimensionId: values.xDimension.split(',')[0],
                   dimensionXY: 'x',
                   vectorList: values.xVector
                 },
                 {
-                  dimensionId: dimensionYId,
+                  dimensionId: values.yDimension.split(',')[0],
                   dimensionXY: 'y',
                   vectorList: values.yVector
                 }
-              ],
-              statisItem: values.statisItem
+              ]),
+              // statisItem: values.statisItem
+              statisItem: 'PERSON'
             }
           } else {
             parmes = {
               dataId: values.xDimension.split(',')[1],
               chartId: values.chartOption,
-              dimensions: [
+              dimensions: JSON.stringify([
                 {
-                  dimensionId: dimensionXId,
+                  dimensionId: values.yDimension.split(',')[0],
                   dimensionXY: 'x',
                   vectorList: values.xVector
                 }
-              ],
-              statisItem: values.statisItem
+              ]),
+              // statisItem: values.statisItem
+              statisItem: 'PERSON'
             }
           }
           console.log(`点击前的parmes是${parmes}`)
@@ -420,7 +422,7 @@ export default {
           console.log('Received values of form: ', values)
           let parmes = {}
           let dimensionXId = values.xDimension.split(',')[1]
-          let dimensionYId = values.yDimension.split(',')[1]
+          let dimensionYId = values && values.yDimension && values.yDimension.split(',')[1]
           //判断x纬度和y纬度是否同一个数据集
           if (dimensionXId !== dimensionYId) {
             return this.$message.error('请选择同一数据集下纬度!')
@@ -432,10 +434,10 @@ export default {
               // chartName:,
               dimensions: [
                 {
-                  id: values.xDimension.split(',')[0], //纬度id
+                  id: values.xDimension.split(',')[0], //纬度id，拼接数组第一个
                   dimensionXY: 'x',
                   // dimensionName: ,这个去掉
-                  dimensionTypeId: dimensionXId, //纬度类型id
+                  dimensionTypeId: dimensionXId, //纬度类型id,数据集id,拼接数组第二个
                   vectorList: values.xVector //向量ID
                 },
                 {
