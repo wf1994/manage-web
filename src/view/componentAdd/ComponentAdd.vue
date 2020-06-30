@@ -33,7 +33,7 @@
                 'chartOption',
                 {
                   rules: [{ required: true, message: '图形不能为空！' }],
-                  initialValue: ediFormData.chartId
+                  initialValue: 'ediFormData.chartId'
                 }
               ]"
               placeholder="请选择图形"
@@ -51,7 +51,7 @@
                 'xDimension',
                 {
                   rules: [{ required: true, message: '纬度不能为空！' }],
-                  initialValue: ediFormData.dimensions[0].dimensionTypeId
+                  initialValue: ediFormData.dimensionType
                 }
               ]"
               placeholder="请选择纬度"
@@ -77,7 +77,7 @@
                 'xVector',
                 {
                   rules: [{ required: true, message: '向量不能为空！' }],
-                  initialValue: ediFormData.dimensions[0].vectorList
+                  initialValue: ['1','4']
                 }
               ]"
               :style="{ marginLeft: '115px' }"
@@ -97,7 +97,7 @@
                 'yDimension',
                 {
                   rules: [{ required: true, message: '纬度不能为空！' }],
-                  initialValue: ediFormData.dimensions[1].dimensionTypeId
+                  initialValue: ediFormData.dimensionType
                 }
               ]"
               placeholder="请选择纬度"
@@ -123,7 +123,7 @@
                 'yVector',
                 {
                   rules: [{ required: true, message: '向量不能为空！' }],
-                  initialValue: ediFormData.dimensions[1].vectorList
+                  initialValue: ediFormData.dimensionType
                 }
               ]"
               :style="{ marginLeft: '115px' }"

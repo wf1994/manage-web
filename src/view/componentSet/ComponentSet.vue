@@ -65,10 +65,10 @@
 </template>
 <script>
 const componentColumns = [
-  { title: '组件名称', dataIndex: 'component_name', key: 'component_name' },
+  { title: '组件名称', dataIndex: 'componentName', key: 'componentName' },
   { title: '维度', dataIndex: 'dimensions', key: 'dimensions' },
-  { title: '统计项', dataIndex: 'item', key: 'item' },
-  { title: '创建时间', dataIndex: 'create_time', key: 'create_time' },
+  { title: '统计项', dataIndex: 'statisItem', key: 'statisItem' },
+  { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
   {
     title: '操作',
     key: 'operation',
