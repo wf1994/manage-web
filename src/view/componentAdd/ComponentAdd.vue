@@ -337,10 +337,11 @@ export default {
             if (dimensionXId !== dimensionYId) {
               return this.$message.error('请选择同一数据集下纬度!')
             }
+
             parmes = {
               dataId: values.xDimension.split(',')[1],
               chartId: values.chartOption,
-              dimensions: [
+              dimensions: JSON.stringify([
                 {
                   dimensionId: dimensionXId,
                   dimensionXY: 'x',
@@ -351,21 +352,24 @@ export default {
                   dimensionXY: 'y',
                   vectorList: values.yVector
                 }
-              ],
-              statisItem: values.statisItem
+              ]),
+              statisItem: 'PERSON'
+              //values.statisItem
             }
           } else {
             parmes = {
               dataId: values.xDimension.split(',')[1],
               chartId: values.chartOption,
-              dimensions: [
+              dimensions: JSON.stringify([
                 {
-                  dimensionId: dimensionXId,
+                  dimensionId: 2,
+                  //dimensionXId,
                   dimensionXY: 'x',
                   vectorList: values.xVector
                 }
-              ],
-              statisItem: values.statisItem
+              ]),
+              statisItem: 'PERSON'
+              //values.statisItem
             }
           }
           console.log(`点击前的parmes是${parmes}`)
