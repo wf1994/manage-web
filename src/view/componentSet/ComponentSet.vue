@@ -31,6 +31,7 @@
           :row-selection="rowSelection"
           :pagination="true"
         >
+        <span slot="dimensions" slot-scope="text,row">{{ row.dimensions.join("、") }}</span>
           <!-- <span slot="text" slot-scope="text, row">{{ row }}</span> -->
           <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
@@ -66,7 +67,8 @@
 <script>
 const componentColumns = [
   { title: '组件名称', dataIndex: 'componentName', key: 'componentName' },
-  { title: '维度', dataIndex: 'dimensions', key: 'dimensions' },
+  { title: '维度', dataIndex: 'dimensions', key: 'dimensions', 
+  scopedSlots: { customRender: 'dimensions' } },
   { title: '统计项', dataIndex: 'statisItem', key: 'statisItem' },
   { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
   {
@@ -88,7 +90,8 @@ export default {
       searchComponentName: '', // 查询组件名称
       componentListData: [], // 组件列表数据
       componentColumns, // 组件列
-      selectedRowKeys: [] // 选中的行的id数组
+      selectedRowKeys: [], // 选中的行的id数组
+      dimenionsList: ''
     }
   },
   beforeCreate() {},
@@ -115,8 +118,8 @@ export default {
       if (res.meta.status === 200) {
         this.componentListData = res.data
         //join
-        // res.data.dimensions.join(".")
-        // console.log('res.data======================='+res.data.dimensions)
+        // this.dimenionsList = res.data.dimensions.join(".")
+        // console.log('dimenionsList======================='+this.dimenionsList)
         console.log('组件列表获取成功')
       } else {
         this.$message.error('组件列表获取失败！')
