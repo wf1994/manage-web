@@ -462,7 +462,7 @@ export default {
                 {
                   id: values.xDimension.split(',')[0], //纬度id
                   dimensionXY: 'x',
-                  // dimensionName: ,这个去掉
+                  // dimensionName: 这个去掉
                   dimensionTypeId: dimensionXId, //纬度类型id
                   vectorList: values.xVector //向量ID
                 }
