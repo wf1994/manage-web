@@ -405,7 +405,7 @@ export default {
       })
       if (res.meta.status === 200) {
         // let tempData = eval(`(${res.data[0].chartOption})`)
-        this.currentOption.source = res.source
+        this.currentOption.dataset.source = res.source
         this.$message.success('成功')
         // this.previewOption = this.currentOption
         let previewOption = this.currentOption
@@ -425,11 +425,12 @@ export default {
           let parmes = {}
           let dimensionXId = values.xDimension.split(',')[1]
           let dimensionYId = values && values.yDimension && values.yDimension.split(',')[1]
-          //判断x纬度和y纬度是否同一个数据集
-          if (dimensionXId !== dimensionYId) {
-            return this.$message.error('请选择同一数据集下纬度!')
-          }
+
           if (this.isConditionShowY) {
+            //判断x纬度和y纬度是否同一个数据集
+            if (dimensionXId !== dimensionYId) {
+              return this.$message.error('请选择同一数据集下纬度!')
+            }
             parmes = {
               componentName: values.componentName,
               chartId: values.chartOption,
@@ -451,7 +452,7 @@ export default {
                 }
               ]),
               statisItem: values.statisItem,
-              chartOption: this.currentOption
+              chartOption: JSON.stringify(this.currentOption)
             }
           } else {
             parmes = {
@@ -468,7 +469,7 @@ export default {
                 }
               ]),
               statisItem: values.statisItem,
-              chartOption: this.currentOption
+              chartOption: JSON.stringify(this.currentOption)
             }
           }
           this.$confirm({
