@@ -20,7 +20,7 @@
                       message: '组件名称不能为空！'
                     }
                   ],
-                  initialValue: ediFormData.dimensionType
+                  initialValue: ediFormData.componentName
                 }
               ]"
               placeholder="请输入组件名称"
@@ -33,7 +33,7 @@
                 'chartOption',
                 {
                   rules: [{ required: true, message: '图形不能为空！' }],
-                  initialValue: ediFormData.dimensionType
+                  initialValue: ediFormData.chartId
                 }
               ]"
               placeholder="请选择图形"
@@ -51,7 +51,7 @@
                 'xDimension',
                 {
                   rules: [{ required: true, message: '纬度不能为空！' }],
-                  initialValue: ediFormData.dimensionType
+                  initialValue: ediFormData.dimensions[0].dimensionTypeId
                 }
               ]"
               placeholder="请选择纬度"
@@ -77,7 +77,7 @@
                 'xVector',
                 {
                   rules: [{ required: true, message: '向量不能为空！' }],
-                  initialValue: ['1','4']
+                  initialValue: ediFormData.dimensions[0].vectorList
                 }
               ]"
               :style="{ marginLeft: '115px' }"
@@ -97,7 +97,7 @@
                 'yDimension',
                 {
                   rules: [{ required: true, message: '纬度不能为空！' }],
-                  initialValue: ediFormData.dimensionType
+                  initialValue: ediFormData.dimensions[1].dimensionTypeId
                 }
               ]"
               placeholder="请选择纬度"
@@ -123,7 +123,7 @@
                 'yVector',
                 {
                   rules: [{ required: true, message: '向量不能为空！' }],
-                  initialValue: ediFormData.dimensionType
+                  initialValue: ediFormData.dimensions[1].vectorList
                 }
               ]"
               :style="{ marginLeft: '115px' }"
@@ -143,7 +143,7 @@
                 'statisItem',
                 {
                   rules: [{ required: true, message: '统计项不能为空！' }],
-                  initialValue: ediFormData.dimensionType
+                  initialValue: ediFormData.statisItem
                 }
               ]"
               placeholder="请选择统计项"
@@ -173,7 +173,9 @@
 
       <!-- 样式设置 -->
       <!-- <div class>样式设置</div> -->
-      <colorPicker v-model="color" />
+      <colorPicker v-model="color" v-on:change="headleChangeColor"/>
+      <a-button class="test" :style="{width: '100px',height: '20px'}">周星宇</a-button>
+      <a-button :style="changeStyle"></a-button>
     </div>
   </div>
 </template>
@@ -181,6 +183,9 @@
 export default {
   data() {
     return {
+      // diyColor: '',
+      // changeStyle:'background-color:'+diyColor,
+      
       color: '#ff0000',
       isConditionShowX: true, //x轴纬度、向量显示
       isConditionShowY: true, //x轴纬度、向量显示
@@ -512,6 +517,11 @@ export default {
       } else {
         this.$message.error('保存数据源失败')
       }
+    },
+    //colorPicker 
+    headleChangeColor(color) {
+      console.log(`colorPicker==========${color}`)
+      // diyColor = color
     }
   }
 }
@@ -560,4 +570,7 @@ export default {
   box-shadow: 0 2px 6px 0 rgba(0,0,0,0.08);
   border-radius: 2px;
 }
+/* .test {
+  background-color:color;
+} */
 </style>
