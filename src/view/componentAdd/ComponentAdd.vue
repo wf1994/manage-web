@@ -229,7 +229,7 @@ export default {
     }
   },
   methods: {
-    //根据 ID 查询组件信息
+    //根据 组件列表中的ID 查询组件信息，编辑
     async getChartData(id) {
       console.log(`this.chartId========${this.chartId}`)
       const { data: res } = await this.$http.request({
@@ -238,24 +238,38 @@ export default {
         params: { id }
       })
       if (res.meta.status === 200) {
-        
         this.ediFormData = res.data
-        let m = new Array()
-        m[0] = this.ediFormData.dimensions[0].id
-        m[1] = this.ediFormData.dimensions[0].dimensionTypeId
-        this.weidu = m.join(',')
-        console.log(`看这里看这里=========${this.weidu}`)
-        console.log(typeof this.weidu)
-        let n = new Array()
-        n[0] = this.ediFormData.dimensions[1].id
-        n[1] = this.ediFormData.dimensions[1].dimensionTypeId
-        this.weiduy = n.join(',')
-        //编辑时数据回显，预览，查询option
-        this.getChartOption(res.data.chartId)
-        
-        this.showVector(`${m[0]},0`)
-        if (n[0]) {
-          this.showVectorY(`${n[0]},1`)
+        // console.log(`this.ediFormData===${JSON.stringify(this.ediFormData)}`)
+        //根据dimension数组长度判断一维还是二纬
+        if (res.data.dimensions.length === 2) {
+          let m = new Array()
+          m[0] = this.ediFormData.dimensions[0].id
+          m[1] = this.ediFormData.dimensions[0].dimensionTypeId
+          this.weidu = m.join(',')
+          console.log(typeof this.weidu)
+          let n = new Array()
+          n[0] = this.ediFormData.dimensions[1].id
+          n[1] = this.ediFormData.dimensions[1].dimensionTypeId
+          this.weiduy = n.join(',')
+          //编辑时数据回显，预览，查询option
+          // this.getChartOption(res.data.chartId)
+          this.currentOption = eval(`(${res.data.chartOption})`)
+          console.log(eval(`(${res.data.chartOption})`))
+          console.log('-=-=-=-=')
+          this.drawMychart(this.currentOption)
+          this.showVector(`${m[0]},0`)
+          if (n[0]) {
+            this.showVectorY(`${n[0]},1`)
+          }
+        } else {
+          let m = new Array()
+          m[0] = this.ediFormData.dimensions[0].id
+          m[1] = this.ediFormData.dimensions[0].dimensionTypeId
+          this.weidu = m.join(',')
+          this.currentOption = eval(`(${res.data.chartOption})`)
+          this.drawMychart(this.currentOption)
+          this.showVector(`${m[0]},0`)
+          this.isConditionShowY = false
         }
       } else {
         this.$message.error('失败')
@@ -382,14 +396,13 @@ export default {
     previewChart() {
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(this)
           const _this = this
           console.log('Received values of form: ', values)
           let parmes = {}
           let dimensionXId = values.xDimension.split(',')[1]
           let dimensionYId =
             values && values.yDimension && values.yDimension.split(',')[1]
-            console.log("看看是新增还是编辑"+this.$route.params.id)
+          // console.log("看看是新增还是编辑"+this.$route.params.id)
           if (this.$route.params.id !== 'add') {
             if (this.isConditionShowY) {
               //判断x纬度和y纬度是否同一个数据集
@@ -397,13 +410,10 @@ export default {
                 return this.$message.error('请选择同一数据集下纬度!')
               }
               console.log(`编辑=========${values.xVector}`)
-              console.log(`zhouxingy类型=========${typeof(values.xVector)}`)
-              // let m = values.xVector.match(/\d+/g)
-              // let n = m.join('')
-              // console.log(`整理后的数据是===========${m}`)
-              // console.log(`整理后的数据是===========${n}`)
-              let m = values.xVector.split(',')
-              console.log(`编辑，向量，修改后的类型====${typeof(m)}`)
+              console.log(`zhouxingy类型=========${typeof values.xVector}`)
+
+              let m = values.xVector
+              console.log(`编辑，向量，修改后的类型====${typeof m}`)
               console.log(`编辑，向量，修改后=====${m}`)
               parmes = {
                 dataId: values.xDimension.split(',')[1],
@@ -412,12 +422,12 @@ export default {
                   {
                     dimensionId: values.xDimension.split(',')[0],
                     dimensionXY: 'x',
-                    vectorList: values.xVector.split(',')
+                    vectorList: values.xVector
                   },
                   {
                     dimensionId: values.yDimension.split(',')[0],
                     dimensionXY: 'y',
-                    vectorList: values.yVector.split(',')
+                    vectorList: values.yVector
                   }
                 ]),
                 // statisItem: values.statisItem
@@ -497,7 +507,7 @@ export default {
         }
       })
     },
-    
+
     //获取图表数据
     async getPreviewChartOption(parmes) {
       console.log('点击后的parmes看这里-------' + JSON.stringify(parmes))
@@ -610,9 +620,9 @@ export default {
         }
       })
       if (res.meta.status === 200) {
-        this.$message.success('保存数据源成功')
+        this.$message.success('保存数据成功')
       } else {
-        this.$message.error('保存数据源失败')
+        this.$message.error('保存数据失败')
       }
     },
     //colorPicker
