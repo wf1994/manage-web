@@ -91,7 +91,7 @@
                 'xVector',
                 {
                   rules: [{ required: true, message: '向量不能为空！' }],
-                  initialValue: vector
+                  initialValue: ediFormData.dimensions[0].vectorList.join(',')
                 }
               ]"
               :style="{ marginLeft: '115px' }"
@@ -143,7 +143,7 @@
                 'yVector',
                 {
                   rules: [{ required: true, message: '向量不能为空！' }],
-                  initialValue: vectory
+                  initialValue: ediFormData.dimensions[1].vectorList.join(',')
                 }
               ]"
               :style="{ marginLeft: '115px' }"
@@ -275,14 +275,19 @@ export default {
         n[1] = this.ediFormData.dimensions[1].dimensionTypeId
         this.weiduy = n.join(',')
 
-        let x, y
-        x = this.ediFormData.dimensions[0].vectorList.toString()
-        y = x.split()
-        this.vector = Array.from(y)
-        this.vectory = this.ediFormData.dimensions[1].vectorList.toString()
-        console.log(`vector转数组======${this.vector}`)
-        console.log(`vector类型是=====${typeof this.vector}`)
-        this.backchartId = this.ediFormData.chartId
+        // let x, y
+        // x = this.ediFormData.dimensions[0].vectorList.toString()
+        // y = x.split()
+        // this.vector = Array.from(y)
+        // this.vectory = this.ediFormData.dimensions[1].vectorList.toString()
+        // console.log(`vector转数组======${this.vector}`)
+        // console.log(`vector类型是=====${typeof this.vector}`)
+        // this.backchartId = this.ediFormData.chartId
+        //根据纬度id请求，获取向量
+        this.showVector(`${m[0]},0`)
+        if(n[0]){
+          this.showVectorY(`${n[0]},1`)
+        }
       } else {
         this.$message.error('失败')
       }
