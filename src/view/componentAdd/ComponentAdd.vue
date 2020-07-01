@@ -238,6 +238,7 @@ export default {
         params: { id }
       })
       if (res.meta.status === 200) {
+        
         this.ediFormData = res.data
         let m = new Array()
         m[0] = this.ediFormData.dimensions[0].id
@@ -249,16 +250,9 @@ export default {
         n[0] = this.ediFormData.dimensions[1].id
         n[1] = this.ediFormData.dimensions[1].dimensionTypeId
         this.weiduy = n.join(',')
-
-        // let x, y
-        // x = this.ediFormData.dimensions[0].vectorList.toString()
-        // y = x.split()
-        // this.vector = Array.from(y)
-        // this.vectory = this.ediFormData.dimensions[1].vectorList.toString()
-        // console.log(`vector转数组======${this.vector}`)
-        // console.log(`vector类型是=====${typeof this.vector}`)
-        // this.backchartId = this.ediFormData.chartId
-        //根据纬度id请求，获取向量
+        //编辑时数据回显，预览，查询option
+        this.getChartOption(res.data.chartId)
+        
         this.showVector(`${m[0]},0`)
         if (n[0]) {
           this.showVectorY(`${n[0]},1`)
@@ -409,6 +403,7 @@ export default {
               // console.log(`整理后的数据是===========${m}`)
               // console.log(`整理后的数据是===========${n}`)
               let m = values.xVector.split(',')
+              console.log(`编辑，向量，修改后的类型====${typeof(m)}`)
               console.log(`编辑，向量，修改后=====${m}`)
               parmes = {
                 dataId: values.xDimension.split(',')[1],
@@ -417,18 +412,18 @@ export default {
                   {
                     dimensionId: values.xDimension.split(',')[0],
                     dimensionXY: 'x',
-                    vectorList: `[${values.xVector}]`
+                    vectorList: values.xVector.split(',')
                   },
                   {
                     dimensionId: values.yDimension.split(',')[0],
                     dimensionXY: 'y',
-                    vectorList: `[${values.yVector}]`
+                    vectorList: values.yVector.split(',')
                   }
                 ]),
                 // statisItem: values.statisItem
                 statisItem: 'PERSON'
               }
-              console.log(`baishan要的====${JSON.stringify(parmes)}`)
+              console.log(`baishan=======${JSON.stringify(parmes)}`)
             } else {
               parmes = {
                 dataId: values.xDimension.split(',')[1],
@@ -502,6 +497,7 @@ export default {
         }
       })
     },
+    
     //获取图表数据
     async getPreviewChartOption(parmes) {
       console.log('点击后的parmes看这里-------' + JSON.stringify(parmes))
