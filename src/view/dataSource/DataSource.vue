@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding: 15px 40px">
     <a-row type="flex" justify="start" align="middle">
       <a-col :span="4">
         <i class="title-icon"></i>
@@ -92,9 +92,6 @@
               <a-select-option value="kingbase">
                 金仓数据库
               </a-select-option>
-              <a-select-option value="other">
-                其他数据库
-              </a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="数据库名称">
@@ -114,30 +111,56 @@
             />
           </a-form-item>
         </a-form>
-        <a-button type="primary" @click="showConfirm">保存</a-button>
+        <a-button
+          class="saveButton"
+          type="primary"
+          @click="showConfirm"
+          >
+          保存
+        </a-button>
       </a-col>
     </a-row>
   </div>
 </template>
-<script>
+<script type="text/jsx">
 export default {
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'dataSourceForm' })
   },
   methods: {
     showConfirm() {
-      this.$confirm({
-        title: '保存数据源',
-        content: <div style="color:green;">确定保存该数据源设置吗？</div>,
-        okText: '确定',
-        cancelText: '取消',
-        onOk() {
-          console.log('OK')
-        },
-        onCancel() {
-          console.log('Cancel')
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log(this)
+          const _this = this
+          console.log('Received values of form: ', values)
+          this.$confirm({
+            title: '保存数据源',
+            content: <div style="color:green;">确定保存该数据源设置吗？</div>,
+            okText: '确定',
+            cancelText: '取消',
+            onOk() {
+              _this.saveDataSource(values)
+            },
+            onCancel() {
+              console.log('Cancel')
+            }
+          })
         }
       })
+    },
+    async saveDataSource(values) {
+      console.log('+++++++++++++++++')
+      const { data: res } = await this.$http.request({
+        url: '/saveDataSource',
+        method: 'post',
+        params: values
+      })
+      if (res.meta.status === 200) {
+        this.$message.success('保存数据源成功')
+      } else {
+        this.$message.error('保存数据源失败')
+      }
     }
   }
 }
@@ -157,5 +180,9 @@ export default {
 }
 .form-row {
   margin-top: 15px;
+}
+.saveButton{
+  display : block;
+  margin: 0 auto;
 }
 </style>

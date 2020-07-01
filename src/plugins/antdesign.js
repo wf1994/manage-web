@@ -12,9 +12,15 @@ import {
   Select,
   Table,
   Pagination,
-  Modal
+  Modal,
+  Message,
+  Dropdown,
+  Tabs,
+  Radio,
+  FormModel,
+  Checkbox
 } from 'ant-design-vue'
-
+import '../theme.less'
 // 全局注册antd组件
 Vue.use(Button)
 Vue.use(Layout)
@@ -29,5 +35,11 @@ Vue.use(Select)
 Vue.use(Table)
 Vue.use(Pagination)
 Vue.use(Modal)
+Vue.use(Dropdown)
+Vue.use(Tabs)
+Vue.use(Radio)
+Vue.use(FormModel)
+Vue.use(Checkbox)
 
 Vue.prototype.$confirm = Modal.confirm
+Vue.prototype.$message = Message
