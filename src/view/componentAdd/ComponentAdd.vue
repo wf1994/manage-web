@@ -51,7 +51,7 @@
                 'xDimension',
                 {
                   rules: [{ required: true, message: '纬度不能为空！' }],
-                  initialValue: '1,1'
+                  initialValue: weidu
                 }
               ]"
               placeholder="请选择纬度"
@@ -97,7 +97,7 @@
                 'yDimension',
                 {
                   rules: [{ required: true, message: '纬度不能为空！' }],
-                  initialValue: ediFormData.dimensionType
+                  initialValue: weiduy
                 }
               ]"
               placeholder="请选择纬度"
@@ -123,7 +123,7 @@
                 'yVector',
                 {
                   rules: [{ required: true, message: '向量不能为空！' }],
-                  initialValue: ediFormData.dimensionType
+                  initialValue: ediFormData.dimensions[1].vectorList
                 }
               ]"
               :style="{ marginLeft: '115px' }"
@@ -175,7 +175,6 @@
       <!-- <div class>样式设置</div> -->
       <colorPicker v-model="color" v-on:change="headleChangeColor" />
       <a-button class="test" :style="{width: '100px',height: '20px'}">周星宇</a-button>
-      <!-- <a-button :style="changeStyle"></a-button> -->
     </div>
   </div>
 </template>
@@ -184,13 +183,15 @@ export default {
   data() {
     return {
       // diyColor: '',
-      // changeStyle:'background-color:'+diyColor,
-      
       color: '#ff0000',
       isConditionShowX: true, //x轴纬度、向量显示
       isConditionShowY: true, //x轴纬度、向量显示
       chartOptionData: [], //基础图表下拉框列表
       currentOption: {},
+      colorOption: {}, //修改颜色后的option
+      textOption: {}, //标题修改后的option
+      modeOption: {}, //是否显示图例后的option
+      labelOption: {}, //是否显示标签文字的option
       xDimensionData: [], //下拉框x纬度
       xVectorData: [], //指定x纬度的向量
       yDimensionData: [], //下拉框y纬度
@@ -201,13 +202,14 @@ export default {
         chartId: '',
         dimensions: [
           { dimensionTypeId: '', id: '', vectorList: [] },
-          {}
+          { dimensionTypeId: '', id: '', vectorList: [] }
         ],
         statisItem: '',
 
       }, //编辑表单
       backchartId: '',
-      weidu: '',
+      weidu: '',//回显纬度
+      weiduy: '',
     }
   },
   beforeCreate() {
@@ -219,8 +221,6 @@ export default {
   created() {
     // console.log(`this.$route.params.chartId------------------------${this.$route.params.chartId}`)
     this.getChartOptionData()
-    
-    
     if (this.$route.params.chartId) {
       // console.log(`created的时候this.chartId========${this.chartId}`)
       this.getChartData(this.$route.params.chartId)
@@ -248,11 +248,14 @@ export default {
         console.log(`纬度id----------${this.ediFormData.dimensions[0].id}`)
         let m = new Array()
         m[0] = this.ediFormData.dimensions[0].id
-        console.log(`'1,1'的类型看看=====${typeof(this.ediFormData.dimensions[0].id)}`)
         m[1] = this.ediFormData.dimensions[0].dimensionTypeId
         this.weidu = m.join(",")
         console.log(`看这里看这里=========${this.weidu}`)
         console.log(typeof(this.weidu))
+        let n = new Array()
+        n[0] = this.ediFormData.dimensions[1].id
+        n[1] = this.ediFormData.dimensions[1].dimensionTypeId
+        this.weiduy = n.join(",")
         this.backchartId = this.ediFormData.chartId
       } else {
         this.$message.error('失败')
@@ -320,10 +323,10 @@ export default {
         methods: 'get',
         url: 'getDimensionSelectList'
       })
-      console.log(`res.data-=-=-=-=-=-=-=-${res.data}`)
+      // console.log(`res.data-=-=-=-=-=-=-=-${res.data}`)
       if (res.meta.status === 200) {
         this.xDimensionData = res.data
-        console.log(`dimensionList-=-=-=-=-=-=-=是${this.xDimensionData}`)
+        // console.log(`dimensionList-=-=-=-=-=-=-=是${this.xDimensionData}`)
       } else {
         this.$message.error('失败')
       }
@@ -333,10 +336,10 @@ export default {
         methods: 'get',
         url: 'getDimensionSelectList'
       })
-      console.log(`res.data-=-=-=-=-=-=-=-${res.data}`)
+      // console.log(`res.data-=-=-=-=-=-=-=-${res.data}`)
       if (res.meta.status === 200) {
         this.xDimensionData = res.data
-        console.log(`dimensionList-=-=-=-=-=-=-=是${this.xDimensionData}`)
+        // console.log(`dimensionList-=-=-=-=-=-=-=是${this.xDimensionData}`)
       } else {
         this.$message.error('失败')
       }
@@ -443,10 +446,6 @@ export default {
     //获取图表数据
     async getPreviewChartOption(parmes) {
       console.log('点击后的parmes看这里-------' + JSON.stringify(parmes))
-      // const { data: res } = await this.$http.get(
-      //     'previewChart',
-      //     this.$qs.stringify(parmes)
-      //   )
       //qs.stringify()将对象 序列化成URL的形式，以&进行拼接
       const { data: res } = await this.$http.request({
         methods: 'get',
@@ -461,14 +460,17 @@ export default {
         // let tempData = eval(`(${res.data[0].chartOption})`)
         this.currentOption.dataset.source = res.source
         this.$message.success('成功')
-        // this.previewOption = this.currentOption
         let previewOption = this.currentOption
+        //把预览的option分别给四个修改用的option
+        this.colorOption = this.currentOption
+        this.textOption = this.currentOption
+        this.modeOption = this.currentOption
+        this.labelOption = this.currentOption
         this.drawMychart(previewOption)
       } else {
         this.$message.error('失败')
       }
     },
-
     //保存所有设置数据
     showConfirm() {
       this.form.validateFields((err, values) => {
