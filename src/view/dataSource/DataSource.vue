@@ -111,11 +111,7 @@
             />
           </a-form-item>
         </a-form>
-        <a-button
-          class="saveButton"
-          type="primary"
-          @click="showConfirm"
-          >
+        <a-button class="saveButton" type="primary" @click="showConfirm">
           保存
         </a-button>
       </a-col>
@@ -181,8 +177,8 @@ export default {
 .form-row {
   margin-top: 15px;
 }
-.saveButton{
-  display : block;
+.saveButton {
+  display: block;
   margin: 0 auto;
 }
 </style>

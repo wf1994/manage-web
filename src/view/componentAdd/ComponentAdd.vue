@@ -6,7 +6,12 @@
         <span class="title-text">新增组件</span>
       </div>
       <div>
-        <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" labelAlign="left">
+        <a-form
+          :form="form"
+          :label-col="{ span: 5 }"
+          :wrapper-col="{ span: 12 }"
+          labelAlign="left"
+        >
           <a-form-item label="组件名称" :style="{ marginTop: '29px' }">
             <!-- 通过ant-design-vue去获取表单的数据是使用v-decorator的方式去给每个项去注册，
             这样才能通过组件去拉取表单的数据，同时对必填项做校验-->
@@ -40,12 +45,20 @@
               @change="getChartOption"
               :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
             >
-              <a-select-option v-for="item in chartOptionData" :key="item.value">{{ item.label }}</a-select-option>
+              <a-select-option
+                v-for="item in chartOptionData"
+                :key="item.value"
+                >{{ item.label }}</a-select-option
+              >
             </a-select>
           </a-form-item>
           <div class="line"></div>
           <!-- 分隔线 -->
-          <a-form-item label="X轴纬度" v-if="isConditionShowX" :style="{ marginTop: '29px' }">
+          <a-form-item
+            label="X轴纬度"
+            v-if="isConditionShowX"
+            :style="{ marginTop: '29px' }"
+          >
             <a-select
               v-decorator="[
                 'xDimension',
@@ -66,8 +79,9 @@
                 <a-select-option
                   v-for="children in item.dimensionList"
                   :key="children.id"
-                  :value="children.id+','+item.dimensionTypeId"
-                >{{ children.dimensionName }}</a-select-option>
+                  :value="children.id + ',' + item.dimensionTypeId"
+                  >{{ children.dimensionName }}</a-select-option
+                >
               </a-select-opt-group>
             </a-select>
           </a-form-item>
@@ -86,12 +100,17 @@
                 v-for="item in xVectorData"
                 :key="item.id"
                 :value="item.id"
-              >{{ item.vectorName }}</a-checkbox>
+                >{{ item.vectorName }}</a-checkbox
+              >
             </a-checkbox-group>
           </a-form-item>
           <div class="line"></div>
           <!-- 分隔线 -->
-          <a-form-item label="Y轴纬度" v-if="isConditionShowY" :style="{ marginTop: '29px' }">
+          <a-form-item
+            label="Y轴纬度"
+            v-if="isConditionShowY"
+            :style="{ marginTop: '29px' }"
+          >
             <a-select
               v-decorator="[
                 'yDimension',
@@ -112,8 +131,9 @@
                 <a-select-option
                   v-for="children in item.dimensionList"
                   :key="children.id"
-                  :value="children.id+','+item.dimensionTypeId"
-                >{{ children.dimensionName }}</a-select-option>
+                  :value="children.id + ',' + item.dimensionTypeId"
+                  >{{ children.dimensionName }}</a-select-option
+                >
               </a-select-opt-group>
             </a-select>
           </a-form-item>
@@ -132,7 +152,8 @@
                 v-for="item in yVectorData"
                 :key="item.id"
                 :value="item.id"
-              >{{ item.vectorName }}</a-checkbox>
+                >{{ item.vectorName }}</a-checkbox
+              >
             </a-checkbox-group>
           </a-form-item>
           <div class="line"></div>
@@ -154,7 +175,9 @@
             </a-select>
           </a-form-item>
         </a-form>
-        <a-button class="saveButton" type="primary" @click="showConfirm">确定</a-button>
+        <a-button class="saveButton" type="primary" @click="showConfirm"
+          >确定</a-button
+        >
         <!-- <a-button class="Button2" type="primary" @click="showConfirm">取消</a-button> -->
       </div>
     </div>
@@ -165,16 +188,18 @@
       <div
         id="mychart"
         :style="{
-                    width: '90%',
-                    height: '90%',
-                    margin: '0 auto'
-                }"
+          width: '90%',
+          height: '90%',
+          margin: '0 auto'
+        }"
       ></div>
 
       <!-- 样式设置 -->
       <!-- <div class>样式设置</div> -->
       <colorPicker v-model="color" v-on:change="headleChangeColor" />
-      <a-button class="test" :style="{width: '100px',height: '20px'}">周星宇</a-button>
+      <a-button class="test" :style="{ width: '100px', height: '20px' }"
+        >周星宇</a-button
+      >
     </div>
   </div>
 </template>
@@ -204,35 +229,29 @@ export default {
           { dimensionTypeId: '', id: '', vectorList: [] },
           { dimensionTypeId: '', id: '', vectorList: [] }
         ],
-        statisItem: '',
-
+        statisItem: ''
       }, //编辑表单
       backchartId: '',
-      weidu: '',//回显纬度
+      weidu: '', //回显纬度
       weiduy: '',
       vector: [],
-      vectory: [],
+      vectory: []
     }
   },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'dataSourceForm' })
-    // console.log(this.$route.params.chartId)
-    this.chartId = this.$route.params.chartId
-    console.log(`beforeCreate的时候${this.chartId}`)
   },
-  created() {
-    // console.log(`this.$route.params.chartId------------------------${this.$route.params.chartId}`)
-    this.getChartOptionData()
-    if (this.$route.params.chartId) {
-      // console.log(`created的时候this.chartId========${this.chartId}`)
-      this.getChartData(this.$route.params.chartId)
-      this.getDimensionData2()
-    }else{
-      this.getDimensionData()
-    }
-  },
+  created() {},
   mounted() {
-    // this.getDimensionData()
+    this.chartId = this.$route.params.id
+    console.log(`beforeCreate的时候${this.chartId}`)
+    this.getChartOptionData()
+    this.getDimensionData()
+    if (this.$route.params.id !== 'add') {
+      setTimeout(() => {
+        this.getChartData(this.$route.params.id)
+      }, 1000)
+    }
   },
   methods: {
     //根据 ID 查询组件信息
@@ -245,19 +264,16 @@ export default {
       })
       if (res.meta.status === 200) {
         this.ediFormData = res.data
-        console.log(`向量数组==========${this.ediFormData.dimensions[0].vectorList}`)
-        console.log(`纬度类型id看看----------${this.ediFormData.dimensions[0].dimensionTypeId}`)
-        console.log(`纬度id----------${this.ediFormData.dimensions[0].id}`)
         let m = new Array()
         m[0] = this.ediFormData.dimensions[0].id
         m[1] = this.ediFormData.dimensions[0].dimensionTypeId
-        this.weidu = m.join(",")
+        this.weidu = m.join(',')
         console.log(`看这里看这里=========${this.weidu}`)
-        console.log(typeof(this.weidu))
+        console.log(typeof this.weidu)
         let n = new Array()
         n[0] = this.ediFormData.dimensions[1].id
         n[1] = this.ediFormData.dimensions[1].dimensionTypeId
-        this.weiduy = n.join(",")
+        this.weiduy = n.join(',')
 
         let x, y
         x = this.ediFormData.dimensions[0].vectorList.toString()
@@ -265,7 +281,7 @@ export default {
         this.vector = Array.from(y)
         this.vectory = this.ediFormData.dimensions[1].vectorList.toString()
         console.log(`vector转数组======${this.vector}`)
-        console.log(`vector类型是=====${typeof(this.vector)}`)
+        console.log(`vector类型是=====${typeof this.vector}`)
         this.backchartId = this.ediFormData.chartId
       } else {
         this.$message.error('失败')
@@ -570,7 +586,7 @@ export default {
         this.$message.error('保存数据源失败')
       }
     },
-    //colorPicker 
+    //colorPicker
     headleChangeColor(color) {
       console.log(`colorPicker==========${color}`)
       // diyColor = color

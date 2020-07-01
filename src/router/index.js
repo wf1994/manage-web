@@ -38,8 +38,7 @@ const routes = [
         component: StatisItem
       },
       {
-        path: '/componentAdd',
-        name: "ComponentAdd",
+        path: '/componentAdd/:id',
         component: ComponentAdd
       }
     ]

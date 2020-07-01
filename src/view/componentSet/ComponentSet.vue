@@ -12,7 +12,9 @@
         ></a-input>
       </a-col>
       <a-col :span="4">
-        <a-button @click="searchByComponentName" class="searchWord">查询</a-button>
+        <a-button @click="searchByComponentName" class="searchWord"
+          >查询</a-button
+        >
       </a-col>
       <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
         <a-button class="addButton" @click="goTo()">新增</a-button>
@@ -31,7 +33,9 @@
           :row-selection="rowSelection"
           :pagination="true"
         >
-        <span slot="dimensions" slot-scope="text,row">{{ row.dimensions.join("、") }}</span>
+          <span slot="dimensions" slot-scope="text, row">{{
+            row.dimensions.join('、')
+          }}</span>
           <!-- <span slot="text" slot-scope="text, row">{{ row }}</span> -->
           <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
@@ -67,8 +71,12 @@
 <script>
 const componentColumns = [
   { title: '组件名称', dataIndex: 'componentName', key: 'componentName' },
-  { title: '维度', dataIndex: 'dimensions', key: 'dimensions', 
-  scopedSlots: { customRender: 'dimensions' } },
+  {
+    title: '维度',
+    dataIndex: 'dimensions',
+    key: 'dimensions',
+    scopedSlots: { customRender: 'dimensions' }
+  },
   { title: '统计项', dataIndex: 'statisItem', key: 'statisItem' },
   { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
   {
@@ -101,9 +109,8 @@ export default {
   methods: {
     //新增跳转页面
     goTo() {
-      this.$router.push({
-        name: 'ComponentAdd'
-      })
+      const add = 'add'
+      this.$router.push(`componentAdd/${add}`)
     },
     onShowSizeChange(current, pageSize) {
       console.log(current, pageSize)
@@ -117,9 +124,6 @@ export default {
 
       if (res.meta.status === 200) {
         this.componentListData = res.data
-        //join
-        // this.dimenionsList = res.data.dimensions.join(".")
-        // console.log('dimenionsList======================='+this.dimenionsList)
         console.log('组件列表获取成功')
       } else {
         this.$message.error('组件列表获取失败！')
@@ -148,11 +152,7 @@ export default {
     },
     //修改
     editComponent(id) {
-      // console.log(`修改id============${id}`)
-      this.$router.push({
-        name: 'ComponentAdd',
-        params: { chartId: id }
-      })
+      this.$router.push(`/componentAdd/${id}`)
     },
     // 删除维度确认框显示
     delComponent() {
