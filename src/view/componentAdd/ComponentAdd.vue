@@ -77,7 +77,7 @@
                 'xVector',
                 {
                   rules: [{ required: true, message: '向量不能为空！' }],
-                  initialValue: ediFormData.dimensions[0].vectorList
+                  initialValue: vector
                 }
               ]"
               :style="{ marginLeft: '115px' }"
@@ -123,7 +123,7 @@
                 'yVector',
                 {
                   rules: [{ required: true, message: '向量不能为空！' }],
-                  initialValue: ediFormData.dimensions[1].vectorList
+                  initialValue: vectory
                 }
               ]"
               :style="{ marginLeft: '115px' }"
@@ -210,6 +210,8 @@ export default {
       backchartId: '',
       weidu: '',//回显纬度
       weiduy: '',
+      vector: [],
+      vectory: [],
     }
   },
   beforeCreate() {
@@ -256,6 +258,14 @@ export default {
         n[0] = this.ediFormData.dimensions[1].id
         n[1] = this.ediFormData.dimensions[1].dimensionTypeId
         this.weiduy = n.join(",")
+
+        let x, y
+        x = this.ediFormData.dimensions[0].vectorList.toString()
+        y = x.split()
+        this.vector = Array.from(y)
+        this.vectory = this.ediFormData.dimensions[1].vectorList.toString()
+        console.log(`vector转数组======${this.vector}`)
+        console.log(`vector类型是=====${typeof(this.vector)}`)
         this.backchartId = this.ediFormData.chartId
       } else {
         this.$message.error('失败')
