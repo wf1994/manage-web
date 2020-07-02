@@ -41,7 +41,7 @@
                 <a-menu-item @click="handleShowEdit(row)">
                   修改
                 </a-menu-item>
-                <a-menu-item @click="RowDelete(row)">
+                <a-menu-item @click="RowDelete(row.id)">
                   删除
                 </a-menu-item>
               </a-menu>
