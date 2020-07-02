@@ -18,7 +18,8 @@ import {
   Tabs,
   Radio,
   FormModel,
-  Checkbox
+  Checkbox,
+  Slider
 } from 'ant-design-vue'
 import '../theme.less'
 // 全局注册antd组件
@@ -40,6 +41,7 @@ Vue.use(Tabs)
 Vue.use(Radio)
 Vue.use(FormModel)
 Vue.use(Checkbox)
+Vue.use(Slider)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = Message

@@ -162,19 +162,48 @@
     <!-- 组件预览 -->
     <div class="pull-right previewDiv">
       <a-button type="primary" @click="previewChart">组件预览</a-button>
-      <div
+      <!-- <div
         id="mychart"
         :style="{
           width: '90%',
           height: '90%',
           margin: '0 auto'
         }"
+      ></div> -->
+      <div
+        id="mychart"
+        :style="{ height: zxyFormatterWidth, width: zxyFormatterWidth }"
+        class="myChartInit"
       ></div>
 
       <!-- 样式设置 -->
-      <!-- <div class>样式设置</div> -->
+      <span>选择颜色</span>
       <colorPicker v-model="color" v-on:change="headleChangeColor" />
-      <a-button class="test" :style="{ width: '100px', height: '20px' }">周星宇</a-button>
+      <div>
+        <span>是否显示标题</span>
+        <a-radio-group @change="onChangeText" :ckecked="true">
+          <a-radio :value="1">是</a-radio>
+          <a-radio :value="2">否</a-radio>
+        </a-radio-group>
+      </div>
+      <div>
+        <span>是否显示标签文字</span>
+        <a-radio-group @change="onChangeSeries" :ckecked="true">
+          <a-radio :value="1">是</a-radio>
+          <a-radio :value="2">否</a-radio>
+        </a-radio-group>
+      </div>
+      <div>
+        <span>是否显示图例</span>
+        <a-radio-group @change="onChangeLegend" :ckecked="true">
+          <a-radio :value="1">是</a-radio>
+          <a-radio :value="2">否</a-radio>
+        </a-radio-group>
+      </div>
+      <!-- <div>
+        <a-slider :tip-formatter="zxyFormatterWidth" />
+        <a-slider :tip-formatter="zxyFormatterHeight" />
+      </div> -->
     </div>
   </div>
 </template>
@@ -189,6 +218,107 @@ export default {
       currentOption: {},
       colorOption: {}, //修改颜色后的option
       textOption: {}, //标题修改后的option
+      textOption2: {
+        tooltip: {
+          show: true,
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        grid: {
+          borderWidth: 0
+        },
+        legend: {
+          textStyle: {
+            fontSize: 12,
+            fontFamily: '微软雅黑',
+            color: '#272727',
+            fontWeight: 'bold'
+          },
+          selectedMode: true,
+          show: true,
+          left: 'right',
+          top: '5%'
+        },
+        dataset: {
+          source: [
+            ['product', '人数'],
+            ['才能1', 335],
+            ['才能2', 310],
+            ['才能3', 234],
+            ['才能4', 135],
+            ['才能5', 548]
+          ]
+        },
+        xAxis: [
+          {
+            axisTick: {
+              show: false
+            },
+            type: 'category',
+            // data : [],  //数据
+            axisLabel: {
+              rotate: 0,
+              interval: 'auto',
+              textStyle: {
+                fontSize: 12,
+                fontFamily: '微软雅黑',
+                color: '#272727',
+                fontWeight: 'bold'
+              }
+            },
+            splitLine: {
+              show: false
+            },
+            axisLine: {
+              lineStyle: {
+                color: '#272727'
+              }
+            },
+            positionOffset: {
+              x: 0,
+              y: 0
+            },
+            isShowXAxisText: false
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            axisLabel: {
+              textStyle: {
+                fontSize: 12,
+                fontFamily: '微软雅黑',
+                color: '#272727',
+                fontWeight: 'bold'
+              },
+              formatter: '{value}'
+            },
+            nameTextStyle: {
+              fontSize: 12,
+              fontFamily: '微软雅黑',
+              color: '#272727',
+              fontWeight: 'bold'
+            },
+            splitLine: {
+              show: true
+            },
+            axisLine: {
+              lineStyle: {
+                color: '#272727'
+              }
+            },
+            name: '' //数据
+          }
+        ],
+        series: [
+          {
+            name: '',
+            type: 'bar'
+          }
+        ]
+      }, 
       modeOption: {}, //是否显示图例后的option
       labelOption: {}, //是否显示标签文字的option
       xDimensionData: [], //下拉框x纬度
@@ -226,7 +356,55 @@ export default {
       }, 1000)
     }
   },
+  // computed: {
+  //   zxyFormatterWidth(value) {
+  //     // return `${value}%`;
+  //     console.log(`zxyFormatter======${value}`)
+  //     return value + '%'
+  //   },
+  // },
   methods: {
+    //是否显示图标题
+    onChangeText(e) {
+      console.log(`图标题====${e.target.value}`)
+      console.log(`textOption之前=====${JSON.stringify(this.textOption)}`)
+      if (e.target.value === 1) {
+        this.textOption.tooltip.show = true
+      } else {
+        this.textOption.tooltip.show = false
+      }
+      console.log(`textOption修改后=====${JSON.stringify(this.textOption)}`)
+      this.drawMychart(this.textOption)
+      this.currentOption = this.textOption
+    },
+    //修改颜色
+    headleChangeColor(color) {
+      console.log(`colorPicker==========${color}`)
+      this.colorOption.legend.textStyle.color = color
+      this.drawMychart(this.colorOption)
+      this.currentOption = this.colorOption
+    },
+    //是否显示标签文字
+    onChangeSeries(e) {
+      if (e.target.value === 1) {
+        this.labelOption.series.show = true
+      } else {
+        this.labelOption.series.show = false
+      }
+      this.drawMychart(this.labelOption)
+      this.currentOption = this.labelOption
+    },
+    //是否显示图例
+    onChangeLegend(e) {
+      if (e.target.value === 1) {
+        this.modeOption.legend.show = true
+      } else {
+        this.modeOption.legend.show = false
+      }
+      this.drawMychart(this.modeOption)
+      this.currentOption = this.modeOption
+    },
+    
     //根据 组件列表中的ID 查询组件所有信息，点击编辑调用
     async getChartData(id) {
       console.log(`this.chartId========${this.chartId}`)
@@ -420,13 +598,19 @@ export default {
                     dimensionId: values.xDimension.split(',')[0],
                     dimensionXY: 'x',
                     // vectorList: values.xVector
-                    vectorList: typeof values.xVector === 'string' ? values.xVector.split(',') : values.xVector
+                    vectorList:
+                      typeof values.xVector === 'string'
+                        ? values.xVector.split(',')
+                        : values.xVector
                   },
                   {
                     dimensionId: values.yDimension.split(',')[0],
                     dimensionXY: 'y',
                     // vectorList: values.yVector
-                    vectorList: typeof values.yVector === 'string' ? values.yVector.split(',') : values.yVector
+                    vectorList:
+                      typeof values.yVector === 'string'
+                        ? values.yVector.split(',')
+                        : values.yVector
                   }
                 ]),
                 // statisItem: values.statisItem
@@ -441,7 +625,10 @@ export default {
                   {
                     dimensionId: values.xDimension.split(',')[0],
                     dimensionXY: 'x',
-                    vectorList: typeof values.xVector === 'string' ? values.xVector.split(',') : values.xVector
+                    vectorList:
+                      typeof values.xVector === 'string'
+                        ? values.xVector.split(',')
+                        : values.xVector
                   }
                 ]),
                 // statisItem: values.statisItem
@@ -622,11 +809,6 @@ export default {
       } else {
         this.$message.error('保存数据失败')
       }
-    },
-    //colorPicker
-    headleChangeColor(color) {
-      console.log(`colorPicker==========${color}`)
-      // diyColor = color
     }
   }
 }
@@ -674,6 +856,11 @@ export default {
   height: 300px;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08);
   border-radius: 2px;
+}
+.myChartInit {
+  width: 90%;
+  height: 90%;
+  margin: 0 auto;
 }
 /* .test {
   background-color:color;
