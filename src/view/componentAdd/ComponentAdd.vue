@@ -176,30 +176,30 @@
         class="myChartInit"
       ></div>
 
-      <!-- 样式设置 -->
-      <span>选择颜色</span>
-      <colorPicker v-model="color" v-on:change="headleChangeColor" />
-      <div>
-        <span>是否显示标题</span>
-        <a-radio-group @change="onChangeText" :ckecked="true">
-          <a-radio :value="1">是</a-radio>
-          <a-radio :value="2">否</a-radio>
-        </a-radio-group>
-      </div>
-      <div>
-        <span>是否显示标签文字</span>
-        <a-radio-group @change="onChangeSeries" :ckecked="true">
-          <a-radio :value="1">是</a-radio>
-          <a-radio :value="2">否</a-radio>
-        </a-radio-group>
-      </div>
-      <div>
-        <span>是否显示图例</span>
-        <a-radio-group @change="onChangeLegend" :ckecked="true">
-          <a-radio :value="1">是</a-radio>
-          <a-radio :value="2">否</a-radio>
-        </a-radio-group>
-      </div>
+<!--      &lt;!&ndash; 样式设置 &ndash;&gt;-->
+<!--      <span>选择颜色</span>-->
+<!--      <colorPicker v-model="color" v-on:change="headleChangeColor" />-->
+<!--      <div>-->
+<!--        <span>是否显示标题</span>-->
+<!--        <a-radio-group @change="onChangeText" :ckecked="true">-->
+<!--          <a-radio :value="1">是</a-radio>-->
+<!--          <a-radio :value="2">否</a-radio>-->
+<!--        </a-radio-group>-->
+<!--      </div>-->
+<!--      <div>-->
+<!--        <span>是否显示标签文字</span>-->
+<!--        <a-radio-group @change="onChangeSeries" :ckecked="true">-->
+<!--          <a-radio :value="1">是</a-radio>-->
+<!--          <a-radio :value="2">否</a-radio>-->
+<!--        </a-radio-group>-->
+<!--      </div>-->
+<!--      <div>-->
+<!--        <span>是否显示图例</span>-->
+<!--        <a-radio-group @change="onChangeLegend" :ckecked="true">-->
+<!--          <a-radio :value="1">是</a-radio>-->
+<!--          <a-radio :value="2">否</a-radio>-->
+<!--        </a-radio-group>-->
+<!--      </div>-->
       <!-- <div>
         <a-slider :tip-formatter="zxyFormatterWidth" />
         <a-slider :tip-formatter="zxyFormatterHeight" />
@@ -539,7 +539,7 @@ export default {
       const { data: res } = await this.$http.request({
         methods: 'get',
         url: 'getVectorList',
-        params: { id }
+        params: { id:Number(id).toFixed() }
       })
       if (res.meta.status === 200) {
         console.log(`根据纬度id查询向量${res.data}`)
@@ -556,7 +556,7 @@ export default {
       const { data: res } = await this.$http.request({
         methods: 'get',
         url: 'getVectorList',
-        params: { id }
+        params: { id:Number(id).toFixed() }
       })
       if (res.meta.status === 200) {
         console.log(`根据纬度id查询向量${res.data}`)
