@@ -182,7 +182,6 @@
 export default {
   data() {
     return {
-      // diyColor: '',
       color: '#ff0000',
       isConditionShowX: true, //x轴纬度、向量显示
       isConditionShowY: true, //x轴纬度、向量显示
@@ -206,11 +205,8 @@ export default {
         ],
         statisItem: ''
       }, //编辑表单
-      backchartId: '',
       weidu: '', //回显纬度
-      weiduy: '',
-      vector: [],
-      vectory: []
+      weiduy: ''
     }
   },
   beforeCreate() {
@@ -220,7 +216,9 @@ export default {
   mounted() {
     this.chartId = this.$route.params.id
     console.log(`beforeCreate的时候${this.chartId}`)
+    // 获取基础图表下拉框列表
     this.getChartOptionData()
+    //获取维度下拉框列表
     this.getDimensionData()
     if (this.$route.params.id !== 'add') {
       setTimeout(() => {
@@ -229,7 +227,7 @@ export default {
     }
   },
   methods: {
-    //根据 组件列表中的ID 查询组件信息，编辑
+    //根据 组件列表中的ID 查询组件所有信息，点击编辑调用
     async getChartData(id) {
       console.log(`this.chartId========${this.chartId}`)
       const { data: res } = await this.$http.request({
@@ -246,16 +244,15 @@ export default {
           m[0] = this.ediFormData.dimensions[0].id
           m[1] = this.ediFormData.dimensions[0].dimensionTypeId
           this.weidu = m.join(',')
-          console.log(typeof this.weidu)
+          // console.log(typeof this.weidu)
           let n = new Array()
           n[0] = this.ediFormData.dimensions[1].id
           n[1] = this.ediFormData.dimensions[1].dimensionTypeId
           this.weiduy = n.join(',')
           //编辑时数据回显，预览，查询option
-          // this.getChartOption(res.data.chartId)
           this.currentOption = eval(`(${res.data.chartOption})`)
-          console.log(eval(`(${res.data.chartOption})`))
-          console.log('-=-=-=-=')
+          // console.log(eval(`(${res.data.chartOption})`))
+          // console.log('-=-=-=-=')
           this.drawMychart(this.currentOption)
           this.showVector(`${m[0]},0`)
           if (n[0]) {
@@ -275,7 +272,7 @@ export default {
         this.$message.error('失败')
       }
     },
-    // 获取基础图表下拉框列表,第一次选择下拉框的图后，先生成一次预览图
+    // 获取基础图表下拉框列表
     async getChartOptionData() {
       const { data: res } = await this.$http.request({
         methods: 'get',
@@ -288,12 +285,11 @@ export default {
             label: item.chartName
           }
         })
-        // console.log(`this.chartOptionData是${this.chartOptionData}`)
       } else {
         this.$message.error('失败')
       }
     },
-    //根据 ID 查询基础图表 option,传入chartId
+    //根据 ID 查询基础图表 option,图形下拉框
     async getChartOption(value) {
       console.log(`点击后的value是${value}`)
       const { data: res } = await this.$http.request({
@@ -412,9 +408,10 @@ export default {
               console.log(`编辑=========${values.xVector}`)
               console.log(`zhouxingy类型=========${typeof values.xVector}`)
 
-              let m = values.xVector
-              console.log(`编辑，向量，修改后的类型====${typeof m}`)
-              console.log(`编辑，向量，修改后=====${m}`)
+              // let m = values.xVector
+              // console.log(`编辑，向量，修改后的类型====${typeof m}`)
+              // console.log(`编辑，向量，修改后=====${m}`)
+
               parmes = {
                 dataId: values.xDimension.split(',')[1],
                 chartId: values.chartOption,
@@ -422,18 +419,20 @@ export default {
                   {
                     dimensionId: values.xDimension.split(',')[0],
                     dimensionXY: 'x',
-                    vectorList: values.xVector
+                    // vectorList: values.xVector
+                    vectorList: typeof values.xVector === 'string' ? values.xVector.split(',') : values.xVector
                   },
                   {
                     dimensionId: values.yDimension.split(',')[0],
                     dimensionXY: 'y',
-                    vectorList: values.yVector
+                    // vectorList: values.yVector
+                    vectorList: typeof values.yVector === 'string' ? values.yVector.split(',') : values.yVector
                   }
                 ]),
                 // statisItem: values.statisItem
                 statisItem: 'PERSON'
               }
-              console.log(`baishan=======${JSON.stringify(parmes)}`)
+              // console.log(`baishan=======${JSON.stringify(parmes)}`)
             } else {
               parmes = {
                 dataId: values.xDimension.split(',')[1],
@@ -442,7 +441,7 @@ export default {
                   {
                     dimensionId: values.xDimension.split(',')[0],
                     dimensionXY: 'x',
-                    vectorList: values.xVector
+                    vectorList: typeof values.xVector === 'string' ? values.xVector.split(',') : values.xVector
                   }
                 ]),
                 // statisItem: values.statisItem
@@ -507,7 +506,6 @@ export default {
         }
       })
     },
-
     //获取图表数据
     async getPreviewChartOption(parmes) {
       console.log('点击后的parmes看这里-------' + JSON.stringify(parmes))
