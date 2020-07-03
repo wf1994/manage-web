@@ -685,7 +685,7 @@ export default {
             }
           }
 
-          console.log(`点击前的parmes是${parmes}`)
+          console.log(`点击前的parmes是${JSON.stringify(parmes)}`)
           this.$confirm({
             title: '保存数据源',
             content: <div style="color:green;">确定按照此配置预览吗？</div>,
