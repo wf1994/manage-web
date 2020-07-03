@@ -174,7 +174,7 @@
         id="mychart"
         :style="{ height: zxyFormatterWidth, width: zxyFormatterWidth }"
         class="myChartInit"
-      ></div> -->
+      ></div>-->
 
       <div>
         <span>是否显示标题</span>
@@ -217,114 +217,110 @@ export default {
       currentOption: {},
       colorOption: {}, //修改颜色后的option
       colorOption2: {
-            tooltip: {
-                show: true,
-                "trigger": "axis",
-                "axisPointer": {
-                    "type": "shadow"
-                }
-            },
-            "grid": {
-                "borderWidth": 0
-            },
-            title: {
-                show: true
-            },
-            
-            legend: {
-               
-                "textStyle": {
-                    "fontSize": 12,
-                    "fontFamily": "微软雅黑",
-                    "color": "#272727",
-                    "fontWeight": "bold"
-                },
-                "selectedMode": true,
-                "show": true,
-                "left":'right',
-                "top":'5%'
-            },
-            dataset:{
-                source:[
-                      ['product', '人数'],
+        tooltip: {
+          show: true,
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        grid: {
+          borderWidth: 0
+        },
+        title: {
+          show: true
+        },
+
+        legend: {
+          textStyle: {
+            fontSize: 12,
+            fontFamily: '微软雅黑',
+            color: '#272727',
+            fontWeight: 'bold'
+          },
+          selectedMode: true,
+          show: true,
+          left: 'right',
+          top: '5%'
+        },
+        dataset: {
+          source: [
+            ['product', '人数'],
             ['才能1', 335],
             ['才能2', 310],
             ['才能3', 234],
-             ['才能4', 135],
-              ['才能5', 548],
-                    ]
-               
- 
-            },
-            xAxis : [
-                {
-                    "axisTick":{
-                        show:false
-                    },
-                    type : 'category',
-                    // data : [],  //数据
-                    "axisLabel": {
-                        "rotate": 0,
-                        "interval": "auto",
-                        "textStyle": {
-                            "fontSize": 12,
-                            "fontFamily": "微软雅黑",
-                            "color": "#272727",
-                            "fontWeight": "bold"
-                        }
-                    },
-                    "splitLine": {
-                        "show": false
-                    },
-                    "axisLine": {
-                        "lineStyle": {
-                            "color": "#272727"
-                        }
-                    },
-                    positionOffset:{
-                    x:0,
-                    y:0
-                },
-                    "isShowXAxisText" : false
-                }
-            ],
-            yAxis : [
-                {
-                    type : 'value',
-                    "axisLabel": {
-                        "textStyle": {
-                            "fontSize": 12,
-                            "fontFamily": "微软雅黑",
-                            "color": "#272727",
-                            "fontWeight": "bold"
-                        },
-                        "formatter": "{value}"
-                    },
-                    "nameTextStyle": {
-                        "fontSize": 12,
-                        "fontFamily": "微软雅黑",
-                        "color": "#272727",
-                        "fontWeight": "bold"
-                    },
-                    "splitLine": {
-                        "show": true
-                    },
-                    "axisLine": {
-                        "lineStyle": {
-                            "color": "#272727"
-                        }
-                    },
-                    name:""     //数据
-                }
-            ],
-            series : [
-                {
-                    "name":"",
-                    "type":"bar",
-                    
-                }
-            ]
+            ['才能4', 135],
+            ['才能5', 548]
+          ]
         },
+        xAxis: [
+          {
+            axisTick: {
+              show: false
+            },
+            type: 'category',
+            // data : [],  //数据
+            axisLabel: {
+              rotate: 0,
+              interval: 'auto',
+              textStyle: {
+                fontSize: 12,
+                fontFamily: '微软雅黑',
+                color: '#272727',
+                fontWeight: 'bold'
+              }
+            },
+            splitLine: {
+              show: false
+            },
+            axisLine: {
+              lineStyle: {
+                color: '#272727'
+              }
+            },
+            positionOffset: {
+              x: 0,
+              y: 0
+            },
+            isShowXAxisText: false
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            axisLabel: {
+              textStyle: {
+                fontSize: 12,
+                fontFamily: '微软雅黑',
+                color: '#272727',
+                fontWeight: 'bold'
+              },
+              formatter: '{value}'
+            },
+            nameTextStyle: {
+              fontSize: 12,
+              fontFamily: '微软雅黑',
+              color: '#272727',
+              fontWeight: 'bold'
+            },
+            splitLine: {
+              show: true
+            },
+            axisLine: {
+              lineStyle: {
+                color: '#272727'
+              }
+            },
+            name: '' //数据
+          }
+        ],
+        series: [
+          {
+            name: '',
+            type: 'bar'
+          }
+        ]
+      },
       textOption: {}, //标题修改后的option
       modeOption: {}, //是否显示图例后的option
       labelOption: {}, //是否显示标签文字的option
@@ -657,12 +653,18 @@ export default {
                   {
                     dimensionId: values.xDimension.split(',')[0],
                     dimensionXY: 'x',
-                    vectorList: values.xVector
+                    vectorList:
+                      typeof values.xVector === 'string'
+                        ? values.xVector.split(',')
+                        : values.xVector
                   },
                   {
                     dimensionId: values.yDimension.split(',')[0],
                     dimensionXY: 'y',
-                    vectorList: values.yVector
+                    vectorList:
+                      typeof values.yVector === 'string'
+                        ? values.yVector.split(',')
+                        : values.yVector
                   }
                 ]),
                 // statisItem: values.statisItem
@@ -676,7 +678,10 @@ export default {
                   {
                     dimensionId: values.xDimension.split(',')[0],
                     dimensionXY: 'x',
-                    vectorList: values.xVector
+                    vectorList:
+                      typeof values.xVector === 'string'
+                        ? values.xVector.split(',')
+                        : values.xVector
                   }
                 ]),
                 // statisItem: values.statisItem
