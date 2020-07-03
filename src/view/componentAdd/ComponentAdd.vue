@@ -66,7 +66,7 @@
                 <a-select-option
                   v-for="children in item.dimensionList"
                   :key="children.id"
-                  :value="children.id + ',' + item.dimensionTypeId"
+                  :value="Number(children.id).toFixed() + ',' + item.dimensionTypeId"
                 >{{ children.dimensionName }}</a-select-option>
               </a-select-opt-group>
             </a-select>
@@ -112,7 +112,7 @@
                 <a-select-option
                   v-for="children in item.dimensionList"
                   :key="children.id"
-                  :value="children.id + ',' + item.dimensionTypeId"
+                  :value="Number(children.id).toFixed() + ',' + item.dimensionTypeId"
                 >{{ children.dimensionName }}</a-select-option>
               </a-select-opt-group>
             </a-select>
@@ -162,48 +162,47 @@
     <!-- 组件预览 -->
     <div class="pull-right previewDiv">
       <a-button type="primary" @click="previewChart">组件预览</a-button>
-      <!-- <div
+      <div
         id="mychart"
         :style="{
           width: '90%',
           height: '90%',
           margin: '0 auto'
         }"
-      ></div> -->
-      <div
+      ></div>
+      <!-- <div
         id="mychart"
         :style="{ height: zxyFormatterWidth, width: zxyFormatterWidth }"
         class="myChartInit"
-      ></div>
+      ></div> -->
 
-<!--      &lt;!&ndash; 样式设置 &ndash;&gt;-->
-<!--      <span>选择颜色</span>-->
-<!--      <colorPicker v-model="color" v-on:change="headleChangeColor" />-->
-<!--      <div>-->
-<!--        <span>是否显示标题</span>-->
-<!--        <a-radio-group @change="onChangeText" :ckecked="true">-->
-<!--          <a-radio :value="1">是</a-radio>-->
-<!--          <a-radio :value="2">否</a-radio>-->
-<!--        </a-radio-group>-->
-<!--      </div>-->
-<!--      <div>-->
-<!--        <span>是否显示标签文字</span>-->
-<!--        <a-radio-group @change="onChangeSeries" :ckecked="true">-->
-<!--          <a-radio :value="1">是</a-radio>-->
-<!--          <a-radio :value="2">否</a-radio>-->
-<!--        </a-radio-group>-->
-<!--      </div>-->
-<!--      <div>-->
-<!--        <span>是否显示图例</span>-->
-<!--        <a-radio-group @change="onChangeLegend" :ckecked="true">-->
-<!--          <a-radio :value="1">是</a-radio>-->
-<!--          <a-radio :value="2">否</a-radio>-->
-<!--        </a-radio-group>-->
-<!--      </div>-->
+      <div>
+        <span>是否显示标题</span>
+        <a-radio-group @change="onChangeText" :ckecked="true">
+          <a-radio :value="1">是</a-radio>
+          <a-radio :value="2">否</a-radio>
+        </a-radio-group>
+      </div>
+      <div>
+        <span>是否显示标签文字</span>
+        <a-radio-group @change="onChangeSeries" :ckecked="true">
+          <a-radio :value="1">是</a-radio>
+          <a-radio :value="2">否</a-radio>
+        </a-radio-group>
+      </div>
+      <div>
+        <span>是否显示图例</span>
+        <a-radio-group @change="onChangeLegend" :ckecked="true">
+          <a-radio :value="1">是</a-radio>
+          <a-radio :value="2">否</a-radio>
+        </a-radio-group>
+      </div>
+      <span>选择颜色</span>
+      <colorPicker v-model="color" v-on:change="headleChangeColor" />
       <!-- <div>
         <a-slider :tip-formatter="zxyFormatterWidth" />
         <a-slider :tip-formatter="zxyFormatterHeight" />
-      </div> -->
+      </div>-->
     </div>
   </div>
 </template>
@@ -217,108 +216,116 @@ export default {
       chartOptionData: [], //基础图表下拉框列表
       currentOption: {},
       colorOption: {}, //修改颜色后的option
-      textOption: {}, //标题修改后的option
-      textOption2: {
-        tooltip: {
-          show: true,
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow'
-          }
-        },
-        grid: {
-          borderWidth: 0
-        },
-        legend: {
-          textStyle: {
-            fontSize: 12,
-            fontFamily: '微软雅黑',
-            color: '#272727',
-            fontWeight: 'bold'
-          },
-          selectedMode: true,
-          show: true,
-          left: 'right',
-          top: '5%'
-        },
-        dataset: {
-          source: [
-            ['product', '人数'],
+      colorOption2: {
+            tooltip: {
+                show: true,
+                "trigger": "axis",
+                "axisPointer": {
+                    "type": "shadow"
+                }
+            },
+            "grid": {
+                "borderWidth": 0
+            },
+            title: {
+                show: true
+            },
+            
+            legend: {
+               
+                "textStyle": {
+                    "fontSize": 12,
+                    "fontFamily": "微软雅黑",
+                    "color": "#272727",
+                    "fontWeight": "bold"
+                },
+                "selectedMode": true,
+                "show": true,
+                "left":'right',
+                "top":'5%'
+            },
+            dataset:{
+                source:[
+                      ['product', '人数'],
             ['才能1', 335],
             ['才能2', 310],
             ['才能3', 234],
-            ['才能4', 135],
-            ['才能5', 548]
-          ]
+             ['才能4', 135],
+              ['才能5', 548],
+                    ]
+               
+ 
+            },
+            xAxis : [
+                {
+                    "axisTick":{
+                        show:false
+                    },
+                    type : 'category',
+                    // data : [],  //数据
+                    "axisLabel": {
+                        "rotate": 0,
+                        "interval": "auto",
+                        "textStyle": {
+                            "fontSize": 12,
+                            "fontFamily": "微软雅黑",
+                            "color": "#272727",
+                            "fontWeight": "bold"
+                        }
+                    },
+                    "splitLine": {
+                        "show": false
+                    },
+                    "axisLine": {
+                        "lineStyle": {
+                            "color": "#272727"
+                        }
+                    },
+                    positionOffset:{
+                    x:0,
+                    y:0
+                },
+                    "isShowXAxisText" : false
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    "axisLabel": {
+                        "textStyle": {
+                            "fontSize": 12,
+                            "fontFamily": "微软雅黑",
+                            "color": "#272727",
+                            "fontWeight": "bold"
+                        },
+                        "formatter": "{value}"
+                    },
+                    "nameTextStyle": {
+                        "fontSize": 12,
+                        "fontFamily": "微软雅黑",
+                        "color": "#272727",
+                        "fontWeight": "bold"
+                    },
+                    "splitLine": {
+                        "show": true
+                    },
+                    "axisLine": {
+                        "lineStyle": {
+                            "color": "#272727"
+                        }
+                    },
+                    name:""     //数据
+                }
+            ],
+            series : [
+                {
+                    "name":"",
+                    "type":"bar",
+                    
+                }
+            ]
         },
-        xAxis: [
-          {
-            axisTick: {
-              show: false
-            },
-            type: 'category',
-            // data : [],  //数据
-            axisLabel: {
-              rotate: 0,
-              interval: 'auto',
-              textStyle: {
-                fontSize: 12,
-                fontFamily: '微软雅黑',
-                color: '#272727',
-                fontWeight: 'bold'
-              }
-            },
-            splitLine: {
-              show: false
-            },
-            axisLine: {
-              lineStyle: {
-                color: '#272727'
-              }
-            },
-            positionOffset: {
-              x: 0,
-              y: 0
-            },
-            isShowXAxisText: false
-          }
-        ],
-        yAxis: [
-          {
-            type: 'value',
-            axisLabel: {
-              textStyle: {
-                fontSize: 12,
-                fontFamily: '微软雅黑',
-                color: '#272727',
-                fontWeight: 'bold'
-              },
-              formatter: '{value}'
-            },
-            nameTextStyle: {
-              fontSize: 12,
-              fontFamily: '微软雅黑',
-              color: '#272727',
-              fontWeight: 'bold'
-            },
-            splitLine: {
-              show: true
-            },
-            axisLine: {
-              lineStyle: {
-                color: '#272727'
-              }
-            },
-            name: '' //数据
-          }
-        ],
-        series: [
-          {
-            name: '',
-            type: 'bar'
-          }
-        ]
-      }, 
+      textOption: {}, //标题修改后的option
       modeOption: {}, //是否显示图例后的option
       labelOption: {}, //是否显示标签文字的option
       xDimensionData: [], //下拉框x纬度
@@ -380,7 +387,8 @@ export default {
     //修改颜色
     headleChangeColor(color) {
       console.log(`colorPicker==========${color}`)
-      this.colorOption.legend.textStyle.color = color
+      this.colorOption.color = color
+      console.log(`colorOption==========${JSON.stringify(this.colorOption)}`)
       this.drawMychart(this.colorOption)
       this.currentOption = this.colorOption
     },
@@ -404,7 +412,7 @@ export default {
       this.drawMychart(this.modeOption)
       this.currentOption = this.modeOption
     },
-    
+
     //根据 组件列表中的ID 查询组件所有信息，点击编辑调用
     async getChartData(id) {
       console.log(`this.chartId========${this.chartId}`)
@@ -539,7 +547,7 @@ export default {
       const { data: res } = await this.$http.request({
         methods: 'get',
         url: 'getVectorList',
-        params: { id:Number(id).toFixed() }
+        params: { id: Number(id).toFixed() }
       })
       if (res.meta.status === 200) {
         console.log(`根据纬度id查询向量${res.data}`)
@@ -556,7 +564,7 @@ export default {
       const { data: res } = await this.$http.request({
         methods: 'get',
         url: 'getVectorList',
-        params: { id:Number(id).toFixed() }
+        params: { id: Number(id).toFixed() }
       })
       if (res.meta.status === 200) {
         console.log(`根据纬度id查询向量${res.data}`)
