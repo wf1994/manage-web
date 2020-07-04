@@ -170,33 +170,37 @@
           margin: '0 auto'
         }"
       ></div>
-      <!-- <div
-        id="mychart"
-        :style="{ height: zxyFormatterWidth, width: zxyFormatterWidth }"
-        class="myChartInit"
-      ></div>-->
 
-      <div>
-        <span>是否显示标题</span>
-        <a-radio-group @change="onChangeText" :ckecked="true">
-          <a-radio :value="1">是</a-radio>
-          <a-radio :value="2">否</a-radio>
-        </a-radio-group>
-        <a-input-search placeholder="请输入标题" size="large" allow-clear @search="onSearch">
-          <a-button slot="enterButton">生成预览</a-button>
-        </a-input-search>
+      <div class="baishanDiy">
+        <div class="null"></div>
+        <div class="titleShowOn">
+          <span>是否显示标题</span>
+          <a-radio-group @change="onChangeText" :ckecked="true">
+            <a-radio :value="1">是</a-radio>
+            <a-radio :value="2">否</a-radio>
+          </a-radio-group>
+        </div>
+        <div class="null"></div>
+        <div class="titleText">
+          <a-input-search placeholder="请输入标题" size="middle" allow-clear @search="onSearch" class="inputTitle">
+            <a-button slot="enterButton">生成预览</a-button>
+          </a-input-search>
+        </div>
+        <div class="null"></div>
+        <div class="titleShowOn">
+          <span>标题位置</span>
+          <a-radio-group @change="onChangeTitlePosition" :ckecked="true">
+            <a-radio :value="1">左边</a-radio>
+            <a-radio :value="2">中间</a-radio>
+            <a-radio :value="3">右边</a-radio>
+          </a-radio-group>
+        </div>
+        <div class="null"></div>
+        <div class="titleShowOn">
+          <span>选择颜色</span>
+          <colorPicker v-model="color" v-on:change="headleChangeColor" />
+        </div>
       </div>
-      <div>
-        <span>标题位置</span>
-        <a-radio-group @change="onChangeTitlePosition" :ckecked="true">
-          <a-radio :value="1">左边</a-radio>
-          <a-radio :value="2">中间</a-radio>
-          <a-radio :value="3">右边</a-radio>
-        </a-radio-group>
-      </div>
-
-      <span>选择颜色</span>
-      <colorPicker v-model="color" v-on:change="headleChangeColor" />
     </div>
   </div>
 </template>
@@ -395,7 +399,7 @@ export default {
     onChangeTitlePosition(e) {
       if (e.target.value === 1) {
         this.textOption.title.left = 'left'
-      } else if (e.target.value === 2){
+      } else if (e.target.value === 2) {
         this.textOption.title.left = 'middle'
       } else {
         this.textOption.title.left = 'right'
@@ -488,7 +492,7 @@ export default {
         let tempCondition = eval(`(${res.data[0].dimensionforchart})`)
         if (tempCondition.length != 2) {
           this.isConditionShowY = false
-        }else {
+        } else {
           this.isConditionShowY = true
         }
         // console.log(this.isConditionShowX)
@@ -520,7 +524,7 @@ export default {
         this.$message.error('失败')
       }
     },
-    
+
     //根据维度 ID 查询X向量
     async showVector(value) {
       console.log(`点击后的value是${value}`)
@@ -677,7 +681,7 @@ export default {
 
           console.log(`点击前的parmes是${JSON.stringify(parmes)}`)
           this.$confirm({
-            title: '保存数据源',
+            title: '预览',
             content: <div style="color:green;">确定按照此配置预览吗？</div>,
             okText: '确定',
             cancelText: '取消',
@@ -833,6 +837,9 @@ export default {
   float: left;
   width: 50%;
 }
+.null {
+  height: 40px;
+}
 .line {
   background: #e2e3e6;
   height: 1px;
@@ -855,12 +862,23 @@ export default {
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08);
   border-radius: 2px;
 }
-.myChartInit {
-  width: 90%;
-  height: 90%;
+.baishanDiy {
+  margin-top: 35px;
+  margin-right: 50px;
+  width: 692px;
+  height: 300px;
+  background: #f7f8fa;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08);
+  border-radius: 2px;
+}
+.titleShowOn {
+  margin-left: 40%;
+  font-family: PingFangSC-Regular;
+  font-size: 24px;
+}
+.inputTitle {
+  display: block;
+  width: 400px;
   margin: 0 auto;
 }
-/* .test {
-  background-color:color;
-} */
 </style>

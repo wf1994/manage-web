@@ -12,13 +12,13 @@
         ></a-input>
       </a-col>
       <a-col :span="4">
-        <a-button @click="searchByComponentName" class="searchWord"
+        <a-button @click="searchByComponentName" type="primary"
           >查询</a-button
         >
       </a-col>
       <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
-        <a-button class="addButton" @click="goTo()">新增</a-button>
-        <a-button class="delButton" @click="delComponent()">删除</a-button>
+        <a-button type="primary" @click="goTo()">新增</a-button>
+        <a-button type="info" @click="delComponent()">删除</a-button>
       </a-col>
     </a-row>
     <div class="back-space-30"></div>
@@ -32,6 +32,7 @@
           :data-source="computeComponentListData"
           :row-selection="rowSelection"
           :pagination="true"
+          :loading="componentListLoading"
         >
           <span slot="dimensions" slot-scope="text, row">{{
             row.dimensions.join('、')
@@ -99,7 +100,8 @@ export default {
       componentListData: [], // 组件列表数据
       componentColumns, // 组件列
       selectedRowKeys: [], // 选中的行的id数组
-      dimenionsList: ''
+      dimenionsList: '',
+      componentListLoading: true
     }
   },
   beforeCreate() {},
@@ -121,8 +123,8 @@ export default {
         url: '/getComponentList',
         methods: 'get'
       })
-
       if (res.meta.status === 200) {
+        this.componentListLoading = false
         this.componentListData = res.data
         console.log('组件列表获取成功')
       } else {
@@ -280,7 +282,7 @@ export default {
 }
 .table {
   width: 1572px;
-  height: 760px;
+  // height: 760px;
   background: #ffffff;
   border: 1px solid #e2e3e6;
   font-size: 14px;
