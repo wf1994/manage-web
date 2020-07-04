@@ -182,27 +182,21 @@
           <a-radio :value="1">是</a-radio>
           <a-radio :value="2">否</a-radio>
         </a-radio-group>
+        <a-input-search placeholder="请输入标题" size="large" allow-clear @search="onSearch">
+          <a-button slot="enterButton">生成预览</a-button>
+        </a-input-search>
       </div>
       <div>
-        <span>是否显示标签文字</span>
-        <a-radio-group @change="onChangeSeries" :ckecked="true">
-          <a-radio :value="1">是</a-radio>
-          <a-radio :value="2">否</a-radio>
+        <span>标题位置</span>
+        <a-radio-group @change="onChangeTitlePosition" :ckecked="true">
+          <a-radio :value="1">左边</a-radio>
+          <a-radio :value="2">中间</a-radio>
+          <a-radio :value="3">右边</a-radio>
         </a-radio-group>
       </div>
-      <div>
-        <span>是否显示图例</span>
-        <a-radio-group @change="onChangeLegend" :ckecked="true">
-          <a-radio :value="1">是</a-radio>
-          <a-radio :value="2">否</a-radio>
-        </a-radio-group>
-      </div>
+
       <span>选择颜色</span>
       <colorPicker v-model="color" v-on:change="headleChangeColor" />
-      <!-- <div>
-        <a-slider :tip-formatter="zxyFormatterWidth" />
-        <a-slider :tip-formatter="zxyFormatterHeight" />
-      </div>-->
     </div>
   </div>
 </template>
@@ -216,7 +210,7 @@ export default {
       chartOptionData: [], //基础图表下拉框列表
       currentOption: {},
       colorOption: {}, //修改颜色后的option
-      colorOption2: {
+      textOption2: {
         tooltip: {
           show: true,
           trigger: 'axis',
@@ -228,9 +222,10 @@ export default {
           borderWidth: 0
         },
         title: {
-          show: true
+          show: true,
+          text: 'zxy',
+          left: 'middle'
         },
-
         legend: {
           textStyle: {
             fontSize: 12,
@@ -372,14 +367,22 @@ export default {
       console.log(`图标题====${e.target.value}`)
       console.log(`textOption之前=====${JSON.stringify(this.textOption)}`)
       if (e.target.value === 1) {
-        this.textOption.tooltip.show = true
+        this.textOption.title.show = true
       } else {
-        this.textOption.tooltip.show = false
+        this.textOption.title.show = false
       }
       console.log(`textOption修改后=====${JSON.stringify(this.textOption)}`)
       this.drawMychart(this.textOption)
       this.currentOption = this.textOption
     },
+
+    onSearch(value) {
+      this.textOption.title.text = value
+      console.log(`看看输入文字后的====${JSON.stringify(this.textOption)}`)
+      this.drawMychart(this.textOption)
+      this.currentOption = this.textOption
+    },
+
     //修改颜色
     headleChangeColor(color) {
       console.log(`colorPicker==========${color}`)
@@ -388,25 +391,17 @@ export default {
       this.drawMychart(this.colorOption)
       this.currentOption = this.colorOption
     },
-    //是否显示标签文字
-    onChangeSeries(e) {
+    //标题位置
+    onChangeTitlePosition(e) {
       if (e.target.value === 1) {
-        this.labelOption.series.show = true
+        this.textOption.title.left = 'left'
+      } else if (e.target.value === 2){
+        this.textOption.title.left = 'middle'
       } else {
-        this.labelOption.series.show = false
+        this.textOption.title.left = 'right'
       }
-      this.drawMychart(this.labelOption)
-      this.currentOption = this.labelOption
-    },
-    //是否显示图例
-    onChangeLegend(e) {
-      if (e.target.value === 1) {
-        this.modeOption.legend.show = true
-      } else {
-        this.modeOption.legend.show = false
-      }
-      this.drawMychart(this.modeOption)
-      this.currentOption = this.modeOption
+      this.drawMychart(this.textOption)
+      this.currentOption = this.textOption
     },
 
     //根据 组件列表中的ID 查询组件所有信息，点击编辑调用
@@ -493,6 +488,8 @@ export default {
         let tempCondition = eval(`(${res.data[0].dimensionforchart})`)
         if (tempCondition.length != 2) {
           this.isConditionShowY = false
+        }else {
+          this.isConditionShowY = true
         }
         // console.log(this.isConditionShowX)
       } else {
@@ -523,19 +520,7 @@ export default {
         this.$message.error('失败')
       }
     },
-    async getDimensionData2() {
-      const { data: res } = await this.$http.request({
-        methods: 'get',
-        url: 'getDimensionSelectList'
-      })
-      // console.log(`res.data-=-=-=-=-=-=-=-${res.data}`)
-      if (res.meta.status === 200) {
-        this.xDimensionData = res.data
-        // console.log(`dimensionList-=-=-=-=-=-=-=是${this.xDimensionData}`)
-      } else {
-        this.$message.error('失败')
-      }
-    },
+    
     //根据维度 ID 查询X向量
     async showVector(value) {
       console.log(`点击后的value是${value}`)
