@@ -73,7 +73,6 @@ export default {
     linkTo(link) {
       window.sessionStorage.setItem('activePath', link.key)
       window.sessionStorage.setItem('activeBreadcrumb', link.item.title)
-      this.activeBreadcrumb = link.item && link.item.title
       this.$router.push(link.key)
       this.activePath = link.key
     }
@@ -83,7 +82,7 @@ export default {
       const tempPath = [window.sessionStorage.getItem('activePath')]
       return tempPath
     },
-    activeBreadcrumb(){
+    activeBreadcrumb() {
       return window.sessionStorage.getItem('activeBreadcrumb')
     }
   }
