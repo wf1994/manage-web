@@ -15,23 +15,23 @@
           @click="linkTo"
           :defaultSelectedKeys="defaultSelectedKeys"
         >
-          <a-menu-item key="/dataSource">
+          <a-menu-item key="/dataSource" title="数据源设置">
             <a-icon type="code-sandbox" />
             <span>数据源设置</span>
           </a-menu-item>
-          <a-menu-item key="/dataSet">
+          <a-menu-item key="/dataSet" title="数据集设置">
             <a-icon type="database" />
             <span>数据集设置</span>
           </a-menu-item>
-          <a-menu-item key="/dataDimension">
+          <a-menu-item key="/dataDimension" title="维度向量设置">
             <a-icon type="hdd" />
             <span>维度向量设置</span>
           </a-menu-item>
-          <a-menu-item key="/statisItem">
+          <a-menu-item key="/statisItem" title="统计项设置">
             <a-icon type="project" />
             <span>统计项设置</span>
           </a-menu-item>
-          <a-menu-item key="/componentSet">
+          <a-menu-item key="/componentSet" title="组件设置">
             <a-icon type="fund" />
             <span>组件设置</span>
           </a-menu-item>
@@ -41,7 +41,7 @@
         <!-- 面包屑区域 -->
         <a-breadcrumb style="margin: 16px 0">
           <a-breadcrumb-item>首页</a-breadcrumb-item>
-          <a-breadcrumb-item>BI工具</a-breadcrumb-item>
+          <a-breadcrumb-item>{{ activeBreadcrumb }}</a-breadcrumb-item>
         </a-breadcrumb>
         <!-- 主题内容区域 -->
         <a-layout-content
@@ -49,7 +49,8 @@
             background: '#fff',
             padding: '24px',
             margin: 0,
-            minHeight: '280px'
+            height: '100%',
+            minHeight: '600px'
           }"
         >
           <!-- 导航视图 -->
@@ -71,6 +72,8 @@ export default {
     // 点击菜单项跳转事件
     linkTo(link) {
       window.sessionStorage.setItem('activePath', link.key)
+      window.sessionStorage.setItem('activeBreadcrumb', link.item.title)
+      this.activeBreadcrumb = link.item && link.item.title
       this.$router.push(link.key)
       this.activePath = link.key
     }
@@ -79,6 +82,9 @@ export default {
     defaultSelectedKeys() {
       const tempPath = [window.sessionStorage.getItem('activePath')]
       return tempPath
+    },
+    activeBreadcrumb(){
+      return window.sessionStorage.getItem('activeBreadcrumb')
     }
   }
 }
