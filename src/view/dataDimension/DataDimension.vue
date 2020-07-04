@@ -52,9 +52,7 @@
                   删除
                 </a-menu-item>
               </a-menu>
-              <a @click="e => e.preventDefault()"
-                ><a-icon type="dash"></a-icon
-              ></a>
+              <a @click="e => e.preventDefault()"><a-icon type="ellipsis"/></a>
             </a-dropdown>
           </span>
           <a-table
@@ -79,7 +77,9 @@
                     删除
                   </a-menu-item>
                 </a-menu>
-                <a @click="e => e.preventDefault()"><a-icon type="dash"/></a>
+                <a @click="e => e.preventDefault()"
+                  ><a-icon type="ellipsis"
+                /></a>
               </a-dropdown>
             </span>
           </a-table>
@@ -381,7 +381,8 @@ export default {
           title: '操作',
           key: 'operation',
           scopedSlots: { customRender: 'operation' },
-          align: 'center'
+          align: 'center',
+          width: '80px'
         }
       ],
       // 向量列
@@ -409,7 +410,8 @@ export default {
           dataIndex: 'vectorOperation',
           key: 'vectorOperation',
           scopedSlots: { customRender: 'vectorOperation' },
-          align: 'center'
+          align: 'center',
+          width: '80px'
         }
       ],
       // vectorData: [], // 向量列表数据
@@ -811,6 +813,7 @@ export default {
         this.addVectorVisible = false
         this.addVectorLoading = false
         this.addVectorDimensionId = ''
+        this.isConditionShow = true
         this.$refs.addVectorFormRef.resetFields()
         this.addVectorForm = {
           vectorName: '',

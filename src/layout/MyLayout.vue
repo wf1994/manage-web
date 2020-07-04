@@ -13,25 +13,26 @@
           :style="{ height: '100%', borderRight: 0 }"
           theme="dark"
           @click="linkTo"
+          :defaultSelectedKeys="defaultSelectedKeys"
         >
           <a-menu-item key="/dataSource">
-            <a-icon type="user" />
+            <a-icon type="code-sandbox" />
             <span>数据源设置</span>
           </a-menu-item>
           <a-menu-item key="/dataSet">
-            <a-icon type="user" />
+            <a-icon type="database" />
             <span>数据集设置</span>
           </a-menu-item>
           <a-menu-item key="/dataDimension">
-            <a-icon type="user" />
+            <a-icon type="hdd" />
             <span>维度向量设置</span>
           </a-menu-item>
           <a-menu-item key="/statisItem">
-            <a-icon type="user" />
+            <a-icon type="project" />
             <span>统计项设置</span>
           </a-menu-item>
           <a-menu-item key="/componentSet">
-            <a-icon type="user" />
+            <a-icon type="fund" />
             <span>组件设置</span>
           </a-menu-item>
         </a-menu>
@@ -69,10 +70,15 @@ export default {
   methods: {
     // 点击菜单项跳转事件
     linkTo(link) {
-      if (this.activePath !== link.key) {
-        this.$router.push(link.key)
-        this.activePath = link.key
-      }
+      window.sessionStorage.setItem('activePath', link.key)
+      this.$router.push(link.key)
+      this.activePath = link.key
+    }
+  },
+  computed: {
+    defaultSelectedKeys() {
+      const tempPath = [window.sessionStorage.getItem('activePath')]
+      return tempPath
     }
   }
 }
