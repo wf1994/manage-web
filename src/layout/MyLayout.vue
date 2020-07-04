@@ -65,7 +65,8 @@ export default {
   data() {
     return {
       collapsed: false, // 侧边栏折叠
-      activePath: '/dataSource' // 当前点击路由
+      activePath: '/dataSource', // 当前点击路由
+      activeBreadcrumb: window.sessionStorage.getItem('activeBreadcrumb')
     }
   },
   methods: {
@@ -73,6 +74,7 @@ export default {
     linkTo(link) {
       window.sessionStorage.setItem('activePath', link.key)
       window.sessionStorage.setItem('activeBreadcrumb', link.item.title)
+      this.activeBreadcrumb = link.item && link.item.title
       this.$router.push(link.key)
       this.activePath = link.key
     }
@@ -81,9 +83,6 @@ export default {
     defaultSelectedKeys() {
       const tempPath = [window.sessionStorage.getItem('activePath')]
       return tempPath
-    },
-    activeBreadcrumb() {
-      return window.sessionStorage.getItem('activeBreadcrumb')
     }
   }
 }
