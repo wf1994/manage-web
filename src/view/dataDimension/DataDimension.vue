@@ -30,6 +30,7 @@
           :rowKey="record => record.dimensionId"
           :columns="dimensionColumns"
           :data-source="computeDimensionListData"
+          :loading="tableLoading"
           @expand="tableExpand"
           :expandedRowKeys="expandedRowKeys"
           :row-selection="{
@@ -416,6 +417,7 @@ export default {
       ],
       // vectorData: [], // 向量列表数据
       expandedRowKeys: [], // 展开行
+      tableLoading: false, // 表格加载spin
       addDimensionVisible: false, // 添加维度Modal显示
       addDimensionLoading: false, // 添加维度确定按钮loading
       editDimensionVisible: false, // 修改维度Modal显示
@@ -944,11 +946,13 @@ export default {
     },
     // 获取维度向量列表
     async getDimensionList() {
+      this.tableLoading = true
       const { data: res } = await this.$http.request({
         url: 'getDimensionList',
         methods: 'get'
       })
       if (res.meta.status === 200) {
+        this.tableLoading = false
         this.dimensionListData = res.data
       } else {
         this.$message.error('维度向量列表获取失败！')
