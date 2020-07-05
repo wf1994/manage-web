@@ -331,12 +331,13 @@ export default {
           if(res.data.chartId === 7){
             let arr = new Array()
             for(let m = 0; m < this.ediFormData.dimensions[1].vectorList.length; m++ ){
-              arr.push("{type:'bar',seriesLayoutBy:'row',stack:1},")
+              arr.push({type:'bar',seriesLayoutBy:'row',stack:1})
             }
             this.currentOption.series = arr
           }
           console.log('-=-=-==-=-=-=-=-=')
           console.log(this.currentOption)
+
           this.drawMychart(this.currentOption)
           this.showVector(`${m[0]},0`)
           if (n[0]) {
