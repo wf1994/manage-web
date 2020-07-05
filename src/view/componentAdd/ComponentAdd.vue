@@ -182,7 +182,7 @@
         </div>
         <div class="null"></div>
         <div class="titleText">
-          <a-input-search placeholder="请输入标题" size="middle" allow-clear @search="onSearch" class="inputTitle">
+          <a-input-search placeholder="请输入标题" size="default" allow-clear @search="onSearch" class="inputTitle">
             <a-button slot="enterButton">生成预览</a-button>
           </a-input-search>
         </div>
@@ -208,121 +208,14 @@
 export default {
   data() {
     return {
+      flag: 0, //初0，预览后为1,先预览再保存
       color: '#ff0000',
       isConditionShowX: true, //x轴纬度、向量显示
       isConditionShowY: true, //x轴纬度、向量显示
       chartOptionData: [], //基础图表下拉框列表
       currentOption: {},
       colorOption: {}, //修改颜色后的option
-      textOption2: {
-        tooltip: {
-          show: true,
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow'
-          }
-        },
-        grid: {
-          borderWidth: 0
-        },
-        title: {
-          show: true,
-          text: 'zxy',
-          left: 'middle'
-        },
-        legend: {
-          textStyle: {
-            fontSize: 12,
-            fontFamily: '微软雅黑',
-            color: '#272727',
-            fontWeight: 'bold'
-          },
-          selectedMode: true,
-          show: true,
-          left: 'right',
-          top: '5%'
-        },
-        dataset: {
-          source: [
-            ['product', '人数'],
-            ['才能1', 335],
-            ['才能2', 310],
-            ['才能3', 234],
-            ['才能4', 135],
-            ['才能5', 548]
-          ]
-        },
-        xAxis: [
-          {
-            axisTick: {
-              show: false
-            },
-            type: 'category',
-            // data : [],  //数据
-            axisLabel: {
-              rotate: 0,
-              interval: 'auto',
-              textStyle: {
-                fontSize: 12,
-                fontFamily: '微软雅黑',
-                color: '#272727',
-                fontWeight: 'bold'
-              }
-            },
-            splitLine: {
-              show: false
-            },
-            axisLine: {
-              lineStyle: {
-                color: '#272727'
-              }
-            },
-            positionOffset: {
-              x: 0,
-              y: 0
-            },
-            isShowXAxisText: false
-          }
-        ],
-        yAxis: [
-          {
-            type: 'value',
-            axisLabel: {
-              textStyle: {
-                fontSize: 12,
-                fontFamily: '微软雅黑',
-                color: '#272727',
-                fontWeight: 'bold'
-              },
-              formatter: '{value}'
-            },
-            nameTextStyle: {
-              fontSize: 12,
-              fontFamily: '微软雅黑',
-              color: '#272727',
-              fontWeight: 'bold'
-            },
-            splitLine: {
-              show: true
-            },
-            axisLine: {
-              lineStyle: {
-                color: '#272727'
-              }
-            },
-            name: '' //数据
-          }
-        ],
-        series: [
-          {
-            name: '',
-            type: 'bar'
-          }
-        ]
-      },
       textOption: {}, //标题修改后的option
-      modeOption: {}, //是否显示图例后的option
-      labelOption: {}, //是否显示标签文字的option
       xDimensionData: [], //下拉框x纬度
       xVectorData: [], //指定x纬度的向量
       yDimensionData: [], //下拉框y纬度
@@ -418,7 +311,7 @@ export default {
       })
       if (res.meta.status === 200) {
         this.ediFormData = res.data
-        // console.log(`this.ediFormData===${JSON.stringify(this.ediFormData)}`)
+        console.log(`this.ediFormData===${JSON.stringify(this.ediFormData)}`)
         //根据dimension数组长度判断一维还是二纬
         if (res.data.dimensions.length === 2) {
           let m = new Array()
@@ -432,8 +325,18 @@ export default {
           this.weiduy = n.join(',')
           //编辑时数据回显，预览，查询option
           this.currentOption = eval(`(${res.data.chartOption})`)
-          // console.log(eval(`(${res.data.chartOption})`))
-          // console.log('-=-=-=-=')
+          
+          //针对堆叠柱状图，series修改
+          // console.log(`堆叠=====${this.ediFormData.chartId}`)
+          // if(res.data.chartId === 7){
+          //   let arr = new Array()
+          //   for(let m = 0; m <= this.ediFormData.dimensions[1].vectorList.length; m++ ){
+          //     arr.push("{type:'bar',seriesLayoutBy:'row',stack:1},")
+          //   }
+          //   this.currentOption.series = arr
+          // }
+          // console.log('-=-=-==-=-=-=-=-=')
+          // console.log(this.currentOption)
           this.drawMychart(this.currentOption)
           this.showVector(`${m[0]},0`)
           if (n[0]) {
@@ -697,6 +600,7 @@ export default {
     },
     //获取图表数据
     async getPreviewChartOption(parmes) {
+      this.flag = 1
       console.log('点击后的parmes看这里-------' + JSON.stringify(parmes))
       //qs.stringify()将对象 序列化成URL的形式，以&进行拼接
       const { data: res } = await this.$http.request({
@@ -716,8 +620,6 @@ export default {
         //把预览的option分别给四个修改用的option
         this.colorOption = this.currentOption
         this.textOption = this.currentOption
-        this.modeOption = this.currentOption
-        this.labelOption = this.currentOption
         this.drawMychart(previewOption)
       } else {
         this.$message.error('失败')
@@ -727,7 +629,9 @@ export default {
     showConfirm() {
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(this)
+          if(this.flag === 0){
+            return this.$message.error('请先预览!')
+          }
           const _this = this
           console.log('Received values of form: ', values)
           let parmes = {}
