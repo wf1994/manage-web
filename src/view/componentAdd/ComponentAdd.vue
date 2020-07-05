@@ -763,7 +763,7 @@ export default {
   margin-top: 15px;
   margin-right: 50px;
   width: 692px;
-  height: 300px;
+  height: 450px;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08);
   border-radius: 2px;
 }
