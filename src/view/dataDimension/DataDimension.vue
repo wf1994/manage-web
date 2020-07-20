@@ -30,7 +30,6 @@
           :rowKey="record => record.dimensionId"
           :columns="dimensionColumns"
           :data-source="computeDimensionListData"
-          :loading="tableLoading"
           @expand="tableExpand"
           :expandedRowKeys="expandedRowKeys"
           :row-selection="{
@@ -57,19 +56,16 @@
             </a-dropdown>
           </span>
           <a-table
-            :rowKey="record => record.vectorId"
+            :rowKey="record => record.id"
             slot="expandedRowRender"
             :columns="vectorColumns"
-            :data-source="row.vectorList"
+            :data-source="vectorList"
             :pagination="false"
-            slot-scope="row"
           >
             <span slot="vectorOperation" slot-scope="text, vectorRow">
               <a-dropdown :trigger="['click']">
                 <a-menu slot="overlay" :style="{ textAlign: 'center' }">
-                  <a-menu-item
-                    @click="handleShowEditVector(vectorRow.vectorId)"
-                  >
+                  <a-menu-item @click="handleShowEditVector(vectorRow.id)">
                     修改
                   </a-menu-item>
                   <a-menu-item
@@ -139,26 +135,9 @@
               :key="item.id"
             >
               {{ item.dataSetName }} -
-              {{ item.dataType === 0 ? '表' : 'SQL' }}
+              {{ item.dataType }}
             </a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item label="字段名">
-          <a-textarea
-            v-decorator="[
-              'fieldName',
-              {
-                rules: [
-                  {
-                    required: true,
-                    message: '字段名不能为空！'
-                  }
-                ]
-              }
-            ]"
-            placeholder="请输入字段名..."
-            :rows="4"
-          />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -220,24 +199,6 @@
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="字段名">
-          <a-textarea
-            v-decorator="[
-              'fieldName',
-              {
-                rules: [
-                  {
-                    required: true,
-                    message: '字段名不能为空！'
-                  }
-                ],
-                initialValue: editDimensionFormData.fieldName
-              }
-            ]"
-            placeholder="请输入字段名..."
-            :rows="4"
-          />
-        </a-form-item>
       </a-form>
     </a-modal>
     <!-- 新增向量Modal -->
@@ -262,34 +223,9 @@
         <a-form-model-item ref="vectorName" label="向量名称" prop="vectorName">
           <a-input v-model="addVectorForm.vectorName" />
         </a-form-model-item>
-        <a-form-model-item label="条件类型" prop="conditionType">
-          <a-radio-group
-            v-model="addVectorForm.conditionType"
-            @change="handleRadioChange"
-          >
-            <a-radio value="0">
-              精准属性
-            </a-radio>
-            <a-radio value="1">
-              范围属性
-            </a-radio>
-          </a-radio-group>
-        </a-form-model-item>
-        <a-form-model-item
-          v-if="isConditionShow"
-          label="属性条件"
-          prop="condition"
-        >
+        <a-form-model-item label="属性条件" prop="condition">
           <a-input v-model="addVectorForm.condition" />
         </a-form-model-item>
-        <div v-else>
-          <a-form-model-item label="属性条件下限" prop="conditionMin">
-            <a-input v-model="addVectorForm.conditionMin"></a-input>
-          </a-form-model-item>
-          <a-form-model-item label="属性条件上限" prop="conditionMax">
-            <a-input v-model="addVectorForm.conditionMax"></a-input>
-          </a-form-model-item>
-        </div>
       </a-form-model>
     </a-modal>
     <!-- 修改向量Modal -->
@@ -313,34 +249,9 @@
         <a-form-model-item ref="vectorName" label="向量名称" prop="vectorName">
           <a-input v-model="editVectorForm.vectorName" />
         </a-form-model-item>
-        <a-form-model-item label="条件类型" prop="conditionType">
-          <a-radio-group
-            v-model="editVectorForm.conditionType"
-            @change="handleRadioChange"
-          >
-            <a-radio value="0">
-              精准属性
-            </a-radio>
-            <a-radio value="1">
-              范围属性
-            </a-radio>
-          </a-radio-group>
-        </a-form-model-item>
-        <a-form-model-item
-          v-if="isConditionShow"
-          label="属性条件"
-          prop="condition"
-        >
+        <a-form-model-item label="属性条件" prop="condition">
           <a-input v-model="editVectorForm.condition" />
         </a-form-model-item>
-        <div v-else>
-          <a-form-model-item label="属性条件下限" prop="conditionMin">
-            <a-input v-model="editVectorForm.conditionMin"></a-input>
-          </a-form-model-item>
-          <a-form-model-item label="属性条件上限" prop="conditionMax">
-            <a-input v-model="editVectorForm.conditionMax"></a-input>
-          </a-form-model-item>
-        </div>
       </a-form-model>
     </a-modal>
   </div>
@@ -352,6 +263,7 @@ export default {
       searchDimensionName: '', // 查询维度名称
       dimensionListData: [], // 维度向量列表数据
       dimensionTypeList: [], // 维度类型下拉框列表
+      vectorList: [],
       // 维度列
       dimensionColumns: [
         {
@@ -364,12 +276,6 @@ export default {
           title: '维度类型',
           dataIndex: 'dimensionType',
           key: 'dimensionType',
-          align: 'center'
-        },
-        {
-          title: '字段名',
-          dataIndex: 'fieldName',
-          key: 'fieldName',
           align: 'center'
         },
         {
@@ -417,7 +323,7 @@ export default {
       ],
       // vectorData: [], // 向量列表数据
       expandedRowKeys: [], // 展开行
-      tableLoading: false, // 表格加载spin
+      currentDimensionId: '', // 当前展开的维度
       addDimensionVisible: false, // 添加维度Modal显示
       addDimensionLoading: false, // 添加维度确定按钮loading
       editDimensionVisible: false, // 修改维度Modal显示
@@ -429,15 +335,11 @@ export default {
       editVectorLoading: false, // 修改向量确定按钮loading
       selectedRowKeys: [], // 选中的行的id数组
       selectedRows: [], // 选中行的数据
-      isConditionShow: true, // 属性条件切换
       addVectorDimensionId: '', // 添加向量传的维度id
       // 新增向量表单数据
       addVectorForm: {
         vectorName: '',
-        conditionType: '0',
-        condition: '',
-        conditionMin: '',
-        conditionMax: ''
+        condition: ''
       },
       // 新增向量表单校验规则
       addVectorFormRules: {
@@ -448,28 +350,10 @@ export default {
             trigger: 'blur'
           }
         ],
-        conditionType: [
-          {
-            required: true,
-            message: '条件类型不能为空！'
-          }
-        ],
         condition: [
           {
             required: true,
             message: '属性条件不能为空！'
-          }
-        ],
-        conditionMin: [
-          {
-            required: true,
-            message: '属性条件下限值不能为空！'
-          }
-        ],
-        conditionMax: [
-          {
-            required: true,
-            message: '属性条件上限值不能为空！'
           }
         ]
       },
@@ -482,28 +366,10 @@ export default {
             trigger: 'blur'
           }
         ],
-        conditionType: [
-          {
-            required: true,
-            message: '条件类型不能为空！'
-          }
-        ],
         condition: [
           {
             required: true,
             message: '属性条件不能为空！'
-          }
-        ],
-        conditionMin: [
-          {
-            required: true,
-            message: '属性条件下限值不能为空！'
-          }
-        ],
-        conditionMax: [
-          {
-            required: true,
-            message: '属性条件上限值不能为空！'
           }
         ]
       },
@@ -528,16 +394,37 @@ export default {
     tableExpand(expanded, record) {
       if (expanded) {
         this.expandedRowKeys = []
+        this.vectorList = []
+        this.currentDimensionId = record.dimensionId
+        this.getVectorList(record.dimensionId)
         this.expandedRowKeys.push(record.dimensionId)
       } else {
         this.expandedRowKeys = []
       }
+
       // this.vectorData = record.vectorList.map(item => {
       //   return {
       //     ...item,
       //     key: item.vectorId
       //   }
       // })
+    },
+    // 通过维度ID查询向量
+    async getVectorList() {
+      const { data: res } = await this.$http.get('getVectorList', {
+        params: {
+          id: this.currentDimensionId
+        }
+      })
+      if (res.meta.status !== 200) {
+        this.vectorList = []
+      }
+      this.vectorList =
+        res.data.map(item => ({
+          ...item,
+          id: Number(item.id).toFixed()
+        })) || []
+      console.log(this.vectorList)
     },
     // 通过维度名称查询列表
     async searchByDimensionName() {
@@ -670,15 +557,6 @@ export default {
     },
     // 通过ids删除维度提交
     async removeDimensionByIds(ids) {
-      // const { data: res } = await this.$http.post(
-      //   'removeDimension',
-      //   { ids },
-      //   {
-      //     headers: {
-      //       'Content-Type': 'application/x-www-form-urlencoded'
-      //     }
-      //   }
-      // )
       // 传递数组，需要将参数转化成json字符串
       const { data: res } = await this.$http
         .request({
@@ -765,17 +643,10 @@ export default {
       this.addVectorVisible = true
       this.addVectorDimensionId = id
     },
-    // 切换条件类型Radio
-    handleRadioChange(e) {
-      const radioValue = e.target.value
-      // 0:精准条件=>isConditionShow:true; 1:范围条件=>isConditionShow:false
-      this.isConditionShow = radioValue === '0'
-    },
     // 新增向量Modal取消
     handleAddVectorCancel() {
       this.addVectorVisible = false
       this.addVectorLoading = false
-      this.isConditionShow = true
       this.addVectorDimensionId = ''
       this.$refs.addVectorFormRef.resetFields()
     },
@@ -787,22 +658,13 @@ export default {
         }
         this.addVectorLoading = true
         let params = {}
-        // 根据条件类型，拼装不同的参数
-        if (!this.isConditionShow) {
-          params = {
-            dimensionId: this.addVectorDimensionId,
-            vectorName: this.addVectorForm.vectorName,
-            conditionType: this.addVectorForm.conditionType,
-            condition: `${this.addVectorForm.conditionMin},${this.addVectorForm.conditionMax}`
-          }
-        } else {
-          params = {
-            dimensionId: this.addVectorDimensionId,
-            vectorName: this.addVectorForm.vectorName,
-            conditionType: this.addVectorForm.conditionType,
-            condition: this.addVectorForm.condition
-          }
+
+        params = {
+          dimensionId: this.addVectorDimensionId,
+          vectorName: this.addVectorForm.vectorName,
+          condition: this.addVectorForm.condition
         }
+
         const { data: res } = await this.$http.post(
           'addVector',
           this.$qs.stringify(params)
@@ -815,16 +677,13 @@ export default {
         this.addVectorVisible = false
         this.addVectorLoading = false
         this.addVectorDimensionId = ''
-        this.isConditionShow = true
         this.$refs.addVectorFormRef.resetFields()
         this.addVectorForm = {
           vectorName: '',
-          conditionType: '0',
-          condition: '',
-          conditionMin: '',
-          conditionMax: ''
+          condition: ''
         }
         this.getDimensionList()
+        this.getVectorList()
       })
     },
     // 修改向量Modal显示
@@ -838,23 +697,7 @@ export default {
         }
       })
       if (res.meta.status === 200) {
-        // 根据条件类型，进行数据回显
-        // 精准条件
-        if (res.data.conditionType === '0') {
-          this.editVectorForm = res.data
-          this.isConditionShow = true
-          // 范围条件
-        } else {
-          this.isConditionShow = false
-          this.editVectorForm = {
-            conditionMin: res.data.condition.split(',')[0],
-            createTime: res.data.createTime,
-            vectorId: res.data.vectorId,
-            vectorName: res.data.vectorName,
-            conditionType: res.data.conditionType,
-            conditionMax: res.data.condition.split(',')[1]
-          }
-        }
+        this.editVectorForm = res.data
       }
     },
     // 修改向量提交事件
@@ -865,21 +708,13 @@ export default {
         }
         this.editVectorLoading = true
         let params = {}
-        if (!this.isConditionShow) {
-          params = {
-            id: this.editVectorForm.vectorId,
-            vectorName: this.editVectorForm.vectorName,
-            conditionType: this.editVectorForm.conditionType,
-            condition: `${this.editVectorForm.conditionMin},${this.editVectorForm.conditionMax}`
-          }
-        } else {
-          params = {
-            id: this.editVectorForm.vectorId,
-            vectorName: this.editVectorForm.vectorName,
-            conditionType: this.editVectorForm.conditionType,
-            condition: this.editVectorForm.condition
-          }
+
+        params = {
+          id: this.editVectorForm.vectorId,
+          vectorName: this.editVectorForm.vectorName,
+          condition: this.editVectorForm.condition
         }
+
         const { data: res } = await this.$http.post(
           'editVector',
           this.$qs.stringify(params)
@@ -891,10 +726,10 @@ export default {
         }
         this.editVectorVisible = false
         this.editVectorLoading = false
-        this.isConditionShow = true
         this.$refs.editVectorFormRef.resetFields()
         this.editVectorForm = {}
         this.getDimensionList()
+        this.getVectorList()
       })
     },
     // 修改向量Modal取消
@@ -921,7 +756,7 @@ export default {
         okType: 'danger',
         cancelText: '取消',
         onOk() {
-          _this.removeVectorById(row.vectorId)
+          _this.removeVectorById(row)
         },
         onCancel() {
           _this.$message.info('已取消删除操作！')
@@ -929,30 +764,30 @@ export default {
       })
     },
     // 根据ID删除向量确定
-    async removeVectorById(id) {
+    async removeVectorById(row) {
       const { data: res } = await this.$http.request({
         url: 'removeVector',
         methods: 'get',
         params: {
-          id
+          id: row.id
         }
       })
+      this.currentDimensionId = row.pid
       if (res.meta.status === 200) {
         this.$message.success('删除向量成功！')
       } else {
         this.$message.error('删除向量失败！')
       }
       this.getDimensionList()
+      this.getVectorList()
     },
     // 获取维度向量列表
     async getDimensionList() {
-      this.tableLoading = true
       const { data: res } = await this.$http.request({
         url: 'getDimensionList',
         methods: 'get'
       })
       if (res.meta.status === 200) {
-        this.tableLoading = false
         this.dimensionListData = res.data
       } else {
         this.$message.error('维度向量列表获取失败！')
