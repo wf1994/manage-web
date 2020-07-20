@@ -439,7 +439,10 @@ export default {
       })
       if (res.meta.status === 200) {
         console.log(`根据纬度id查询向量${res.data}`)
-        this.xVectorData = res.data
+        this.xVectorData = res.data.map(item => ({
+            ...item,
+            id:Number(item.id).toFixed()
+        }))
         this.$message.success('成功')
       } else {
         this.$message.error('失败')
@@ -456,7 +459,10 @@ export default {
       })
       if (res.meta.status === 200) {
         console.log(`根据纬度id查询向量${res.data}`)
-        this.yVectorData = res.data
+        this.yVectorData = res.data.map(item => ({
+            ...item,
+            id: Number(item.id).toFixed()
+        }))
         this.$message.success('成功')
       } else {
         this.$message.error('失败')
@@ -509,8 +515,8 @@ export default {
                         : values.yVector
                   }
                 ]),
-                // statisItem: values.statisItem
-                statisItem: 'PERSON'
+                statisItem: values.statisItem
+                //statisItem: 'PERSON'
               }
               // console.log(`baishan=======${JSON.stringify(parmes)}`)
             } else {
