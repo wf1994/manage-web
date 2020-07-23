@@ -50,6 +50,31 @@
             />
           </a-form-item>
           <p class="tips">现有数量为当前维度数量相加得出</p>
+          <h3 class="subTittle">统计规则</h3>
+          <a-form-item :labelCol="{ span: 8 }" label="统计规则名称">
+            <a-select
+              v-decorator="[
+                'staticRule',
+                {
+                  rules: [
+                    {
+                      required: true,
+                      message: '统计规则不能为空！'
+                    }
+                  ]
+                }
+              ]"
+              placeholder="请选择统计规则..."
+            >
+              <a-select-option value="count">
+                count
+              </a-select-option>
+              <a-select-option value="sum">
+                sum
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <p class="tips">统计规则为数据库采用的统计方式</p>
           <!--          <a-form-item label="用户名">-->
           <!--            <a-input-->
           <!--                    v-decorator="[-->
