@@ -1,9 +1,18 @@
+/*
+ * @Descripttion: 
+ * @Author: zxy
+ * @Date: 2020-07-02 22:47:45
+ * @LastEditTime: 2020-07-29 15:25:52
+ */ 
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import echarts from 'echarts'
 import vcolorpicker from 'vcolorpicker'
+import chinaMap from './plugins/chinaMap.js'
+
+echarts.registerMap('china', chinaMap)
 
 // 导入moment
 import moment from 'moment'
@@ -33,6 +42,7 @@ Vue.filter('dateformat', function(input, fmtstring) {
 Vue.config.productionTip = false
 Vue.prototype.$echarts = echarts
 Vue.use(vcolorpicker)
+
 
 new Vue({
   router,
