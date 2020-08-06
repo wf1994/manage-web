@@ -85,15 +85,33 @@ const componentColumns = [
     key: 'operation',
     scopedSlots: { customRender: 'operation' }
   }
-  // {
-  //   title: '操作2',
-  //   key: 'operation2',
-  //   scopedSlots: { customRender: 'text' }
-  // }
 ]
 export default {
   data() {
     return {
+      computeComponentListData2: [
+		{
+			id:1,
+			componentName: "组件1",
+			dimensions: ['维度1','维度2'],
+			statisItem: "现有数量",
+			createTime: "2020-06-06 12:12:12"
+		},
+		{
+			id:2,
+			componentName: "组件12",
+			dimensions: ['维度3'],
+			statisItem: "现有数量",
+			createTime: "2020-06-06 12:12:12"
+		},
+		{
+			id:3,
+			componentName: "组件3",
+			dimensions: ['维度1'],
+			statisItem: "现有数量",
+			createTime: "2020-06-06 12:12:12"
+		},
+	],
       pageSize: 20,
       current: 4,
       searchComponentName: '', // 查询组件名称
