@@ -24,7 +24,7 @@
                 }
               ]"
               placeholder="请输入组件名称"
-              :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
+              :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
             />
           </a-form-item>
           <a-form-item label="图形">
@@ -38,7 +38,7 @@
               ]"
               placeholder="请选择图形"
               @change="getChartOption"
-              :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
+              :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
             >
               <a-select-option v-for="item in chartOptionData" :key="item.value">{{ item.label }}</a-select-option>
             </a-select>
@@ -57,7 +57,7 @@
               ]"
                 placeholder="请选择纬度"
                 @change="showVector"
-                :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
+                :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
               >
                 <a-select-opt-group
                   v-for="(item, index) in xDimensionData"
@@ -81,7 +81,7 @@
                   initialValue: ediFormData.dimensions[0].vectorList.join(',')
                 }
               ]"
-                :style="{ marginLeft: '115px' }"
+                :style="{ marginLeft: '15px' }"
               >
                 <a-checkbox
                   v-for="item in xVectorData"
@@ -103,7 +103,7 @@
               ]"
                 placeholder="请选择纬度"
                 @change="showVectorY"
-                :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
+                :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
               >
                 <a-select-opt-group
                   v-for="(item, index) in xDimensionData"
@@ -148,10 +148,9 @@
                 }
               ]"
                 placeholder="请选择统计项"
-                :style="{ width: '360px', height: '32px', marginLeft: '115px' }"
+                :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
               >
-                <a-select-option value="currentNum">现有数量</a-select-option>
-                <a-select-option value="standardNum">编制数量</a-select-option>
+                <a-select-option v-for="item in statisData" :key="item.value">{{ item.label }}</a-select-option>
               </a-select>
             </a-form-item>
           </div>
@@ -165,7 +164,7 @@
               ]"
               placeholder="Controlled autosize"
               :auto-size="{ minRows: 3, maxRows: 5 }"
-              :style="{ width: '360px', height: '32px', marginLeft: '115px'}"
+              :style="{ width: '360px', height: '32px', marginLeft: '15px'}"
             />
           </a-form-item>
         </a-form>
@@ -230,6 +229,7 @@
 export default {
   data() {
     return {
+      seriesFlag: 0, //series的标志，用于几个条形图柱状图的series的标记
       flag: 0, //初0，预览后为1,先预览再保存
       color: '#ff0000',
       isConditionShowX: true, //x轴纬度、向量显示
@@ -237,6 +237,7 @@ export default {
       mapShow: true, //地图组件，隐藏下面设置
       textShow: false, //文本组件，默认隐藏
       chartOptionData: [], //基础图表下拉框列表
+      statisData: [], //统计项
       currentOption: {},
       colorOption: {}, //修改颜色后的option
       textOption: {}, //标题修改后的option
@@ -265,11 +266,13 @@ export default {
   created() {},
   mounted() {
     this.chartId = this.$route.params.id
-    console.log(`beforeCreate的时候${this.chartId}`)
+    // console.log(`beforeCreate的时候${this.chartId}`)
     // 获取基础图表下拉框列表
     this.getChartOptionData()
     //获取维度下拉框列表
     this.getDimensionData()
+    //获取统计项
+    this.getStatisData()
     if (this.$route.params.id !== 'add') {
       setTimeout(() => {
         this.getChartData(this.$route.params.id)
@@ -350,7 +353,6 @@ export default {
           this.weiduy = n.join(',')
           //编辑时数据回显，预览，查询option
           this.currentOption = eval(`(${res.data.chartOption})`)
-
           //针对堆叠柱状图，series修改
           // console.log(`堆叠=====${this.ediFormData.chartId}`)
           if (res.data.chartId === 7) {
@@ -361,6 +363,19 @@ export default {
               m++
             ) {
               arr.push({ type: 'bar', seriesLayoutBy: 'row', stack: 1 })
+            }
+            this.currentOption.series = arr
+          }
+          //针对对比柱形图
+          if (res.data.chartId === 5) {
+            console.log('对比柱形图修改series====')
+            let arr = new Array()
+            for (
+              let m = 0;
+              m < this.ediFormData.dimensions[1].vectorList.length;
+              m++
+            ) {
+              arr.push({ type: 'bar', seriesLayoutBy: 'row' })
             }
             this.currentOption.series = arr
           }
@@ -403,9 +418,30 @@ export default {
         this.$message.error('失败')
       }
     },
+    //获取统计项
+    async getStatisData() {
+      const { data: res } = await this.$http.request({
+        methods: 'get',
+        url: 'getStatisSet'
+      })
+      if (res.status === 200) {
+        // console.log('=======统计项')
+        // console.log(res.data)
+        this.statisData = res.data.map(item => {
+          return {
+            value: item.field,
+            label: item.field
+          }
+        })
+      } else {
+        this.$message.error('失败')
+      }
+    },
     //根据 ID 查询基础图表 option,图形下拉框
     async getChartOption(value) {
       console.log(`点击后的value是${value}`)
+      this.textShow = false
+      this.mapShow = true
       //判断是地图还是文字组件还是普通组件，地图组件：下面的内容隐藏(mapShow)，文字组件：下面显示文本输入框(textShow)
       if (value == 16) {
         //id为 ,文本组件，不需要option
@@ -427,7 +463,7 @@ export default {
         // }
         //拿到文本数据
         let tempData =
-          '这是文本组件示例，请在下面的文本域输入内容，周星宇要减肥了阿，然后这里是很长很长的一段描述，用于文本组件，现在暂时写死数据了，因为韩哥这两天没时间'
+          '这是文本组件示例，请在下面的文本域输入内容'
         this.currentOption = tempData
         document.getElementById(
           'mychart'
@@ -438,6 +474,16 @@ export default {
         //地图
         this.mapShow = true
         this.isConditionShowY = false
+      }
+      //如果是柱状条形图等图，基础图id为5、6、7、8
+      if (value == 5 || value == 6) {
+        this.seriesFlag = 1
+      }
+      if(value == 7 || value == 8) {
+        this.seriesFlag = 2
+      }
+      if(value == 13) { //饼图
+        this.seriesFlag = 3
       }
       const { data: res } = await this.$http.request({
         methods: 'get',
@@ -469,6 +515,8 @@ export default {
       let myChart
       myChart && myChart.dispose()
       myChart = this.$echarts.init(document.getElementById('mychart'))
+      //每次出图前先清理之前的setOption的数据
+      myChart.clear()
       myChart.setOption(option)
     },
     //获取维度下拉框列表
@@ -538,7 +586,7 @@ export default {
             document.getElementById('mychart').innerHTML = ''
             document.getElementById('mychart').innerHTML = values.text
             this.flag = 1
-            return;
+            return
           }
           let parmes = {}
           let dimensionXId = values.xDimension.split(',')[1]
@@ -593,8 +641,7 @@ export default {
                         : values.xVector
                   }
                 ]),
-                // statisItem: values.statisItem
-                statisItem: 'PERSON'
+                statisItem: values.statisItem
                 // text: values.text
               }
             }
@@ -626,8 +673,7 @@ export default {
                         : values.yVector
                   }
                 ]),
-                // statisItem: values.statisItem
-                statisItem: 'PERSON'
+                statisItem: values.statisItem
                 // text: values.text
               }
             } else {
@@ -644,8 +690,7 @@ export default {
                         : values.xVector
                   }
                 ]),
-                // statisItem: values.statisItem
-                statisItem: 'PERSON'
+                statisItem: values.statisItem
                 // text: values.text
               }
             }
@@ -675,7 +720,7 @@ export default {
       //   return
       // }
       this.flag = 1
-      console.log('点击后的parmes看这里-------' + JSON.stringify(parmes))
+      // console.log('点击后的parmes看这里-------' + JSON.stringify(parmes))
       //qs.stringify()将对象 序列化成URL的形式，以&进行拼接
       const { data: res } = await this.$http.request({
         methods: 'get',
@@ -689,11 +734,35 @@ export default {
       if (res.meta.status === 200) {
         // let tempData = eval(`(${res.data[0].chartOption})`)
         this.currentOption.dataset.source = res.source
+        console.log('预览时======', res.source)
+        //加判断，条形图
+        if (this.seriesFlag == 1) {
+          let arr = new Array()
+          for (let m = 0, length = res.source.length - 1; m < length; m++) {
+            arr.push({ type: 'bar', seriesLayoutBy: 'row'})
+          }
+          this.currentOption.series = arr
+          console.log('预览时修改了series:')
+          console.log(this.currentOption)
+        }
+        //堆叠图
+        if (this.seriesFlag == 2) {
+          let arr = new Array()
+          for (let m = 0, length = res.source.length - 1; m < length; m++) {
+            arr.push({ type: 'bar', seriesLayoutBy: 'row', stack: 1 })
+          }
+          this.currentOption.series = arr
+        }
+        //饼图
+        if (this.seriesFlag == 3) {
+          this.currentOption.series[0].encode.value = res.source[0][1]
+          this.currentOption.series[0].encode.tooltip = res.source[0][1]
+        }
         this.$message.success('成功')
         let previewOption = this.currentOption
         //把预览的option分别给四个修改用的option
-        this.colorOption = this.currentOption
-        this.textOption = this.currentOption
+        this.colorOption = previewOption
+        this.textOption = previewOption
         this.drawMychart(previewOption)
       } else {
         this.$message.error('失败')
@@ -714,14 +783,15 @@ export default {
           if (this.textShow) {
             parmes = {
               conponentName: values.conponentName,
-              chartId: values.chartOption,
+              chartId: values.chartOption
               // text: values.text,
             }
           }
-          if (!this.textShow) { //如果是文本组件，这里就不执行
-          let dimensionXId = values.xDimension.split(',')[1]
-          let dimensionYId =
-            values && values.yDimension && values.yDimension.split(',')[1]
+          if (!this.textShow) {
+            //如果是文本组件，这里就不执行
+            let dimensionXId = values.xDimension.split(',')[1]
+            let dimensionYId =
+              values && values.yDimension && values.yDimension.split(',')[1]
             if (this.isConditionShowY) {
               //判断x纬度和y纬度是否同一个数据集
               if (dimensionXId !== dimensionYId) {
@@ -789,13 +859,15 @@ export default {
     //保存图表组件
     async saveDataSource(values) {
       //如果是文本组件
-      if(this.textShow === true) {
+      if (this.textShow === true) {
         document.getElementById('mychart').innerHTML = ''
       }
+      // console.log('看看post保存时类型===',typeof values.)
       const { data: res } = await this.$http.request({
         url: '/saveChart',
         method: 'post',
         params: values,
+        //负责 `params` 序列化的函数
         paramsSerializer: params => {
           return this.$qs.stringify(params, { indices: false })
         }
@@ -850,16 +922,18 @@ export default {
 }
 .previewDiv {
   margin-top: 15px;
-  margin-right: 50px;
-  width: 692px;
+  /* margin-right: 50px; */
+  /* width: 692px; */
+  width: 650px;
   height: 450px;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08);
   border-radius: 2px;
 }
 .baishanDiy {
   margin-top: 35px;
-  margin-right: 50px;
-  width: 692px;
+  /* margin-right: 50px; */
+  /* width: 692px; */
+  width: 650px;
   height: 300px;
   background: #f7f8fa;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08);

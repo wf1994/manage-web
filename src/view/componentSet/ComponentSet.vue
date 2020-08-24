@@ -299,7 +299,7 @@ export default {
   line-height: 14px;
 }
 .table {
-  width: 1572px;
+  // width: 1572px;
   // height: 760px;
   background: #ffffff;
   border: 1px solid #e2e3e6;
