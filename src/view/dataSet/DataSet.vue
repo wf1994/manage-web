@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- <h1>{{dataSourceId}}</h1> -->
     <a-row :gutter="[16, 24]">
       <a-col :span="4">
         <a-input
@@ -254,9 +255,11 @@
   </div>
 </template>
 <script>
+import Bus from '../../utils/bus.js'
 export default {
   data() {
     return {
+      dataSourceId: 0,
       DataSetData: [], // 列表数据
       searchDataSetName: '', //查询数据集名称输入框的内容
       DataSetColumns: [
@@ -290,7 +293,13 @@ export default {
     })
   },
   created() {
-    this.getDataSetList()
+    //先获取数据源ID，再获取数据列表
+    this.getDataSourceId()
+    setTimeout(() => {this.getDataSetList()}, 0)
+    Bus.$on('getChartIdBus', name => {
+            console.log('数据源ID：', name)
+            // this.dataSourceId = name
+        })
   },
   methods: {
     // 新增数据集model显示
@@ -303,12 +312,18 @@ export default {
         // 如果表单没有错误
         if (!err) {
           console.log('values=============', values)
+          let addModalData = {
+            dataContent: values.dataContent,
+            dataSetName: values.dataSetName,
+            dataType: values.dataType,
+            dataSourceId: this.currentDataSourceId
+          }
           // 确定按钮loading状态开启
           this.addDataSetLoading = true
           const { data: res } = await this.$http.request({
             url: `/addDataSet`,
             methods: 'get',
-            params: values
+            params: addModalData
           })
 
           // 新增成功
@@ -407,11 +422,14 @@ export default {
       this.selectedRowKeys = []
       this.getDataSetList()
     },
-    // 获取列表数据
+    // 获取列表数据(二期修改多传了数据源ID)
     async getDataSetList() {
       const { data: res } = await this.$http.request({
         url: '/getDataSetList',
-        methods: 'get'
+        methods: 'get',
+        params: {
+          dataSourceId: this.currentDataSourceId
+        }
       })
       if (res.meta.status === 200) {
         this.DataSetData = res.data
@@ -427,7 +445,8 @@ export default {
         url: '/filterDataSetList',
         methods: 'get',
         params: {
-          dataSetName: this.searchDataSetName
+          dataSetName: this.searchDataSetName,
+          dataSourceId: this.currentDataSourceId
         }
       })
       if (res.meta.status === 200) {
@@ -549,7 +568,19 @@ export default {
     onChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
-    }
+    },
+    //获取数据源ID（二期新增）
+    async getDataSourceId() {
+      const { data: res } = await this.$http.request({
+        url: '/getCurrentDataSourceId',
+        methods: 'get'
+      })
+      if (res.meta.status === 200) {
+        this.dataSourceId = res.data.currentDataSourceId
+      } else {
+        this.$message.error('数据集列表获取失败！')
+      }
+    },
   },
   computed: {
     computeDataSetData() {
@@ -560,26 +591,20 @@ export default {
         }
       })
       return tempList
+    },
+    currentDataSourceId() {
+      let tempId = this.dataSourceId
+      return tempId
     }
-    // rowSelection() {
-    //   return {
-    //     onChange: (selectedRowKeys, selectedRows) => {
-    //       this.selectedRowKeys = selectedRowKeys
-    //       console.log(
-    //         `selectedRowKeys: ${selectedRowKeys}`,
-    //         'selectedRows: ',
-    //         selectedRows
-    //       )
-    //     },
-    //     getCheckboxProps: record => ({
-    //       props: {
-    //         disabled: record.name === 'Disabled User', // Column configuration not to be checked
-    //         name: record.name
-    //       }
-    //     })
-    //   }
-    // }
-  }
+  },
+  // watch: {
+  //   dataSourceId() {
+  //     Bus.$on('getChartIdBus', name => {
+  //           this.dataSourceId = name
+  //       })
+  //   },
+  //   immediate: true
+  // }
 }
 </script>
 <style lang="less" scoped></style>
