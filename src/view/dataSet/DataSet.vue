@@ -259,7 +259,7 @@ import Bus from '../../utils/bus.js'
 export default {
   data() {
     return {
-      dataSourceId: 0,
+      dataSourceId: 1,
       DataSetData: [], // 列表数据
       searchDataSetName: '', //查询数据集名称输入框的内容
       DataSetColumns: [
@@ -316,7 +316,7 @@ export default {
             dataContent: values.dataContent,
             dataSetName: values.dataSetName,
             dataType: values.dataType,
-            dataSourceId: this.currentDataSourceId
+            datasourceid: this.currentDataSourceId
           }
           // 确定按钮loading状态开启
           this.addDataSetLoading = true
@@ -428,7 +428,7 @@ export default {
         url: '/getDataSetList',
         methods: 'get',
         params: {
-          dataSourceId: this.currentDataSourceId
+          datasourceid: this.currentDataSourceId
         }
       })
       if (res.meta.status === 200) {
@@ -446,7 +446,7 @@ export default {
         methods: 'get',
         params: {
           dataSetName: this.searchDataSetName,
-          dataSourceId: this.currentDataSourceId
+          datasourceid: this.currentDataSourceId
         }
       })
       if (res.meta.status === 200) {

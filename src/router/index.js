@@ -1,3 +1,9 @@
+/*
+ * @Descripttion: 
+ * @Author: zxy
+ * @Date: 2020-07-02 22:47:45
+ * @LastEditTime: 2020-08-28 16:16:37
+ */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import { Modal } from 'ant-design-vue'
@@ -34,8 +40,12 @@ const routes = [
         component: ComponentSet
       },
       {
-        path: '/statisItem',
+        path: '/statisItem/:id',
         component: StatisItem
+      },
+      {
+        path: '/statisList',
+        component: () => import("../view/statisItem/statisList.vue")
       },
       {
         path: '/componentAdd/:id',

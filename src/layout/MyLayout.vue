@@ -27,7 +27,7 @@
             <a-icon type="hdd" />
             <span>维度向量设置</span>
           </a-menu-item>
-          <a-menu-item key="/statisItem" title="统计项设置">
+          <a-menu-item key="/statisList" title="统计项设置">
             <a-icon type="project" />
             <span>统计项设置</span>
           </a-menu-item>

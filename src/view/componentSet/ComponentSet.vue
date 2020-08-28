@@ -230,7 +230,7 @@ export default {
       const tempList = this.componentListData.map(item => {
         return {
           ...item,
-          key: item.componentId
+          key: item.id
         }
       })
       return tempList

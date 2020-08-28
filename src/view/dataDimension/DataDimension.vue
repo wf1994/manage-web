@@ -260,7 +260,7 @@
 export default {
   data() {
     return {
-      dataSourceId: 0,
+      dataSourceId: 1,
       searchDimensionName: '', // 查询维度名称
       dimensionListData: [], // 维度向量列表数据
       dimensionTypeList: [], // 维度类型下拉框列表
