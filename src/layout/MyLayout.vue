@@ -15,6 +15,14 @@
           @click="linkTo"
           :defaultSelectedKeys="defaultSelectedKeys"
         >
+          <a-menu-item key="/dataSourceList" title="数据源列表">
+            <!-- 
+              --图标暂时使用数据源设置图标 
+              --
+            -->
+            <a-icon type="code-sandbox" />   
+            <span>数据源列表</span>
+          </a-menu-item>
           <a-menu-item key="/dataSource" title="数据源设置">
             <a-icon type="code-sandbox" />
             <span>数据源设置</span>

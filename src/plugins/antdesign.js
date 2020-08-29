@@ -19,7 +19,8 @@ import {
   Radio,
   FormModel,
   Checkbox,
-  Slider
+  Slider,
+  Upload
 } from 'ant-design-vue'
 import '../theme.less'
 // 全局注册antd组件
@@ -42,6 +43,7 @@ Vue.use(Radio)
 Vue.use(FormModel)
 Vue.use(Checkbox)
 Vue.use(Slider)
+Vue.use(Upload)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = Message

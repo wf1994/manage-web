@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import { Modal } from 'ant-design-vue'
 import MyLayout from '../layout/MyLayout.vue'
 import DataSource from '../view/dataSource/DataSource.vue'
+import DataSourceList from '../view/dataSourceList/DataSourceList.vue'
 import DataSet from '../view/dataSet/DataSet.vue'
 import DataDimension from '../view/dataDimension/DataDimension.vue'
 import ComponentSet from '../view/componentSet/ComponentSet.vue'
@@ -20,6 +21,14 @@ const routes = [
       {
         path: '/dataSource',
         component: DataSource
+      },
+      {
+        path: '/dataSourceset',
+        component: DataSource
+      },
+      {
+        path: '/dataSourceList',
+        component: DataSourceList
       },
       {
         path: '/dataSet',
