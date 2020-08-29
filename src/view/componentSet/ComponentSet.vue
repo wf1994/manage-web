@@ -12,9 +12,7 @@
         ></a-input>
       </a-col>
       <a-col :span="4">
-        <a-button @click="searchByComponentName" type="primary"
-          >查询</a-button
-        >
+        <a-button @click="searchByComponentName" type="primary">查询</a-button>
       </a-col>
       <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
         <a-button type="primary" @click="goTo()">新增</a-button>
@@ -34,9 +32,11 @@
           :pagination="true"
           :loading="componentListLoading"
         >
-          <span slot="dimensions" slot-scope="text, row">{{
+          <span slot="dimensions" slot-scope="text, row">
+            {{
             row.dimensions.join('、')
-          }}</span>
+            }}
+          </span>
           <!-- <span slot="text" slot-scope="text, row">{{ row }}</span> -->
           <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
@@ -90,28 +90,28 @@ export default {
   data() {
     return {
       computeComponentListData2: [
-		{
-			id:1,
-			componentName: "组件1",
-			dimensions: ['维度1','维度2'],
-			statisItem: "现有数量",
-			createTime: "2020-06-06 12:12:12"
-		},
-		{
-			id:2,
-			componentName: "组件12",
-			dimensions: ['维度3'],
-			statisItem: "现有数量",
-			createTime: "2020-06-06 12:12:12"
-		},
-		{
-			id:3,
-			componentName: "组件3",
-			dimensions: ['维度1'],
-			statisItem: "现有数量",
-			createTime: "2020-06-06 12:12:12"
-		},
-	],
+        {
+          id: 1,
+          componentName: '组件1',
+          dimensions: ['维度1', '维度2'],
+          statisItem: '现有数量',
+          createTime: '2020-06-06 12:12:12'
+        },
+        {
+          id: 2,
+          componentName: '组件12',
+          dimensions: ['维度3'],
+          statisItem: '现有数量',
+          createTime: '2020-06-06 12:12:12'
+        },
+        {
+          id: 3,
+          componentName: '组件3',
+          dimensions: ['维度1'],
+          statisItem: '现有数量',
+          createTime: '2020-06-06 12:12:12'
+        }
+      ],
       pageSize: 20,
       current: 4,
       searchComponentName: '', // 查询组件名称
@@ -230,7 +230,7 @@ export default {
       const tempList = this.componentListData.map(item => {
         return {
           ...item,
-          key: item.componentId
+          key: item.id
         }
       })
       return tempList

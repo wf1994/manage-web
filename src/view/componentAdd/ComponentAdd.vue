@@ -69,6 +69,7 @@
                     :key="children.id"
                     :value="Number(children.id).toFixed() + ',' + item.dimensionTypeId"
                   >{{ children.dimensionName }}</a-select-option>
+                  <!-- 拼接两个ID，左边是纬度ID，右边是数据集ID -->
                 </a-select-opt-group>
               </a-select>
             </a-form-item>

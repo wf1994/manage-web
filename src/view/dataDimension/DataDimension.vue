@@ -260,6 +260,7 @@
 export default {
   data() {
     return {
+      dataSourceId: 1,
       searchDimensionName: '', // 查询维度名称
       dimensionListData: [], // 维度向量列表数据
       dimensionTypeList: [], // 维度类型下拉框列表
@@ -387,9 +388,23 @@ export default {
     })
   },
   created() {
-    this.getDimensionList()
+    //先获取数据源ID，再获取数据列表
+    this.getDataSourceId()
+    setTimeout(() => {this.getDimensionList()}, 0)
   },
   methods: {
+    //获取数据源ID（二期新增）
+    async getDataSourceId() {
+      const { data: res } = await this.$http.request({
+        url: '/getCurrentDataSourceId',
+        methods: 'get'
+      })
+      if (res.meta.status === 200) {
+        this.dataSourceId = res.data.currentDataSourceId
+      } else {
+        this.$message.error('数据集列表获取失败！')
+      }
+    },
     // 维度table展开操作
     tableExpand(expanded, record) {
       if (expanded) {
@@ -785,7 +800,10 @@ export default {
     async getDimensionList() {
       const { data: res } = await this.$http.request({
         url: 'getDimensionList',
-        methods: 'get'
+        methods: 'get',
+        params: {
+          dataSourceId: this.currentDataSourceId
+        }
       })
       if (res.meta.status === 200) {
         this.dimensionListData = res.data
@@ -819,6 +837,10 @@ export default {
         }
       })
       return tempList
+    },
+    currentDataSourceId() {
+      let tempId = this.dataSourceId
+      return tempId
     }
   }
 }
