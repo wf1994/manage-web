@@ -473,38 +473,6 @@ export default {
       }
     },
 
-    // 上传文件
-    // handleChange(info) {
-    //   let fileList = [...info.fileList]
-
-    //   // 1. Limit the number of uploaded files
-    //   //    Only to show two recent uploaded files, and old ones will be replaced by the new
-    //   fileList = fileList.slice(-1)
-
-    //   // 2. read from response and show file link
-    //   fileList = fileList.map(file => {
-    //     if (file.response) {
-    //       // Component will show file.url as link
-    //       file.url = file.response.url
-    //     }
-    //     return file
-    //   })
-      
-    //   if (fileList.length !== 0) {
-    //     if (fileList[0].status === 'done') {
-    //       this.excelDataSourceForm.setFieldsValue({
-    //         fileurl: fileList[0].url
-    //       })
-    //     } else if (fileList[0].status === 'error') {
-    //       this.fileList.splice(0, 1);
-    //       this.$message.error("文件上传失败，请重新上传");
-    //     }
-    //   }
-      
-    //   this.fileList = fileList
-    //   // console.log(this.fileList);
-    //   // console.log(this.fileUrl)
-    // }
   }
 }
 </script>
