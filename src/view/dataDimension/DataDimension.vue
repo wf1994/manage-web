@@ -10,7 +10,7 @@
         ></a-input>
       </a-col>
       <a-col :span="4">
-        <a-button type="primary" @click="searchByDimensionName">查询</a-button>
+        <a-button type="primary" @click="getDataSourceIdAndSearch">查询</a-button>
       </a-col>
       <a-col :span="6" :offset="10" :style="{ textAlign: 'right' }">
         <a-button
@@ -260,7 +260,7 @@
 export default {
   data() {
     return {
-      dataSourceId: 1,
+      dataSourceId: 0,
       searchDimensionName: '', // 查询维度名称
       dimensionListData: [], // 维度向量列表数据
       dimensionTypeList: [], // 维度类型下拉框列表
@@ -390,7 +390,7 @@ export default {
   created() {
     //先获取数据源ID，再获取数据列表
     this.getDataSourceId()
-    setTimeout(() => {this.getDimensionList()}, 0)
+    // setTimeout(() => {this.getDimensionList()}, 0)
   },
   methods: {
     //获取数据源ID（二期新增）
@@ -399,8 +399,33 @@ export default {
         url: '/getCurrentDataSourceId',
         methods: 'get'
       })
-      if (res.meta.status === 200) {
-        this.dataSourceId = res.data.currentDataSourceId
+      if (parseInt(res.status) === 200) {
+        this.dataSourceId = res.datasourceid
+        this.getDimensionList(this.dataSourceId)
+      } else {
+        this.$message.error('数据集列表获取失败！')
+      }
+    },
+    async getDataSourceIdAndGet() {
+      const { data: res } = await this.$http.request({
+        url: '/getCurrentDataSourceId',
+        methods: 'get'
+      })
+      if (parseInt(res.status) === 200) {
+        this.dataSourceId = res.datasourceid
+        this.getDimensionTypeList(this.dataSourceId)
+      } else {
+        this.$message.error('数据集列表获取失败！')
+      }
+    },
+    async getDataSourceIdAndSearch() {
+      const { data: res } = await this.$http.request({
+        url: '/getCurrentDataSourceId',
+        methods: 'get'
+      })
+      if (parseInt(res.status) === 200) {
+        this.dataSourceId = res.datasourceid
+        this.searchByDimensionName(this.dataSourceId)
       } else {
         this.$message.error('数据集列表获取失败！')
       }
@@ -442,11 +467,14 @@ export default {
       console.log(this.vectorList)
     },
     // 通过维度名称查询列表
-    async searchByDimensionName() {
+    async searchByDimensionName(id) {
       const { data: res } = await this.$http.request({
         url: '/filterDimensionList',
         methods: 'get',
-        params: { dimensionName: this.searchDimensionName }
+        params: { 
+          dimensionName: this.searchDimensionName,
+          datasourceid: id
+          }
       })
       if (res.meta.status === 200) {
         this.dimensionListData = res.data
@@ -459,14 +487,18 @@ export default {
     clearSearchDimensionName(e) {
       if (e.type === 'click') {
         this.searchDimensionName = ''
-        this.getDimensionList()
+        // this.getDimensionList()
+        this.getDataSourceId()
       }
     },
     // 维度分类数据Select下拉列表获取
-    async getDimensionTypeList() {
+    async getDimensionTypeList(id) {
       const { data: res } = await this.$http.request({
         url: '/getDataSetList',
-        methods: 'get'
+        methods: 'get',
+        params: {
+          datasourceid: id
+        }
       })
       if (res.meta.status === 200) {
         this.dimensionTypeList = res.data
@@ -481,26 +513,35 @@ export default {
     // 新增维度Moda显示
     handleShowAddDimension() {
       this.addDimensionVisible = true
-      this.getDimensionTypeList()
+      this.getDataSourceIdAndGet()
     },
     // 新增维度Modal提交
     handleAddDimension() {
       // 表单数据校验
       this.addDimensionForm.validateFields(async (err, values) => {
+        console.log('vlaues:', values)
+        console.log('新增纬度时数据源 ID；', this.currentDataSourceId)
         // 如果表单没有错误
         if (!err) {
           // 确定按钮loading状态开启
           this.addDimensionLoading = true
+          
+          let params = {
+            dimensionName: values.dimensionName,
+            dimensionType: values.dimensionType,
+            datasourceid: this.currentDataSourceId
+          }
           const { data: res } = await this.$http.post(
             'addDimension',
-            this.$qs.stringify(values)
+            this.$qs.stringify(params)
           )
 
           // 新增成功
           if (res.meta.status === 200) {
             this.addDimensionVisible = false
             this.addDimensionLoading = false
-            this.getDimensionList()
+            // this.getDimensionList()
+            this.getDataSourceId()
             this.$message.success('新增维度成功！')
           } else {
             // 新增失败
@@ -595,13 +636,12 @@ export default {
       }
       // 清空已选行
       this.selectedRowKeys = []
-      this.getDimensionList()
+      // this.getDimensionList()
+      this.getDataSourceId()
     },
     // 修改维度按钮点击事件
     async handleShowEditDimension(id) {
-      // 获取维度分类列表
-      this.getDimensionTypeList()
-      this.editDimensionVisible = true
+      
       const { data: res } = await this.$http.request({
         url: 'getDimension',
         methods: 'get',
@@ -611,6 +651,9 @@ export default {
       })
       if (res.meta.status === 200) {
         this.editDimensionFormData = res.data
+        // 获取维度分类列表
+      this.getDataSourceIdAndGet()
+      this.editDimensionVisible = true
       } else {
         this.$message.info('查询维度信息失败！')
       }
@@ -641,7 +684,8 @@ export default {
           this.editDimensionFormData = {}
           // 重置修改维度表单域
           this.editDimensionForm.resetFields()
-          this.getDimensionList()
+          // this.getDimensionList()
+          this.getDataSourceId()
           this.selectedRowKeys = []
         }
       })
@@ -697,7 +741,8 @@ export default {
           vectorName: '',
           condition: ''
         }
-        this.getDimensionList()
+        // this.getDimensionList()
+        // this.getDataSourceId()
         this.getVectorList()
       })
     },
@@ -743,7 +788,8 @@ export default {
         this.editVectorLoading = false
         this.$refs.editVectorFormRef.resetFields()
         this.editVectorForm = {}
-        this.getDimensionList()
+        // this.getDimensionList()
+        // this.getDataSourceId()
         this.getVectorList()
       })
     },
@@ -793,16 +839,17 @@ export default {
       } else {
         this.$message.error('删除向量失败！')
       }
-      this.getDimensionList()
+      // this.getDimensionList()
+      // this.getDataSourceId()
       this.getVectorList()
     },
     // 获取维度向量列表
-    async getDimensionList() {
+    async getDimensionList(id) {
       const { data: res } = await this.$http.request({
         url: 'getDimensionList',
         methods: 'get',
         params: {
-          dataSourceId: this.currentDataSourceId
+          datasourceid: id
         }
       })
       if (res.meta.status === 200) {
@@ -811,16 +858,7 @@ export default {
         this.$message.error('维度向量列表获取失败！')
       }
     },
-    // rowSelection() {
-    //   return {
-    //     selectedRowKeys: this.selectedRowKeys,
-    //     onChange: selectedRowKeys => {
-    //       this.selectedRowKeys = selectedRowKeys
-    //       console.log('typeof rowkeys===', selectedRowKeys instanceof Array)
-    //       console.log(`selectedRowKeys: ${selectedRowKeys}`)
-    //     }
-    //   }
-    // }
+   
     // 表格多选事件
     onChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys

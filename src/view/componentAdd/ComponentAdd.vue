@@ -273,7 +273,8 @@ export default {
     //获取维度下拉框列表
     this.getDimensionData()
     //获取统计项
-    this.getStatisData()
+    this.getDataSourceId()
+    // this.getStatisData()
     if (this.$route.params.id !== 'add') {
       setTimeout(() => {
         this.getChartData(this.$route.params.id)
@@ -288,6 +289,19 @@ export default {
   //   },
   // },
   methods: {
+    //获取数据源ID（二期新增）
+    async getDataSourceId() {
+      const { data: res } = await this.$http.request({
+        url: '/getCurrentDataSourceId',
+        methods: 'get'
+      })
+      if (parseInt(res.status) === 200) {
+        this.dataSourceId = res.datasourceid
+        this.getStatisData(this.dataSourceId)
+      } else {
+        this.$message.error('数据集列表获取失败！')
+      }
+    },
     //是否显示图标题
     onChangeText(e) {
       console.log(`图标题====${e.target.value}`)
@@ -420,10 +434,13 @@ export default {
       }
     },
     //获取统计项
-    async getStatisData() {
+    async getStatisData(id) {
       const { data: res } = await this.$http.request({
         methods: 'get',
-        url: 'getStatisSet'
+        url: 'getStatisSet',
+        params: {
+          datasourceid: id
+        }
       })
       if (res.status === 200) {
         // console.log('=======统计项')

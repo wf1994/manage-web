@@ -259,7 +259,7 @@ import Bus from '../../utils/bus.js'
 export default {
   data() {
     return {
-      dataSourceId: 1,
+      dataSourceId: 0,
       DataSetData: [], // 列表数据
       searchDataSetName: '', //查询数据集名称输入框的内容
       DataSetColumns: [
@@ -295,7 +295,7 @@ export default {
   created() {
     //先获取数据源ID，再获取数据列表
     this.getDataSourceId()
-    setTimeout(() => {this.getDataSetList()}, 0)
+    // setTimeout(() => {this.getDataSetList()}, 0)
     Bus.$on('getChartIdBus', name => {
             console.log('数据源ID：', name)
             // this.dataSourceId = name
@@ -331,7 +331,8 @@ export default {
             this.addDataSetVisible = false
             this.addDataSetLoading = false
             this.$message.success('新增数据集成功！')
-            this.getDataSetList()
+            // this.getDataSetList()
+            this.getDataSourceId()
           } else {
             // 新增失败
             this.addDataSetLoading = false
@@ -420,15 +421,16 @@ export default {
         this.$message.error('删除数据集失败！')
       }
       this.selectedRowKeys = []
-      this.getDataSetList()
+      // this.getDataSetList()
+      this.getDataSourceId()
     },
     // 获取列表数据(二期修改多传了数据源ID)
-    async getDataSetList() {
+    async getDataSetList(id) {
       const { data: res } = await this.$http.request({
         url: '/getDataSetList',
         methods: 'get',
         params: {
-          datasourceid: this.currentDataSourceId
+          datasourceid: id
         }
       })
       if (res.meta.status === 200) {
@@ -461,7 +463,8 @@ export default {
     clearsearchDataSetName(e) {
       if (e.type === 'click') {
         this.searchDataSetName = ''
-        this.getDataSetList()
+        // this.getDataSetList()
+        this.getDataSourceId()
       }
     },
     // 点击修改按钮出现modal
@@ -525,7 +528,8 @@ export default {
           this.editDataSetVisible = false
           this.editDataSetFormData = {}
           this.editDataSetForm.resetFields()
-          this.getDataSetList()
+          // this.getDataSetList()
+          this.getDataSourceId()
           this.selectedRowKeys = []
         }
       })
@@ -575,8 +579,9 @@ export default {
         url: '/getCurrentDataSourceId',
         methods: 'get'
       })
-      if (res.meta.status === 200) {
-        this.dataSourceId = res.data.currentDataSourceId
+      if (parseInt(res.status) === 200) {
+        this.dataSourceId = res.datasourceid
+        this.getDataSetList(this.dataSourceId)
       } else {
         this.$message.error('数据集列表获取失败！')
       }
