@@ -46,6 +46,9 @@
                 <a-menu-item @click="RowDelete(row.id)">
                   删除
                 </a-menu-item>
+                <a-menu-item>
+                  设为默认数据源
+                </a-menu-item>
               </a-menu>
               <a @click="e => e.preventDefault()"
                 ><a-icon type="dash"></a-icon
@@ -243,7 +246,6 @@ export default {
 		// 数据源类型单选框处理
 		onDataSourceTypeChange(e) {
 			this.dataSourceTypeValue = e.target.value;
-			// console.log(this.dataSourceTypeValue);
 		},
 
     // 新增数据源Modal提交
@@ -260,7 +262,7 @@ export default {
     // 新增数据源Modal取消
     handleCancel() {
       this.addDataSourceVisible = false
-      this.addDataSourceLoading = false
+      // this.addDataSourceLoading = false
     },
 
     // 删除数据源modal显示
@@ -281,7 +283,7 @@ export default {
       }
       // 删除提示中，具体的维度名称
       const removeText = this.selectedRows
-        .map(item => item.DataSourceName)
+        .map(item => item.databasename)
         .join('、')
       if (params.length !== 0) {
         this.$confirm({
@@ -385,6 +387,11 @@ export default {
 
     // 点击修改按钮出现modal
     handleShowEdit(row) {
+      if (row.databasetype === "kingbase") {
+        this.dataSourceTypeValue = 1;
+      } else {
+        this.dataSourceTypeValue = 2;
+      }
 			this.$router.replace({
 				path: '/dataSource',
 				query: {
@@ -399,7 +406,7 @@ export default {
       // console.log('row===', row)
     },
 
-    //
+    // 通过id获取数据源
     async getDataSource(row) {
       console.log('row', row)
       const { data: res } = await this.$http.request({
@@ -459,6 +466,7 @@ export default {
         }
       })
     },
+
     // 修改数据源Modal取消
     handleEditCancel() {
       this.editDataSourceVisible = false

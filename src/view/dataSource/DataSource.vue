@@ -1,215 +1,227 @@
 <template>
-  <div style="padding: 15px 40px">
-    <a-row type="flex" justify="start" align="middle">
-      <a-col :span="4" @click="toggleFormStatus">
-        <i class="title-icon"></i>
-        <span class="title-text">数据源设置</span>
+  <div style="padding: 0 40px">
+    <a-row>
+      <!-- kingBase数据源 -->
+      <a-col :span="10">   
+        <div id="kingbase-form">
+
+          <i class="title-icon"></i>
+          <span class="title-text" @click="toggleForm">kingBase数据源设置</span>
+          <div style="margin-top: 30px; position: relative;">
+          <div class="shadow" id="kingbase-form-shadow"></div>
+          <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" labelAlign="left">
+
+            <!-- <a-form-item>
+              <i class="title-icon"></i>
+              <span class="title-text" @click="toggleForm">kingBase数据源设置</span>
+            </a-form-item> -->
+           
+            <a-form-item label="IP">
+              <a-input
+                v-decorator="[
+                  'ip',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'IP不能为空！'
+                      }
+                    ]
+                  }
+                ]"
+                :disabled="kingBase_DS_disabled"
+                placeholder="请输入IP地址..."
+                initialValue: DS_kingBase.ip
+              />
+            </a-form-item>
+            <a-form-item label="端口号">
+              <a-input
+                v-decorator="[
+                  'port',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: '端口号不能为空！'
+                      }
+                    ]
+                  }
+                ]"
+                :disabled="kingBase_DS_disabled"
+                placeholder="请输入端口号..."
+              />
+            </a-form-item>
+            <a-form-item label="用户名">
+              <a-input
+                v-decorator="[
+                  'username',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: '用户名不能为空！'
+                      }
+                    ]
+                  }
+                ]"
+                :disabled="kingBase_DS_disabled"
+                placeholder="请输入用户名..."
+              />
+            </a-form-item>
+            <a-form-item label="密码">
+              <a-input
+                v-decorator="[
+                  'password',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: '密码不能为空！'
+                      }
+                    ]
+                  }
+                ]"
+                :disabled="kingBase_DS_disabled"
+                type="password"
+                placeholder="请输入密码..."
+              />
+            </a-form-item>
+            <!-- <a-form-item label="数据库类型">
+              <a-select
+                v-decorator="[
+                  'databasetype',
+                  {
+                    rules: [{ required: true, message: '数据库类型不能为空！' }]
+                  }
+                ]"
+                :disabled="kingBase_DS_disabled"
+                placeholder="请选择数据库类型..."
+              >
+                <a-select-option value="kingbase">金仓数据库</a-select-option>
+              </a-select>
+            </a-form-item> -->
+            <a-form-item label="数据库名称">
+              <a-input
+                v-decorator="[
+                  'databasename',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: '数据库名不能为空！'
+                      }
+                    ]
+                  }
+                ]"
+                :disabled="kingBase_DS_disabled"
+                placeholder="请输入数据库名称..."
+              />
+            </a-form-item>
+            <a-form-item label="数据库备注">
+              <a-input
+                v-decorator="[
+                  'note',
+                  {
+                    rules: [
+                      {
+                        required: false,
+                      }
+                    ]
+                  }
+                ]"
+                :disabled="kingBase_DS_disabled"
+                placeholder="请输入备注..."
+              />
+            </a-form-item>
+          </a-form>
+          <a-button class="saveButton" type="primary" @click="showConfirm" :disabled="kingBase_DS_disabled">保存</a-button>
+          </div>
+        </div>
       </a-col>
-      <!-- excel数据源设置 -->
-      <a-col :span="4" :offset="8" @click="toggleFormStatus">
-        <i class="title-icon"></i>
-        <span class="title-text">excel数据源设置</span>
-      </a-col>
-    </a-row>
-    <a-row class="form-row">
-      <!-- 盒子：上传kingBase数据源表单 -->
-      <a-col :span="12">
-        <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" labelAlign="left">
-          <a-form-item label="IP">
-            <a-input
-              v-decorator="[
-                'ip',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'IP不能为空！'
-                    }
-                  ]
-                }
-              ]"
-              :disabled="kingBase_DS_disabled"
-              placeholder="请输入IP地址..."
-              initialValue: DS_kingBase.ip
-            />
-          </a-form-item>
-          <a-form-item label="端口号">
-            <a-input
-              v-decorator="[
-                'port',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '端口号不能为空！'
-                    }
-                  ]
-                }
-              ]"
-              :disabled="kingBase_DS_disabled"
-              placeholder="请输入端口号..."
-            />
-          </a-form-item>
-          <a-form-item label="用户名">
-            <a-input
-              v-decorator="[
-                'username',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '用户名不能为空！'
-                    }
-                  ]
-                }
-              ]"
-              :disabled="kingBase_DS_disabled"
-              placeholder="请输入用户名..."
-            />
-          </a-form-item>
-          <a-form-item label="密码">
-            <a-input
-              v-decorator="[
-                'password',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '密码不能为空！'
-                    }
-                  ]
-                }
-              ]"
-              :disabled="kingBase_DS_disabled"
-              type="password"
-              placeholder="请输入密码..."
-            />
-          </a-form-item>
-          <!-- <a-form-item label="数据库类型">
-            <a-select
-              v-decorator="[
-                'databasetype',
-                {
-                  rules: [{ required: true, message: '数据库类型不能为空！' }]
-                }
-              ]"
-              :disabled="kingBase_DS_disabled"
-              placeholder="请选择数据库类型..."
-            >
-              <a-select-option value="kingbase">金仓数据库</a-select-option>
-            </a-select>
-          </a-form-item> -->
-          <a-form-item label="数据库名称">
-            <a-input
-              v-decorator="[
-                'databasename',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '数据库名不能为空！'
-                    }
-                  ]
-                }
-              ]"
-              :disabled="kingBase_DS_disabled"
-              placeholder="请输入数据库名称..."
-            />
-          </a-form-item>
-          <a-form-item label="数据库备注">
-            <a-input
-              v-decorator="[
-                'note',
-                {
-                  rules: [
-                    {
-                      required: false,
-                    }
-                  ]
-                }
-              ]"
-              :disabled="kingBase_DS_disabled"
-              placeholder="请输入备注..."
-            />
-          </a-form-item>
-        </a-form>
-        <a-button class="saveButton" type="primary" @click="showConfirm" :disabled="kingBase_DS_disabled">保存</a-button>
-      </a-col>
 
-      <!-- 盒子：上传excel数据源表单 -->
-      <a-col :span="12">
-        <a-form
-          :form="excelDataSourceForm"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 12 }"
-          labelAlign="left"
-        >
-          <!-- 上传文件 -->
-          <a-form-item label="上传文件">
-            <a-input
-              v-decorator="['fileurl']"
-              :disabled="excel_DS_disabled"
-              style="display: none; z-index: -1"
-            />
-            <a-upload
-              :file-list="fileList"
-              :disabled="excel_DS_disabled"
-              :remove="removeFile"
-              :before-upload="beforeUpload"
-            >
-              <a-button :disabled="fileList.length === 1 || excel_DS_disabled">
-                <a-icon type="upload" />上传文件
-              </a-button>
-            </a-upload>
-          </a-form-item>
+      <!-- excel数据源 -->
+      <a-col :span="10" :offset="2">
+        <div id="excel-form">
+          <i class="title-icon"></i>
+          <span class="title-text" @click="toggleForm">excel数据源设置</span>
+          <div style="margin-top: 30px; position: relative">
+          <div class="shadow" id="excel-form-shadow"></div>
+          <a-form
+            :form="excelDataSourceForm"
+            :label-col="{ span: 5 }"
+            :wrapper-col="{ span: 12 }"
+            labelAlign="left"
+          >
+            
+            <!-- 上传文件 -->
+            <a-form-item label="上传文件">
+              <a-input
+                v-decorator="['filepath']"
+                :disabled="excel_DS_disabled"
+                style="display: none; z-index: -1"
+              />
+              <a-upload
+                :file-list="fileList"
+                :disabled="excel_DS_disabled"
+                :remove="removeFile"
+                :before-upload="beforeUpload"
+              >
+                <a-button :disabled="fileList.length === 1 || excel_DS_disabled">
+                  <a-icon type="upload" />上传文件
+                </a-button>
+              </a-upload>
+            </a-form-item>
 
-          <!-- 数据源名称 -->
-          <a-form-item label="数据源名称">
-            <a-input
-              v-decorator="[
-                'exceldatasourcename',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '名称不能为空！'
-                    }
-                  ]
-                }
-              ]"
-              :disabled="excel_DS_disabled"
-              placeholder="请输入数据源名称..."
-            />
-          </a-form-item>
+            <!-- 数据源名称 -->
+            <a-form-item label="数据源名称">
+              <a-input
+                v-decorator="[
+                  'dataSourceName',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: '名称不能为空！'
+                      }
+                    ]
+                  }
+                ]"
+                :disabled="excel_DS_disabled"
+                placeholder="请输入数据源名称..."
+              />
+            </a-form-item>
 
-          <!-- 备注 -->
-          <a-form-item label="数据源备注">
-            <a-input
-              v-decorator="[
-                'note',
-                {
-                  rules: [
-                    {
-                      required: false,
-                    }
-                  ]
-                }
-              ]"
-              :disabled="excel_DS_disabled"
-              placeholder="请输入相应备注..."
-            />
-          </a-form-item>
-        </a-form>
+            <!-- 备注 -->
+            <a-form-item label="数据源备注">
+              <a-input
+                v-decorator="[
+                  'note',
+                  {
+                    rules: [
+                      {
+                        required: false,
+                      }
+                    ]
+                  }
+                ]"
+                :disabled="excel_DS_disabled"
+                placeholder="请输入相应备注..."
+              />
+            </a-form-item>
+          </a-form>
 
-        <!-- 提交按钮 -->
-        <a-button
-          class="saveButton"
-          type="primary"
-          :disabled="excel_DS_disabled"
-          @click="save_excel_DS_confirm"
-        >
-          保存
-        </a-button>
+          <!-- 提交按钮 -->
+          <a-button
+            class="saveButton"
+            type="primary"
+            :loading="loading"
+            :disabled="excel_DS_disabled"
+            @click="save_excel_DS_confirm"
+          >
+            保存
+          </a-button>
+          </div>
+        </div>
       </a-col>
     </a-row>
   </div>
@@ -219,12 +231,14 @@ export default {
   data() {
     return {
       dataSourceTypeValue: 1,
-      excel_DS_disabled: true,
+      excel_DS_disabled: false,
       kingBase_DS_disabled: false,
       fileList: [],
+      loading:false,
       uploading: false,
       fileUrl: '',
       DS_kingBase: [],
+      excelDataSource: {}
     }
   },
 
@@ -237,9 +251,12 @@ export default {
   },
 
   created() {
-    this.getRouteParams()
+    this.getRouteParams();
   },
 
+  mounted() {
+    this.showShadow();
+  },
 
   methods: {
     showConfirm() {
@@ -247,6 +264,9 @@ export default {
         if (!err) {
           console.log(this)
           const _this = this
+          if (values.note === undefined) {
+            values.note = "";
+          }
           console.log('Received values of form: ', values)
           this.$confirm({
             title: '保存数据源',
@@ -311,6 +331,31 @@ export default {
       }
     },
 
+    // 显示表单遮罩
+    showShadow() {
+      if (!this.kingBase_DS_disabled) {
+        document.querySelector("#kingbase-form-shadow").style.display = "none"
+        document.querySelector("#excel-form-shadow").style.display = "block"
+      }
+      if (!this.excel_DS_disabled) {
+        document.querySelector("#kingbase-form-shadow").style.display = "block"
+        document.querySelector("#excel-form-shadow").style.display = "none"
+      }
+    },
+
+    async uploadexceldemo() {
+      const {data: res} = await this.$http.request({
+        url: '/upload',
+        methods: 'post',
+      })
+    if (res.meta.status === 200) {
+        
+        console.log('数据源获取成功')
+
+      } else {
+        this.$message.error('数据源获取失败！')
+      }
+    },
     // 通过Id获取数据源信息
     async getDataSourceById(id) {
       const { data: res } = await this.$http.request({
@@ -344,8 +389,16 @@ export default {
           note: data.note
         })
       } else {
+        this.fileList.push({
+          uid: '1',
+          name: data.databasename,
+          status: 'done',
+          url: data.fileoath
+        });
         this.excelDataSourceForm.setFieldsValue({
-
+          filepath: data.file,
+          dataSourceName: data.dataSourceName,
+          note: data.note
         })
       }
     },
@@ -365,10 +418,16 @@ export default {
       }
     },
 
-    // 改变表单状态
-    toggleFormStatus() {
-      this.excel_DS_disabled = !this.excel_DS_disabled;
-      this.kingBase_DS_disabled = !this.kingBase_DS_disabled;
+    // 改变操作表单
+    toggleForm(e) {
+      if (e.target.innerHTML.includes('kingBase')) {
+        this.excel_DS_disabled = true;
+        this.kingBase_DS_disabled= false;
+      } else {
+        this.excel_DS_disabled = false;
+        this.kingBase_DS_disabled= true;
+      }
+      this.showShadow();
     },
 
     // 确认保存excel数据源信息提示
@@ -376,7 +435,11 @@ export default {
       this.excelDataSourceForm.validateFields((err, values) => {
         if (!err) {
           const _this = this
+          if (values.note === undefined) {
+            values.note = "";
+          }
           console.log('Received values of form: ', values)
+          this.excelDataSource = values;
           this.$confirm({
             title: '保存excel数据源',
             content: <div style="color:green;">确定保存该excel数据源设置吗？</div>,
@@ -421,32 +484,37 @@ export default {
     // 处理文件上传
     handleUpload() {
       const { fileList } = this;
-      const formData = new FormData();
+      let formData = new FormData();
       console.log(fileList);
       fileList.forEach(file => {
         console.log(file);
-        formData.file = file;
+        formData.append('file', file)
       });
       this.uploading = true;
-      console.log(formData);
-      this.uploadExcelFile(formData.file);
+      console.log(formData.get('file'));
+      this.uploadExcelFile(formData);
     },
 
     // 上传excel文件
     async uploadExcelFile(file) {
+      this.loading = true;
+      console.log(file);
       const { data: res } = await this.$http.request({
-        url: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-        methods: 'post',
-        params: {
+        url: '/upload',
+        method: 'post',
+        processData: false,
+        data: {
           file
-        }
+        },
       })
-      if (res.status === 'done') {
+      if (res.meta.status == 200) {
         const resData = res
         console.log('resData', resData)
         this.fileList = [];
         this.uploading = false;
-
+        this.excelDataSource.filepath = resData.filepath
+        console.log(this.excelDataSource);
+        this.saveExcelDataSource();
       } else {
         this.uploading = false;
         this.$message.error('文件上传失败，请重试')
@@ -454,26 +522,23 @@ export default {
     },
 
     // 保存excel数据源信息
-    async saveExcelDataSource(values) {
-      let params = [];
-      params.dataSourceType = 'excel';
-      params.dataSourceName = values.exceldatasourcename;
-      params.dataBaseName = values.fileurl;
-      params.note = values.note;
-
+    async saveExcelDataSource() {
+      const params = this.excelDataSource;
+      console.log(params);
       const { data: res } = await this.$http.request({
         url: '/saveDataSourceExcel',
         method: 'post',
         params: params
       })
       if (res.meta.status === 200) {
-        this.$message.success('保存excel数据源成功')
+        this.$message.success('保存excel数据源成功');
+        this.loading = false;
+        this.excelDataSourceForm.resetFields();
       } else {
         this.$message.error('保存excel数据源失败')
       }
     },
-
-  }
+  },
 }
 </script>
 <style lang="less" scoped>
@@ -495,5 +560,11 @@ export default {
 .saveButton {
   display: block;
   margin: 0 auto;
+}
+.background {
+  background-color: #f5f5f5;
+}
+.shadow {
+  position: absolute; background-color: #999999; height: 100%; width: 100%; z-index: 10; opacity: 0.5; display: none
 }
 </style>
