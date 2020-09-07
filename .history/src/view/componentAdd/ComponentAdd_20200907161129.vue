@@ -13,6 +13,8 @@
           labelAlign="left"
         >
           <a-form-item label="组件名称" :style="{ marginTop: '29px' }">
+            <!-- 通过ant-design-vue去获取表单的数据是使用v-decorator的方式去给每个项去注册，
+            这样才能通过组件去拉取表单的数据，同时对必填项做校验-->
             <a-input
               v-decorator="[
                 'componentName',
@@ -150,7 +152,7 @@
                     initialValue: ediFormData.dimensions[1].vectorList.join(',')
                   }
                 ]"
-                :style="{ marginLeft: '15px' }"
+                :style="{ marginLeft: '115px' }"
               >
                 <a-checkbox
                   v-for="item in yVectorData"
@@ -198,18 +200,10 @@
             />
           </a-form-item>
         </a-form>
-        <a-button
-          class="saveButton"
-          type="primary"
-          @click="showConfirm"
-          v-if="this.$route.params.id == 'add'"
+        <a-button class="saveButton" type="primary" @click="showConfirm" v-if="this.$route.params.id == 'add'"
           >保存新增</a-button
         >
-        <a-button
-          class="saveButton"
-          type="primary"
-          @click="showConfirmEdit"
-          v-if="this.$route.params.id !== 'add'"
+        <a-button class="saveButton" type="primary" @click="showConfirmEdit" v-if="this.$route.params.id !== 'add'"
           >保存修改</a-button
         >
       </div>
@@ -234,10 +228,8 @@
         <div class="titleShowOn">
           <!-- <span>是否显示标题</span> -->
           <a-radio-group @change="onChangeText" :ckecked="true">
-            <a-radio :value="1" :style="{ fontSize: '24px' }">显示标题</a-radio>
-            <a-radio :value="2" :style="{ fontSize: '24px' }"
-              >不显示标题</a-radio
-            >
+            <a-radio :value="1" :style="{fontSize: '24px'}">显示标题</a-radio>
+            <a-radio :value="2" :style="{fontSize: '24px'}">不显示标题</a-radio>
           </a-radio-group>
         </div>
         <div class="null"></div>
@@ -274,99 +266,7 @@
 export default {
   data() {
     return {
-      mapOption: {
-        backgroundColor: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 1,
-          y2: 1,
-          colorStops: [
-            { offset: 0, color: '#0f378f' },
-            { offset: 1, color: '#00091a' }
-          ],
-          globalCoord: false
-        },
-        title: {
-          top: 20,
-          text: '“会员活跃度” - 山东省',
-          subtext: '',
-          x: 'center',
-          textStyle: { color: '#ccc' }
-        },
-        legend: {
-          orient: 'vertical',
-          y: 'bottom',
-          x: 'right',
-          data: ['pm2.5'],
-          textStyle: { color: '#fff' }
-        },
-        visualMap: {
-          show: false,
-          min: 0,
-          max: 500,
-          left: 'left',
-          top: 'bottom',
-          text: ['高', '低'],
-          calculable: true,
-          seriesIndex: [1],
-          inRange: {}
-        },
-        geo: {
-          map: 'china',
-          show: true,
-          roam: true,
-          label: { normal: { show: false }, emphasis: { show: false } },
-          itemStyle: {
-            normal: {
-              areaColor: '#3a7fd5',
-              borderColor: '#0a53e9',
-              shadowColor: '#092f8f',
-              shadowBlur: 20
-            },
-            emphasis: { areaColor: '#0a2dae' }
-          }
-        },
-        series: [
-          {
-            symbolSize: 5,
-            label: {
-              normal: { formatter: '{b}', position: 'right', show: true },
-              emphasis: { show: true }
-            },
-            itemStyle: { normal: { color: '#fff' } },
-            name: 'light',
-            type: 'scatter',
-            coordinateSystem: 'geo',
-            data: [
-              { name: '吉林', value: [121.5135, 25.0308] },
-              { name: '吉林', value: [127.9688, 45.368] },
-              { name: '吉林', value: [110.3467, 41.4899] },
-              { name: '吉林', value: [121.5135, 25.0308] },
-              { name: '吉林', value: [116.4551, 40.2539] }
-            ]
-          },
-          {
-            name: '散点',
-            type: 'scatter',
-            coordinateSystem: 'geo',
-            symbol: 'pin',
-            symbolSize: [50, 50],
-            itemStyle: { normal: { color: '#D8BC37' } },
-            data: [
-              { name: '吉林', value: [121.5135, 25.0308] },
-              { name: '吉林', value: [127.9688, 45.368] },
-              { name: '吉林', value: [110.3467, 41.4899] },
-              { name: '吉林', value: [121.5135, 25.0308] },
-              { name: '吉林', value: [116.4551, 40.2539] }
-            ],
-            showEffectOn: 'render',
-            rippleEffect: { brushType: 'stroke' },
-            hoverAnimation: true,
-            zlevel: 1
-          }
-        ]
-      },
+      // listId: 0, //组件列表id
       dataSourceId: 0,
       seriesFlag: 0, //series的标志，用于几个条形图柱状图的series的标记
       flag: 0, //初0，预览后为1,先预览再保存
@@ -644,9 +544,7 @@ export default {
         //   this.currentOption = res[0].chartOption
         this.currentOption = tempData
         this.$message.success('成功')
-        // this.drawMychart(this.currentOption)
-        //地图测试
-        this.drawMychart(this.mapOption)
+        this.drawMychart(this.currentOption)
         //判断一维还是二维
         let tempCondition = eval(`(${res.data[0].dimensionforchart})`)
         if (tempCondition.length != 2) {
@@ -674,7 +572,7 @@ export default {
         methods: 'get',
         url: 'getDimensionSelectList',
         // url: 'getDimensionList',
-        params: { datasourceid: parseInt(this.currentDataSourceId) }
+        params: { datasourceid: parseInt(this.currentDataSourceId)}
       })
       // console.log(`纬度下拉框-=-=-=-=-=-=-=`)
       // console.log(res.data)
@@ -1070,22 +968,14 @@ export default {
                     dimensionXY: 'x',
                     // dimensionName: ,这个去掉
                     dimensionTypeId: dimensionXId, //纬度类型id,数据集id,拼接数组第二个
-                    // vectorList: values.xVector //向量ID
-                    vectorList:
-                      typeof values.xVector === 'string'
-                        ? values.xVector.split(',')
-                        : values.xVector
+                    vectorList: values.xVector //向量ID
                   },
                   {
                     id: values.yDimension.split(',')[0], //纬度id
                     dimensionXY: 'y',
                     // dimensionName: ,这个去掉
                     dimensionTypeId: dimensionYId, //纬度类型id
-                    // vectorList: values.yVector //向量ID
-                    vectorList:
-                      typeof values.yVector === 'string'
-                      ? values.yVector.split(',')
-                      : values.yVector
+                    vectorList: values.yVector //向量ID
                   }
                 ]),
                 statisItem: values.statisItem,
@@ -1104,11 +994,7 @@ export default {
                     dimensionXY: 'x',
                     // dimensionName: 这个去掉
                     dimensionTypeId: dimensionXId, //纬度类型id
-                    // vectorList: values.xVector //向量ID
-                    vectorList:
-                      typeof values.xVector === 'string'
-                        ? values.xVector.split(',')
-                        : values.xVector
+                    vectorList: values.xVector //向量ID
                   }
                 ]),
                 statisItem: values.statisItem,
@@ -1151,7 +1037,7 @@ export default {
       } else {
         this.$message.error('保存数据失败')
       }
-    }
+    },
   },
   computed: {
     currentDataSourceId() {

@@ -644,9 +644,7 @@ export default {
         //   this.currentOption = res[0].chartOption
         this.currentOption = tempData
         this.$message.success('成功')
-        // this.drawMychart(this.currentOption)
-        //地图测试
-        this.drawMychart(this.mapOption)
+        this.drawMychart(this.currentOption)
         //判断一维还是二维
         let tempCondition = eval(`(${res.data[0].dimensionforchart})`)
         if (tempCondition.length != 2) {
@@ -1070,22 +1068,14 @@ export default {
                     dimensionXY: 'x',
                     // dimensionName: ,这个去掉
                     dimensionTypeId: dimensionXId, //纬度类型id,数据集id,拼接数组第二个
-                    // vectorList: values.xVector //向量ID
-                    vectorList:
-                      typeof values.xVector === 'string'
-                        ? values.xVector.split(',')
-                        : values.xVector
+                    vectorList: values.xVector //向量ID
                   },
                   {
                     id: values.yDimension.split(',')[0], //纬度id
                     dimensionXY: 'y',
                     // dimensionName: ,这个去掉
                     dimensionTypeId: dimensionYId, //纬度类型id
-                    // vectorList: values.yVector //向量ID
-                    vectorList:
-                      typeof values.yVector === 'string'
-                      ? values.yVector.split(',')
-                      : values.yVector
+                    vectorList: values.yVector //向量ID
                   }
                 ]),
                 statisItem: values.statisItem,
@@ -1104,11 +1094,7 @@ export default {
                     dimensionXY: 'x',
                     // dimensionName: 这个去掉
                     dimensionTypeId: dimensionXId, //纬度类型id
-                    // vectorList: values.xVector //向量ID
-                    vectorList:
-                      typeof values.xVector === 'string'
-                        ? values.xVector.split(',')
-                        : values.xVector
+                    vectorList: values.xVector //向量ID
                   }
                 ]),
                 statisItem: values.statisItem,
