@@ -201,10 +201,10 @@
           </a-form-item>
         </a-form>
         <a-button class="saveButton" type="primary" @click="showConfirm" v-if="this.$route.params.id == 'add'"
-          >确定</a-button
+          >确定新增</a-button
         >
         <a-button class="saveButton" type="primary" @click="showConfirmEdit(this.$route.params.id)" v-if="this.$route.params.id !== 'add'"
-          >确定</a-button
+          >确定修改</a-button
         >
       </div>
     </div>
@@ -572,7 +572,7 @@ export default {
     async getDimensionData() {
       const { data: res } = await this.$http.request({
         methods: 'get',
-        url: 'getDimensionSelectList',
+        url: 'getDimensionSelectList'
         // url: 'getDimensionList',
         params: { datasourceid: parseInt(this.currentDataSourceId)}
       })

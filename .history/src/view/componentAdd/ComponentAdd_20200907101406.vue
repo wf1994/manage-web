@@ -201,10 +201,10 @@
           </a-form-item>
         </a-form>
         <a-button class="saveButton" type="primary" @click="showConfirm" v-if="this.$route.params.id == 'add'"
-          >确定</a-button
+          >确定新增</a-button
         >
         <a-button class="saveButton" type="primary" @click="showConfirmEdit(this.$route.params.id)" v-if="this.$route.params.id !== 'add'"
-          >确定</a-button
+          >确定修改</a-button
         >
       </div>
     </div>
@@ -303,25 +303,25 @@ export default {
   },
   created() {
     this.chartId = this.$route.params.id
-    //获取统计项(写在获取数据源ID接口中)
+    //获取维度下拉框列表
     setTimeout(() => {
-      this.getDataSourceId()
-    }, 400)
+      this.getDimensionData()
+    }, 0)
     // 获取基础图表下拉框列表
     setTimeout(() => {
       this.getChartOptionData()
-    }, 0)
+    }, 200)
     //编辑回显
     if (this.$route.params.id !== 'add') {
       setTimeout(() => {
         this.getChartData(this.$route.params.id)
-      }, 200)
+      }, 600)
     }
   },
   mounted() {
-    //获取维度下拉框列表
+    //获取统计项(写在获取数据源ID接口中)
     setTimeout(() => {
-      this.getDimensionData()
+      this.getDataSourceId()
     }, 1000)
   },
   methods: {
@@ -333,6 +333,9 @@ export default {
       })
       if (parseInt(res.status) === 200) {
         this.dataSourceId = res.datasourceid
+        // this.$set(this.dataSourceId, res.datasourceid)
+        // setTimeout(() => {this.getStatisData(res.datasourceid)}, 0)
+
         this.getDataSetList(this.dataSourceId)
       } else {
         this.$message.error('数据集列表获取失败！')
@@ -572,8 +575,8 @@ export default {
     async getDimensionData() {
       const { data: res } = await this.$http.request({
         methods: 'get',
-        url: 'getDimensionSelectList',
-        // url: 'getDimensionList',
+        // url: 'getDimensionSelectList'
+        url: 'getDimensionList',
         params: { datasourceid: parseInt(this.currentDataSourceId)}
       })
       // console.log(`纬度下拉框-=-=-=-=-=-=-=`)

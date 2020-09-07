@@ -15,7 +15,7 @@
         <a-button @click="searchByComponentName" type="primary">查询</a-button>
       </a-col>
       <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
-        <a-button type="primary" @click="goTo()" :style="{marginRight: '5%'}">新增</a-button>
+        <a-button type="primary" @click="goTo()" :style="{marginRight: '2%'}">新增</a-button>
         <a-button type="info" @click="delComponent()">删除</a-button>
       </a-col>
     </a-row>
