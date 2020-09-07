@@ -404,6 +404,10 @@ export default {
   },
   created() {
     this.chartId = this.$route.params.id
+    //获取统计项(写在获取数据源ID接口中)
+    setTimeout(() => {
+      this.getDataSourceId()
+    }, 400)
     // 获取基础图表下拉框列表
     setTimeout(() => {
       this.getChartOptionData()
@@ -414,10 +418,6 @@ export default {
         this.getChartData(this.$route.params.id)
       }, 200)
     }
-    //获取统计项(写在获取数据源ID接口中)
-    setTimeout(() => {
-      this.getDataSourceId()
-    }, 400)
   },
   mounted() {
     //获取维度下拉框列表
