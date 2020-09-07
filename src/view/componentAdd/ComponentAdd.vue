@@ -266,6 +266,7 @@
 export default {
   data() {
     return {
+      // listId: 0, //组件列表id
       dataSourceId: 0,
       seriesFlag: 0, //series的标志，用于几个条形图柱状图的series的标记
       flag: 0, //初0，预览后为1,先预览再保存
@@ -405,34 +406,31 @@ export default {
           //编辑时数据回显，预览，查询option
           this.currentOption = eval(`(${res.data.chartOption})`)
           //针对堆叠柱状图，series修改
-          // console.log(`堆叠=====${this.ediFormData.chartId}`)
-          if (res.data.chartId === 7) {
-            let arr = new Array()
-            for (
-              let m = 0;
-              m < this.ediFormData.dimensions[1].vectorList.length;
-              m++
-            ) {
-              arr.push({ type: 'bar', seriesLayoutBy: 'row', stack: 1 })
-            }
-            this.currentOption.series = arr
-          }
+          // if (res.data.chartId === 7) {
+          //   let arr = new Array()
+          //   for (
+          //     let m = 0;
+          //     m < this.ediFormData.dimensions[1].vectorList.length;
+          //     m++
+          //   ) {
+          //     arr.push({ type: 'bar', seriesLayoutBy: 'row', stack: 1 })
+          //   }
+          //   this.currentOption.series = arr
+          // }
           //针对对比柱形图
-          if (res.data.chartId === 5) {
-            console.log('对比柱形图修改series====')
-            let arr = new Array()
-            for (
-              let m = 0;
-              m < this.ediFormData.dimensions[1].vectorList.length;
-              m++
-            ) {
-              arr.push({ type: 'bar', seriesLayoutBy: 'row' })
-            }
-            this.currentOption.series = arr
-          }
-          console.log('-=-=-==-=-=-=-=-=')
+          // if (res.data.chartId === 5) {
+          //   let arr = new Array()
+          //   for (
+          //     let m = 0;
+          //     m < this.ediFormData.dimensions[0].vectorList.length;
+          //     m++
+          //   ) {
+          //     arr.push({ type: 'bar', seriesLayoutBy: 'row' })
+          //   }
+          //   this.currentOption.series = arr
+          // }
+          console.log('-=-=-==-=-=-=-=-=currentOption-=-=-=-=-=-=-=-=')
           console.log(this.currentOption)
-
           this.drawMychart(this.currentOption)
           this.showVector(`${m[0]},0`)
           if (n[0]) {
@@ -643,14 +641,15 @@ export default {
           let dimensionXId = values.xDimension.split(',')[1]
           let dimensionYId =
             values && values.yDimension && values.yDimension.split(',')[1]
+          //修改
           if (this.$route.params.id !== 'add') {
             if (this.isConditionShowY) {
               //判断x纬度和y纬度是否同一个数据集
               if (dimensionXId !== dimensionYId) {
                 return this.$message.error('请选择同一数据集下纬度!')
               }
-              console.log(`编辑=========${values.xVector}`)
-              console.log(`zhouxingy类型=========${typeof values.xVector}`)
+              // console.log(`编辑=========${values.xVector}`)
+              // console.log(`zhouxingy类型=========${typeof values.xVector}`)
               parmes = {
                 dataId: values.xDimension.split(',')[1],
                 chartId: values.chartOption,
@@ -677,7 +676,6 @@ export default {
                 statisItem: values.statisItem
                 // text: values.text
               }
-              // console.log(`baishan=======${JSON.stringify(parmes)}`)
             } else {
               parmes = {
                 dataId: values.xDimension.split(',')[1],
@@ -811,7 +809,7 @@ export default {
         }
         this.$message.success('成功')
         let previewOption = this.currentOption
-        //把预览的option分别给四个修改用的option
+        //把预览的option分别给修改用的option
         this.colorOption = previewOption
         this.textOption = previewOption
         this.drawMychart(previewOption)
@@ -1046,6 +1044,11 @@ export default {
       let tempId = parseInt(this.dataSourceId)
       console.log('computed时的数据源ID：', tempId)
       return tempId
+    },
+    listId() {
+      let id = this.$route.params.id
+      console.log('computed时的组件设置的ID：', id)
+      return id
     }
   }
 }
