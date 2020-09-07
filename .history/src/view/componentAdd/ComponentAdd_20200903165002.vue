@@ -176,7 +176,7 @@
                 placeholder="请选择统计项"
                 :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
               >
-                <a-select-option v-for="item in statisData" :key="item.id">{{
+                <a-select-option v-for="item in statisData" :key="item.item_name">{{
                   item.item_name
                 }}</a-select-option>
               </a-select>
@@ -200,11 +200,8 @@
             />
           </a-form-item>
         </a-form>
-        <a-button class="saveButton" type="primary" @click="showConfirm" v-if="this.$route.params.id == 'add'"
-          >确定新增</a-button
-        >
-        <a-button class="saveButton" type="primary" @click="showConfirmEdit(this.$route.params.id)" v-if="this.$route.params.id !== 'add'"
-          >确定修改</a-button
+        <a-button class="saveButton" type="primary" @click="showConfirm"
+          >确定</a-button
         >
       </div>
     </div>
@@ -929,116 +926,7 @@ export default {
       } else {
         this.$message.error('保存数据失败')
       }
-    },
-    //修改保存
-    showConfirmEdit(listId) {
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          if (this.flag === 0) {
-            return this.$message.error('请先预览!')
-          }
-          const _this = this
-          console.log('Received values of form: ', values)
-          console.log(this.textShow)
-          let parmes = {}
-          //如果是文本组件，单独处理
-          if (this.textShow) {
-            parmes = {
-              conponentName: values.conponentName,
-              chartId: values.chartOption
-              // text: values.text,
-            }
-          }
-          if (!this.textShow) {
-            //如果是文本组件，这里就不执行
-            let dimensionXId = values.xDimension.split(',')[1]
-            let dimensionYId =
-              values && values.yDimension && values.yDimension.split(',')[1]
-            if (this.isConditionShowY) {
-              //判断x纬度和y纬度是否同一个数据集
-              if (dimensionXId !== dimensionYId) {
-                return this.$message.error('请选择同一数据集下纬度!')
-              }
-              parmes = {
-                id: listId,
-                componentName: values.componentName,
-                chartId: values.chartOption,
-                // chartName:,
-                dimensions: JSON.stringify([
-                  {
-                    id: values.xDimension.split(',')[0], //纬度id，拼接数组第一个
-                    dimensionXY: 'x',
-                    // dimensionName: ,这个去掉
-                    dimensionTypeId: dimensionXId, //纬度类型id,数据集id,拼接数组第二个
-                    vectorList: values.xVector //向量ID
-                  },
-                  {
-                    id: values.yDimension.split(',')[0], //纬度id
-                    dimensionXY: 'y',
-                    // dimensionName: ,这个去掉
-                    dimensionTypeId: dimensionYId, //纬度类型id
-                    vectorList: values.yVector //向量ID
-                  }
-                ]),
-                statisItem: values.statisItem,
-                // text: values.text,
-                chartOption: JSON.stringify(this.currentOption)
-              }
-            } else {
-              parmes = {
-                componentName: values.componentName,
-                chartId: values.chartOption,
-                // chartName:,
-                dimensions: JSON.stringify([
-                  {
-                    id: values.xDimension.split(',')[0], //纬度id
-                    dimensionXY: 'x',
-                    // dimensionName: 这个去掉
-                    dimensionTypeId: dimensionXId, //纬度类型id
-                    vectorList: values.xVector //向量ID
-                  }
-                ]),
-                statisItem: values.statisItem,
-                // text: values.text,
-                chartOption: JSON.stringify(this.currentOption)
-              }
-            }
-          }
-          this.$confirm({
-            title: '保存数据源',
-            content: <div style="color:green;">确定保存该设置吗？</div>,
-            okText: '确定',
-            cancelText: '取消',
-            onOk() {
-              _this.saveDataSourceEdit(parmes)
-            },
-            onCancel() {
-              console.log('Cancel')
-            }
-          })
-        }
-      })
-    },
-    //保存图表组件修改
-    async saveDataSourceEdit(values) {
-      //如果是文本组件
-      if (this.textShow === true) {
-        document.getElementById('mychart').innerHTML = ''
-      }
-      const { data: res } = await this.$http.request({
-        url: '/updateChart',
-        method: 'post',
-        params: values,
-        paramsSerializer: params => {
-          return this.$qs.stringify(params, { indices: false })
-        }
-      })
-      if (res.meta.status === 200) {
-        this.$message.success('保存数据成功')
-      } else {
-        this.$message.error('保存数据失败')
-      }
-    },
+    }
   },
   computed: {
     currentDataSourceId() {

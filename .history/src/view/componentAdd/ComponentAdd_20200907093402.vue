@@ -1020,15 +1020,17 @@ export default {
       })
     },
     //保存图表组件修改
-    async saveDataSourceEdit(values) {
+    async saveDataSource(values) {
       //如果是文本组件
       if (this.textShow === true) {
         document.getElementById('mychart').innerHTML = ''
       }
+      // console.log('看看post保存时类型===',typeof values.)
       const { data: res } = await this.$http.request({
         url: '/updateChart',
         method: 'post',
         params: values,
+        //负责 `params` 序列化的函数
         paramsSerializer: params => {
           return this.$qs.stringify(params, { indices: false })
         }

@@ -6,12 +6,7 @@
         <span class="title-text">新增组件</span>
       </div>
       <div>
-        <a-form
-          :form="form"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 12 }"
-          labelAlign="left"
-        >
+        <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" labelAlign="left">
           <a-form-item label="组件名称" :style="{ marginTop: '29px' }">
             <!-- 通过ant-design-vue去获取表单的数据是使用v-decorator的方式去给每个项去注册，
             这样才能通过组件去拉取表单的数据，同时对必填项做校验-->
@@ -45,29 +40,21 @@
               @change="getChartOption"
               :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
             >
-              <a-select-option
-                v-for="item in chartOptionData"
-                :key="item.value"
-                >{{ item.label }}</a-select-option
-              >
+              <a-select-option v-for="item in chartOptionData" :key="item.value">{{ item.label }}</a-select-option>
             </a-select>
           </a-form-item>
           <div class="line"></div>
           <!-- 分隔线 -->
           <div v-if="mapShow">
-            <a-form-item
-              label="X轴纬度"
-              v-if="isConditionShowX"
-              :style="{ marginTop: '29px' }"
-            >
+            <a-form-item label="X轴纬度" v-if="isConditionShowX" :style="{ marginTop: '29px' }">
               <a-select
                 v-decorator="[
-                  'xDimension',
-                  {
-                    rules: [{ required: true, message: '纬度不能为空！' }],
-                    initialValue: weidu
-                  }
-                ]"
+                'xDimension',
+                {
+                  rules: [{ required: true, message: '纬度不能为空！' }],
+                  initialValue: weidu
+                }
+              ]"
                 placeholder="请选择纬度"
                 @change="showVector"
                 :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
@@ -80,11 +67,8 @@
                   <a-select-option
                     v-for="children in item.dimensionList"
                     :key="children.id"
-                    :value="
-                      Number(children.id).toFixed() + ',' + item.dimensionTypeId
-                    "
-                    >{{ children.dimensionName }}</a-select-option
-                  >
+                    :value="Number(children.id).toFixed() + ',' + item.dimensionTypeId"
+                  >{{ children.dimensionName }}</a-select-option>
                   <!-- 拼接两个ID，左边是纬度ID，右边是数据集ID -->
                 </a-select-opt-group>
               </a-select>
@@ -92,37 +76,32 @@
             <a-form-item label="xxx向量" v-if="isConditionShowX">
               <a-checkbox-group
                 v-decorator="[
-                  'xVector',
-                  {
-                    rules: [{ required: true, message: '向量不能为空！' }],
-                    initialValue: ediFormData.dimensions[0].vectorList.join(',')
-                  }
-                ]"
+                'xVector',
+                {
+                  rules: [{ required: true, message: '向量不能为空！' }],
+                  initialValue: ediFormData.dimensions[0].vectorList.join(',')
+                }
+              ]"
                 :style="{ marginLeft: '15px' }"
               >
                 <a-checkbox
                   v-for="item in xVectorData"
                   :key="item.id"
                   :value="item.id"
-                  >{{ item.vectorName }}</a-checkbox
-                >
+                >{{ item.vectorName }}</a-checkbox>
               </a-checkbox-group>
             </a-form-item>
             <div class="line"></div>
             <!-- 分隔线 -->
-            <a-form-item
-              label="Y轴纬度"
-              v-if="isConditionShowY"
-              :style="{ marginTop: '29px' }"
-            >
+            <a-form-item label="Y轴纬度" v-if="isConditionShowY" :style="{ marginTop: '29px' }">
               <a-select
                 v-decorator="[
-                  'yDimension',
-                  {
-                    rules: [{ required: true, message: '纬度不能为空！' }],
-                    initialValue: weiduy
-                  }
-                ]"
+                'yDimension',
+                {
+                  rules: [{ required: true, message: '纬度不能为空！' }],
+                  initialValue: weiduy
+                }
+              ]"
                 placeholder="请选择纬度"
                 @change="showVectorY"
                 :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
@@ -135,31 +114,27 @@
                   <a-select-option
                     v-for="children in item.dimensionList"
                     :key="children.id"
-                    :value="
-                      Number(children.id).toFixed() + ',' + item.dimensionTypeId
-                    "
-                    >{{ children.dimensionName }}</a-select-option
-                  >
+                    :value="Number(children.id).toFixed() + ',' + item.dimensionTypeId"
+                  >{{ children.dimensionName }}</a-select-option>
                 </a-select-opt-group>
               </a-select>
             </a-form-item>
             <a-form-item label="xxx向量" v-if="isConditionShowY">
               <a-checkbox-group
                 v-decorator="[
-                  'yVector',
-                  {
-                    rules: [{ required: true, message: '向量不能为空！' }],
-                    initialValue: ediFormData.dimensions[1].vectorList.join(',')
-                  }
-                ]"
+                'yVector',
+                {
+                  rules: [{ required: true, message: '向量不能为空！' }],
+                  initialValue: ediFormData.dimensions[1].vectorList.join(',')
+                }
+              ]"
                 :style="{ marginLeft: '115px' }"
               >
                 <a-checkbox
                   v-for="item in yVectorData"
                   :key="item.id"
                   :value="item.id"
-                  >{{ item.vectorName }}</a-checkbox
-                >
+                >{{ item.vectorName }}</a-checkbox>
               </a-checkbox-group>
             </a-form-item>
             <div class="line"></div>
@@ -167,26 +142,20 @@
             <a-form-item label="统计项" :style="{ marginTop: '29px' }">
               <a-select
                 v-decorator="[
-                  'statisItem',
-                  {
-                    rules: [{ required: true, message: '统计项不能为空！' }],
-                    initialValue: ediFormData.statisItem
-                  }
-                ]"
+                'statisItem',
+                {
+                  rules: [{ required: true, message: '统计项不能为空！' }],
+                  initialValue: ediFormData.statisItem
+                }
+              ]"
                 placeholder="请选择统计项"
                 :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
               >
-                <a-select-option v-for="item in statisData" :key="item.id">{{
-                  item.item_name
-                }}</a-select-option>
+                <a-select-option v-for="item in statisData" :key="item.value">{{ item.label }}</a-select-option>
               </a-select>
             </a-form-item>
           </div>
-          <a-form-item
-            label="文本输入"
-            v-if="textShow"
-            :style="{ marginTop: '29px' }"
-          >
+          <a-form-item label="文本输入" v-if="textShow" :style="{ marginTop: '29px' }">
             <a-textarea
               v-decorator="[
                 'text',
@@ -196,16 +165,11 @@
               ]"
               placeholder="Controlled autosize"
               :auto-size="{ minRows: 3, maxRows: 5 }"
-              :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
+              :style="{ width: '360px', height: '32px', marginLeft: '15px'}"
             />
           </a-form-item>
         </a-form>
-        <a-button class="saveButton" type="primary" @click="showConfirm" v-if="this.$route.params.id == 'add'"
-          >确定新增</a-button
-        >
-        <a-button class="saveButton" type="primary" @click="showConfirmEdit(this.$route.params.id)" v-if="this.$route.params.id !== 'add'"
-          >确定修改</a-button
-        >
+        <a-button class="saveButton" type="primary" @click="showConfirm">确定</a-button>
       </div>
     </div>
 
@@ -266,7 +230,6 @@
 export default {
   data() {
     return {
-      dataSourceId: 0,
       seriesFlag: 0, //series的标志，用于几个条形图柱状图的series的标记
       flag: 0, //初0，预览后为1,先预览再保存
       color: '#ff0000',
@@ -301,29 +264,32 @@ export default {
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'dataSourceForm' })
   },
-  created() {
+  created() {},
+  mounted() {
     this.chartId = this.$route.params.id
-    //获取维度下拉框列表
-    setTimeout(() => {
-      this.getDimensionData()
-    }, 0)
+    // console.log(`beforeCreate的时候${this.chartId}`)
     // 获取基础图表下拉框列表
-    setTimeout(() => {
-      this.getChartOptionData()
-    }, 200)
+    this.getChartOptionData()
+    //获取维度下拉框列表
+    this.getDimensionData()
+    //获取统计项(写在获取数据源ID接口中)
+    // setTimeout(() => {this.getDataSourceId()}, 0)
+    this.getDataSourceId()
+    this.getStatisData()
     //编辑回显
     if (this.$route.params.id !== 'add') {
       setTimeout(() => {
         this.getChartData(this.$route.params.id)
-      }, 600)
+      }, 100)
     }
   },
-  mounted() {
-    //获取统计项(写在获取数据源ID接口中)
-    setTimeout(() => {
-      this.getDataSourceId()
-    }, 1000)
-  },
+  // computed: {
+  //   zxyFormatterWidth(value) {
+  //     // return `${value}%`;
+  //     console.log(`zxyFormatter======${value}`)
+  //     return value + '%'
+  //   },
+  // },
   methods: {
     //获取数据源ID（二期新增）
     async getDataSourceId() {
@@ -333,10 +299,9 @@ export default {
       })
       if (parseInt(res.status) === 200) {
         this.dataSourceId = res.datasourceid
-        // this.$set(this.dataSourceId, res.datasourceid)
-        // setTimeout(() => {this.getStatisData(res.datasourceid)}, 0)
-
-        this.getDataSetList(this.dataSourceId)
+        this.$set(this.dataSourceId, res.datasourceid)
+        console.log('获取数据源ID接口：', this.dataSourceId)
+        // this.getStatisData(this.dataSourceId)
       } else {
         this.$message.error('数据集列表获取失败！')
       }
@@ -473,20 +438,28 @@ export default {
       }
     },
     //获取统计项
-    async getDataSetList(id) {
+    async getStatisData() {
+      console.log('===1001====', this.currentDataSourceId);
+      console.log('===1002====', this.dataSourceId);
       const { data: res } = await this.$http.request({
-        url: '/getStatisSet',
         methods: 'get',
+        url: 'getStatisSet',
         params: {
-          datasourceid: id
+          datasourceid: this.currentDataSourceId
         }
       })
+      console.log('res--------',res)
       if (res.status === 200) {
-        this.statisData = res.data
-        console.log('this.statisData', this.statisData)
-        console.log('统计项列表获取成功')
+        // console.log('=======统计项')
+        // console.log(res.data)
+        this.statisData = res.data.map(item => {
+          return {
+            value: item.field,
+            label: item.field
+          }
+        })
       } else {
-        this.$message.error('统计项列表获取失败！')
+        this.$message.error('失败')
       }
     },
     //根据 ID 查询基础图表 option,图形下拉框
@@ -514,7 +487,8 @@ export default {
         //   console.log(this.currentOption)
         // }
         //拿到文本数据
-        let tempData = '这是文本组件示例，请在下面的文本域输入内容'
+        let tempData =
+          '这是文本组件示例，请在下面的文本域输入内容'
         this.currentOption = tempData
         document.getElementById(
           'mychart'
@@ -530,11 +504,10 @@ export default {
       if (value == 5 || value == 6) {
         this.seriesFlag = 1
       }
-      if (value == 7 || value == 8) {
+      if(value == 7 || value == 8) {
         this.seriesFlag = 2
       }
-      if (value == 13) {
-        //饼图
+      if(value == 13) { //饼图
         this.seriesFlag = 3
       }
       const { data: res } = await this.$http.request({
@@ -791,7 +764,7 @@ export default {
         if (this.seriesFlag == 1) {
           let arr = new Array()
           for (let m = 0, length = res.source.length - 1; m < length; m++) {
-            arr.push({ type: 'bar', seriesLayoutBy: 'row' })
+            arr.push({ type: 'bar', seriesLayoutBy: 'row'})
           }
           this.currentOption.series = arr
           console.log('预览时修改了series:')
@@ -929,121 +902,11 @@ export default {
       } else {
         this.$message.error('保存数据失败')
       }
-    },
-    //修改保存
-    showConfirmEdit(listId) {
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          if (this.flag === 0) {
-            return this.$message.error('请先预览!')
-          }
-          const _this = this
-          console.log('Received values of form: ', values)
-          console.log(this.textShow)
-          let parmes = {}
-          //如果是文本组件，单独处理
-          if (this.textShow) {
-            parmes = {
-              conponentName: values.conponentName,
-              chartId: values.chartOption
-              // text: values.text,
-            }
-          }
-          if (!this.textShow) {
-            //如果是文本组件，这里就不执行
-            let dimensionXId = values.xDimension.split(',')[1]
-            let dimensionYId =
-              values && values.yDimension && values.yDimension.split(',')[1]
-            if (this.isConditionShowY) {
-              //判断x纬度和y纬度是否同一个数据集
-              if (dimensionXId !== dimensionYId) {
-                return this.$message.error('请选择同一数据集下纬度!')
-              }
-              parmes = {
-                id: listId,
-                componentName: values.componentName,
-                chartId: values.chartOption,
-                // chartName:,
-                dimensions: JSON.stringify([
-                  {
-                    id: values.xDimension.split(',')[0], //纬度id，拼接数组第一个
-                    dimensionXY: 'x',
-                    // dimensionName: ,这个去掉
-                    dimensionTypeId: dimensionXId, //纬度类型id,数据集id,拼接数组第二个
-                    vectorList: values.xVector //向量ID
-                  },
-                  {
-                    id: values.yDimension.split(',')[0], //纬度id
-                    dimensionXY: 'y',
-                    // dimensionName: ,这个去掉
-                    dimensionTypeId: dimensionYId, //纬度类型id
-                    vectorList: values.yVector //向量ID
-                  }
-                ]),
-                statisItem: values.statisItem,
-                // text: values.text,
-                chartOption: JSON.stringify(this.currentOption)
-              }
-            } else {
-              parmes = {
-                componentName: values.componentName,
-                chartId: values.chartOption,
-                // chartName:,
-                dimensions: JSON.stringify([
-                  {
-                    id: values.xDimension.split(',')[0], //纬度id
-                    dimensionXY: 'x',
-                    // dimensionName: 这个去掉
-                    dimensionTypeId: dimensionXId, //纬度类型id
-                    vectorList: values.xVector //向量ID
-                  }
-                ]),
-                statisItem: values.statisItem,
-                // text: values.text,
-                chartOption: JSON.stringify(this.currentOption)
-              }
-            }
-          }
-          this.$confirm({
-            title: '保存数据源',
-            content: <div style="color:green;">确定保存该设置吗？</div>,
-            okText: '确定',
-            cancelText: '取消',
-            onOk() {
-              _this.saveDataSourceEdit(parmes)
-            },
-            onCancel() {
-              console.log('Cancel')
-            }
-          })
-        }
-      })
-    },
-    //保存图表组件修改
-    async saveDataSourceEdit(values) {
-      //如果是文本组件
-      if (this.textShow === true) {
-        document.getElementById('mychart').innerHTML = ''
-      }
-      const { data: res } = await this.$http.request({
-        url: '/updateChart',
-        method: 'post',
-        params: values,
-        paramsSerializer: params => {
-          return this.$qs.stringify(params, { indices: false })
-        }
-      })
-      if (res.meta.status === 200) {
-        this.$message.success('保存数据成功')
-      } else {
-        this.$message.error('保存数据失败')
-      }
-    },
+    }
   },
   computed: {
     currentDataSourceId() {
-      let tempId = parseInt(this.dataSourceId)
-      console.log('computed时的数据源ID：', tempId)
+      let tempId = this.dataSourceId
       return tempId
     }
   }

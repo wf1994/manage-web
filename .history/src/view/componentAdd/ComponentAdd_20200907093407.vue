@@ -1025,10 +1025,12 @@ export default {
       if (this.textShow === true) {
         document.getElementById('mychart').innerHTML = ''
       }
+      // console.log('看看post保存时类型===',typeof values.)
       const { data: res } = await this.$http.request({
         url: '/updateChart',
         method: 'post',
         params: values,
+        //负责 `params` 序列化的函数
         paramsSerializer: params => {
           return this.$qs.stringify(params, { indices: false })
         }
