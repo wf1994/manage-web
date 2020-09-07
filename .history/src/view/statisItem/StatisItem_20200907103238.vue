@@ -124,9 +124,8 @@ export default {
         url: '/getCurrentDataSourceId',
         methods: 'get'
       })
-      if (parseInt(res.status) === 200) {
-        this.dataSourceId = res.datasourceid
-        
+      if (res.meta.status === 200) {
+        this.dataSourceId = res.data.currentDataSourceId
       } else {
         this.$message.error('数据集列表获取失败！')
       }
@@ -194,7 +193,7 @@ export default {
         item_name: values.standardNum,
         field: values.exisitNum,
         staticRule: values.staticRule,
-        datasourceid: parseInt(this.currentDataSourceId)
+        datasourceid: parseInt(this.dataSourceId)
       }
       const { data: res } = await this.$http.request({
         url:'/saveStatisSet',
@@ -203,7 +202,6 @@ export default {
       })
       if(res.meta.status === 200){
         this.$message.success('保存统计项成功')
-        this.$router.push(`/statisList`)
       }
       else {
         this.$message.error('保存统计项失败')
@@ -222,9 +220,8 @@ export default {
         method:'post',
         params:saveData
       })
-      if(res.status === 200){
-        this.$message.success('修改统计项成功')
-        this.$router.push(`/statisList`)
+      if(res.meta.status === 200){
+        this.$message.success('保存统计项成功')
       }
       else {
         this.$message.error('保存统计项失败')

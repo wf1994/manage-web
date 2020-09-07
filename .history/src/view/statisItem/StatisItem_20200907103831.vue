@@ -203,7 +203,6 @@ export default {
       })
       if(res.meta.status === 200){
         this.$message.success('保存统计项成功')
-        this.$router.push(`/statisList`)
       }
       else {
         this.$message.error('保存统计项失败')
@@ -222,9 +221,8 @@ export default {
         method:'post',
         params:saveData
       })
-      if(res.status === 200){
-        this.$message.success('修改统计项成功')
-        this.$router.push(`/statisList`)
+      if(res.meta.status === 200){
+        this.$message.success('保存统计项成功')
       }
       else {
         this.$message.error('保存统计项失败')
