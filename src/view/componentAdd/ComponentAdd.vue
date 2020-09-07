@@ -201,10 +201,10 @@
           </a-form-item>
         </a-form>
         <a-button class="saveButton" type="primary" @click="showConfirm" v-if="this.$route.params.id == 'add'"
-          >确定</a-button
+          >保存新增</a-button
         >
-        <a-button class="saveButton" type="primary" @click="showConfirmEdit(this.$route.params.id)" v-if="this.$route.params.id !== 'add'"
-          >确定</a-button
+        <a-button class="saveButton" type="primary" @click="showConfirmEdit" v-if="this.$route.params.id !== 'add'"
+          >保存修改</a-button
         >
       </div>
     </div>
@@ -930,7 +930,8 @@ export default {
       }
     },
     //修改保存
-    showConfirmEdit(listId) {
+    showConfirmEdit() {
+      console.log('编辑后，保存的id:', this.$route.params.id)
       this.form.validateFields((err, values) => {
         if (!err) {
           if (this.flag === 0) {
@@ -959,7 +960,7 @@ export default {
                 return this.$message.error('请选择同一数据集下纬度!')
               }
               parmes = {
-                id: listId,
+                id: this.$route.params.id,
                 componentName: values.componentName,
                 chartId: values.chartOption,
                 // chartName:,
@@ -985,6 +986,7 @@ export default {
               }
             } else {
               parmes = {
+                id: this.$route.params.id,
                 componentName: values.componentName,
                 chartId: values.chartOption,
                 // chartName:,
