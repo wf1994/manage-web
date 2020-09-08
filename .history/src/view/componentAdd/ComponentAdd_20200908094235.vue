@@ -249,7 +249,7 @@
             @search="onSearch"
             class="inputTitle"
           >
-            <a-button slot="enterButton">确定</a-button>
+            <a-button slot="enterButton">生成预览</a-button>
           </a-input-search>
         </div>
         <div class="null"></div>
