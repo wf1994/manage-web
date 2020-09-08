@@ -508,7 +508,7 @@ export default {
       let formData = new FormData()
       // console.log(fileList);
       fileList.forEach(file => {
-        console.log(file)
+        // console.log(file)
         formData.append('file', file)
       })
       this.uploading = true

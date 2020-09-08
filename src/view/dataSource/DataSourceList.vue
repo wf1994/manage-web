@@ -323,15 +323,18 @@ export default {
       this.selectedRows = selectedRows
     }
   },
-  
+
   computed: {
     computeDataSourceList() {
-      const tempList = this.DataSourceList.map(item => {
-        return {
-          ...item,
-          key: item.id
-        }
-      })
+      let tempList = []
+      if (this.DataSourceList !== null) {
+          tempList = this.DataSourceList.map(item => {
+          return {
+            ...item,
+            key: item.id
+          }
+        })
+      }
       return tempList
     }
   }
