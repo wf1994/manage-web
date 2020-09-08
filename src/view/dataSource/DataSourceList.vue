@@ -46,7 +46,7 @@
                 <a-menu-item @click="RowDelete(row.id)">
                   删除
                 </a-menu-item>
-                <a-menu-item>
+                <a-menu-item @click="setDatasourceDefault(row)">
                   设为默认数据源
                 </a-menu-item>
               </a-menu>
@@ -238,6 +238,22 @@ export default {
 	},
 	
   methods: {
+    // 设为默认数据源
+    async setDatasourceDefault(row) {
+      const { data: res } = await this.$http.request({
+        url: '/setDatasourceDefault',
+        methods: 'get',
+        params: {
+          id: row.id
+        }
+      })
+      if (res.status == '200') {
+        this.$message.success('设置默认数据源成功')
+      } else {
+        this.$message.error('设置默认数据源失败！')
+      }
+    },
+
     // 新增数据源modal显示
     showModal() {
       this.addDataSourceVisible = true
