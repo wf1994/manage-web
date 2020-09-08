@@ -412,7 +412,7 @@ export default {
     if (this.$route.params.id !== 'add') {
       setTimeout(() => {
         this.getChartData(this.$route.params.id)
-      }, 100)
+      }, 200)
     }
     //获取统计项(写在获取数据源ID接口中)
     setTimeout(() => {
@@ -423,7 +423,7 @@ export default {
     //获取维度下拉框列表
     setTimeout(() => {
       this.getDimensionData()
-    }, 1500)
+    }, 1000)
   },
   methods: {
     //获取数据源ID（二期新增）
@@ -434,10 +434,7 @@ export default {
       })
       if (parseInt(res.status) === 200) {
         this.dataSourceId = res.datasourceid
-        setTimeout(() => {
-          this.getDataSetList(res.datasourceid)
-        }, 100)
-        
+        this.getDataSetList(this.dataSourceId)
       } else {
         this.$message.error('数据集列表获取失败！')
       }
