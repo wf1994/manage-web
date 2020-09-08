@@ -11,17 +11,10 @@
         ></a-input>
       </a-col>
       <a-col :span="4">
-        <a-button type="primary" @click="getListByDataSourceName"
-          >查询</a-button
-        >
+        <a-button type="primary" @click="getListByDataSourceName">查询</a-button>
       </a-col>
       <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
-        <a-button
-          type="primary"
-          @click="showModal"
-          :style="{ marginRight: '15px' }"
-          >新增</a-button
-        >
+        <a-button type="primary" @click="showModal" :style="{ marginRight: '15px' }">新增</a-button>
         <a-button type="info" @click="showModalDelete()">删除</a-button>
       </a-col>
     </a-row>
@@ -44,9 +37,7 @@
               <a-menu slot="overlay">
                 <a-menu-item @click="handleEdit(row)">修改</a-menu-item>
                 <a-menu-item @click="RowDelete(row.id)">删除</a-menu-item>
-                <a-menu-item @click="setDatasourceDefault(row)"
-                  >设为默认数据源</a-menu-item
-                >
+                <a-menu-item @click="setDatasourceDefault(row)">设为默认数据源</a-menu-item>
               </a-menu>
               <a @click="e => e.preventDefault()">
                 <a-icon type="dash"></a-icon>
@@ -66,10 +57,7 @@
       okText="确定"
       cancelText="取消"
     >
-      <a-radio-group
-        v-model="dataSourceTypeValue"
-        @change="onDataSourceTypeChange"
-      >
+      <a-radio-group v-model="dataSourceTypeValue" @change="onDataSourceTypeChange">
         <a-radio :style="radioStyle" :value="1">sql</a-radio>
         <a-radio :style="radioStyle" :value="2">excel</a-radio>
       </a-radio-group>
@@ -340,7 +328,7 @@ export default {
     computeDataSourceList() {
       let tempList = []
       if (this.DataSourceList !== null) {
-        tempList = this.DataSourceList.map(item => {
+          tempList = this.DataSourceList.map(item => {
           return {
             ...item,
             key: item.id
