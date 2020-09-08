@@ -519,7 +519,12 @@ export default {
         }
       }
       this.loading = true
-      this.$http.post('/upload', formData, config).then(res => {
+      this.$http.post('/upload', formData, config)
+      .catch(error => {
+        this.$message.error('文件上传失败！' + error)
+        this.loading = false;
+      })
+      .then(res => {
         if (res.data.meta.status == 200) {
           const resData = res
           this.fileList = []
@@ -527,6 +532,9 @@ export default {
           this.excelDataSource.filepath = resData.data.filepath
           // console.log(this.excelDataSource);
           this.saveExcelDataSource()
+        } else {
+          this.$message.error(res.data.meta.msg);
+          this.loading = false;
         }
       })
     },
@@ -548,6 +556,7 @@ export default {
         })
       } else {
         this.$message.error('保存excel数据源失败')
+        this.loading = false
       }
     }
   }
