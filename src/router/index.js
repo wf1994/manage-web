@@ -21,13 +21,13 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/dataSource',
+    redirect: '/dataSourceList',
     component: MyLayout,
     children: [
-      {
-        path: '/dataSource',
-        component: DataSource
-      },
+      // {
+      //   path: '/dataSource',
+      //   component: DataSource
+      // },
       {
         path: '/dataSourceset',
         component: DataSource

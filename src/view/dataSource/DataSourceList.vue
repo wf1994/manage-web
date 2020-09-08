@@ -80,7 +80,7 @@
     </a-modal>
 
     <!-- 修改数据源Modal -->
-    <a-modal
+    <!-- <a-modal
       title="修改数据源"
       :visible="editDataSourceVisible"
       :confirm-loading="editDataSourceLoading"
@@ -186,7 +186,7 @@
           </a-Radio-Group>
         </a-Form-Item>
       </a-form>
-    </a-modal>
+    </a-modal> -->
   </div>
 </template>
 <script>
@@ -210,9 +210,9 @@ export default {
       // 数据源列
       addDataSourceVisible: false, // 添加数据源Modal显示
       addDataSourceLoading: false, // 添加数据源确定按钮loading
-      editDataSourceVisible: false, // 修改数据源Modal显示
-      editDataSourceLoading: false, // 修改数据源确定按钮loading
-      editDataSourceFormData: {}, // 修改数据源回显数据
+      //editDataSourceVisible: false, // 修改数据源Modal显示
+      //editDataSourceLoading: false, // 修改数据源确定按钮loading
+      //editDataSourceFormData: {}, // 修改数据源回显数据
       selectedRowKeys: [], // 选中的行的id数组
 			selectedRows: [], // 选中行的数据
 			
@@ -251,7 +251,7 @@ export default {
     // 新增数据源Modal提交
     handleOk() {
 			this.$router.push({
-				path: '/dataSource',
+				path: '/dataSourceSet',
 				query: {
 					dataSourceTypeValue: this.dataSourceTypeValue,
 					operation: "addDataSource"
@@ -349,10 +349,9 @@ export default {
         methods: 'get'
       })
       if (res.meta.status === 200) {
-				console.log(res);
         this.DataSourceList = res.data
-        console.log('this.DataSourceList', this.DataSourceList)
-        console.log('数据源列表获取成功')
+        //console.log('this.DataSourceList', this.DataSourceList)
+        //console.log('数据源列表获取成功')
       } else {
         this.$message.error('数据源列表获取失败！')
       }
@@ -368,9 +367,9 @@ export default {
         }
       })
       if (res.msg.status === 200) {
-        console.log('查询数据', res.data)
+        //console.log('查询数据', res.data)
 				this.DataSourceList = res.data
-				console.log('this.DataSourceList', this.DataSourceList)
+				//console.log('this.DataSourceList', this.DataSourceList)
         this.$message.success('查询成功！')
       } else {
         this.$message.error('查询失败！')
@@ -392,8 +391,8 @@ export default {
       } else {
         this.dataSourceTypeValue = 2;
       }
-			this.$router.replace({
-				path: '/dataSource',
+			this.$router.push({
+				path: '/dataSourceSet',
 				query: {
 					id: row.id,
 					dataSourceTypeValue: this.dataSourceTypeValue,
