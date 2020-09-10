@@ -37,7 +37,7 @@
           <span
             slot="componentName"
             slot-scope="text, row"
-            :style="{ color: '#128075', cursor: 'pointer' }"
+            :style="{ color: '#128075' }"
             @click="editComponent(row.id)"
           >
             {{ row.componentName }}

@@ -15,9 +15,7 @@
         <a-button @click="searchByComponentName" type="primary">查询</a-button>
       </a-col>
       <a-col :span="4" :offset="12" :style="{ textAlign: 'right' }">
-        <a-button type="primary" @click="goTo()" :style="{ marginRight: '5%' }"
-          >新增</a-button
-        >
+        <a-button type="primary" @click="goTo()" :style="{marginRight: '5%'}">新增</a-button>
         <a-button type="info" @click="delComponent()">删除</a-button>
       </a-col>
     </a-row>
@@ -34,19 +32,13 @@
           :pagination="true"
           :loading="componentListLoading"
         >
-          <span
-            slot="componentName"
-            slot-scope="text, row"
-            :style="{ color: '#128075', cursor: 'pointer' }"
-            @click="editComponent(row.id)"
-          >
-            {{ row.componentName }}
-          </span>
           <span slot="dimensions" slot-scope="text, row">
-            {{ row.dimensions.join('、') }}
+            {{
+            row.dimensions.join('、')
+            }}
           </span>
-          <!-- <span slot="text" slot-scope="text, row">{{ row }}</span> -->
-          <span slot="operation" slot-scope="row">
+          <span slot="text" slot-scope="text, row">{{ row }}</span>
+          <!-- <span slot="operation" slot-scope="row">
             <a-dropdown :trigger="['click']">
               <a-menu slot="overlay">
                 <a-menu-item @click="editComponent(row.id)">修改</a-menu-item>
@@ -56,7 +48,7 @@
                 <a-icon type="dash"></a-icon>
               </a>
             </a-dropdown>
-          </span>
+          </span> -->
         </a-table>
       </a-col>
     </a-row>
@@ -79,13 +71,7 @@
 </template>
 <script>
 const componentColumns = [
-  {
-    title: '组件名称',
-    dataIndex: 'componentName',
-    key: 'componentName',
-    scopedSlots: { customRender: 'componentName' }
-    // color: '#128075'
-  },
+  { title: '组件名称', dataIndex: 'componentName', key: 'componentName' },
   {
     title: '维度',
     dataIndex: 'dimensions',

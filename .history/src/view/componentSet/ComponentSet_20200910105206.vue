@@ -34,12 +34,7 @@
           :pagination="true"
           :loading="componentListLoading"
         >
-          <span
-            slot="componentName"
-            slot-scope="text, row"
-            :style="{ color: '#128075', cursor: 'pointer' }"
-            @click="editComponent(row.id)"
-          >
+          <span slot="componentName" slot-scope="text, row">
             {{ row.componentName }}
           </span>
           <span slot="dimensions" slot-scope="text, row">

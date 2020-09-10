@@ -113,7 +113,7 @@
               }
             ]"
             placeholder="请输入维度名称..."
-            :style="{width: '280px'}"
+            :style="{width: '250px'}"
           />
         </a-form-item>
         <a-form-item label="维度分类">
@@ -126,7 +126,7 @@
             ]"
             placeholder="请选择维度分类..."
             @change="handleSelectChange"
-            :style="{width: '280px'}"
+            :style="{width: '250px'}"
           >
             <a-select-option value="">
               请选择

@@ -12,6 +12,24 @@
           :wrapper-col="{ span: 12 }"
           labelAlign="left"
         >
+          <a-form-item label="组件名称" :style="{ marginTop: '29px' }">
+            <a-input
+              v-decorator="[
+                'componentName',
+                {
+                  rules: [
+                    {
+                      required: true,
+                      message: '组件名称不能为空！'
+                    }
+                  ],
+                  initialValue: ediFormData.componentName
+                }
+              ]"
+              placeholder="请输入组件名称"
+              :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
+            />
+          </a-form-item>
           <a-form-item label="图形">
             <a-select
               v-decorator="[
@@ -31,24 +49,6 @@
                 >{{ item.label }}</a-select-option
               >
             </a-select>
-          </a-form-item>
-          <a-form-item label="组件名称" :style="{ marginTop: '29px' }">
-            <a-input
-              v-decorator="[
-                'componentName',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '组件名称不能为空！'
-                    }
-                  ],
-                  initialValue: ediFormData.componentName
-                }
-              ]"
-              placeholder="请输入组件名称"
-              :style="{ width: '360px', height: '32px', marginLeft: '15px' }"
-            />
           </a-form-item>
           <div class="line"></div>
           <!-- 分隔线 -->
