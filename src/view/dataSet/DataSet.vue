@@ -89,8 +89,8 @@
             placeholder="请输入数据集名称..."
           ></a-input>
         </a-form-item>
-        <a-Form-Item name="radio-group" label="数据集类型">
-          <a-Radio-Group
+        <a-Form-Item name="radio-group" label="数据集内容">
+          <!-- <a-Radio-Group
             option.initialValue="表"
             v-decorator="[
               'dataType',
@@ -103,8 +103,8 @@
                 ]
               }
             ]"
-          >
-            <a-Radio
+          > -->
+          <!-- <a-Radio
               value="表"
               :style="{
                 display: 'block',
@@ -121,26 +121,26 @@
                 lineHeight: '30px'
               }"
               >SQL</a-Radio
-            >
-            <a-textarea
-              :row="4"
-              :style="{
-                width: '300px'
-              }"
-              v-decorator="[
-                'dataContent',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '数据集内容不能为空！'
-                    }
-                  ]
-                }
-              ]"
-              placeholder="请输入数据集内容"
-            ></a-textarea>
-          </a-Radio-Group>
+            > -->
+          <a-textarea
+            :row="4"
+            :style="{
+              width: '300px'
+            }"
+            v-decorator="[
+              'dataContent',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '数据集内容不能为空！'
+                  }
+                ]
+              }
+            ]"
+            placeholder="请输入数据集内容"
+          ></a-textarea>
+          <!-- </a-Radio-Group> -->
         </a-Form-Item>
       </a-form>
     </a-modal>
@@ -201,8 +201,8 @@
             placeholder="请输入数据集名称..."
           ></a-input>
         </a-form-item>
-        <a-Form-Item name="radio-group" label="数据集类型">
-          <a-Radio-Group
+        <a-Form-Item name="radio-group" label="数据集内容">
+          <!-- <a-Radio-Group
             option.initialValue="表"
             v-decorator="[
               'dataType',
@@ -210,8 +210,8 @@
                 initialValue: editDataSetFormData.dataType
               }
             ]"
-          >
-            <a-Radio
+          > -->
+          <!-- <a-Radio
               value="表"
               :style="{
                 display: 'block',
@@ -228,27 +228,27 @@
                 lineHeight: '30px'
               }"
               >SQL</a-Radio
-            >
-            <a-textarea
-              :row="4"
-              :style="{
-                width: '300px'
-              }"
-              v-decorator="[
-                'dataContent',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '数据集内容不能为空！'
-                    }
-                  ],
-                  initialValue: editDataSetFormData.dataContent
-                }
-              ]"
-              placeholder="请输入数据集内容"
-            ></a-textarea>
-          </a-Radio-Group>
+            > -->
+          <a-textarea
+            :row="4"
+            :style="{
+              width: '300px'
+            }"
+            v-decorator="[
+              'dataContent',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '数据集内容不能为空！'
+                  }
+                ],
+                initialValue: editDataSetFormData.dataContent
+              }
+            ]"
+            placeholder="请输入数据集内容"
+          ></a-textarea>
+          <!-- </a-Radio-Group> -->
         </a-Form-Item>
       </a-form>
     </a-modal>
@@ -264,7 +264,7 @@ export default {
       searchDataSetName: '', //查询数据集名称输入框的内容
       DataSetColumns: [
         { title: '数据集名称', dataIndex: 'dataSetName', key: 'dataSetName' },
-        { title: '数据集类型', dataIndex: 'dataType', key: 'dataType' },
+        // { title: '数据集类型', dataIndex: 'dataType', key: 'dataType' },
         { title: '数据集内容', dataIndex: 'dataContent', key: 'dataContent' },
         { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
         // { title: 'id', dataIndex: 'id', key: 'id' },
@@ -297,9 +297,9 @@ export default {
     this.getDataSourceId()
     // setTimeout(() => {this.getDataSetList()}, 0)
     Bus.$on('getChartIdBus', name => {
-            console.log('数据源ID：', name)
-            // this.dataSourceId = name
-        })
+      console.log('数据源ID：', name)
+      // this.dataSourceId = name
+    })
   },
   methods: {
     // 新增数据集model显示
@@ -585,7 +585,7 @@ export default {
       } else {
         this.$message.error('数据集列表获取失败！')
       }
-    },
+    }
   },
   computed: {
     computeDataSetData() {
@@ -601,7 +601,7 @@ export default {
       let tempId = this.dataSourceId
       return tempId
     }
-  },
+  }
   // watch: {
   //   dataSourceId() {
   //     Bus.$on('getChartIdBus', name => {

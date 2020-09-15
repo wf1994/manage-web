@@ -60,21 +60,6 @@
         </a-table>
       </a-col>
     </a-row>
-    <!-- 分页 -->
-    <!-- <a-row>
-      <a-col :span="24">
-        <a-pagination
-          class="pull-right footer"
-          v-model="current"
-          show-quick-jumper
-          show-size-changer
-          :page-size.sync="pageSize"
-          :total="500"
-          :show-total="total => `Total ${total} items`"
-          @showSizeChange="onShowSizeChange"
-        />
-      </a-col>
-    </a-row>-->
   </div>
 </template>
 <script>
@@ -319,9 +304,4 @@ export default {
   border: 1px solid #e2e3e6;
   font-size: 14px;
 }
-// .footer {
-//   width: 560px;
-//   height: 18px;
-//   font-size: 12px;
-// }
 </style>
