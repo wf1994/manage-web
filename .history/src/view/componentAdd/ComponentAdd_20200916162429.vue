@@ -415,7 +415,7 @@ export default {
     if (this.$route.params.id !== 'add') {
       console.log('新的传参======= ', this.$route.params)
       setTimeout(() => {
-        this.getChartData(this.$route.params.id)
+        this.getChartData(this.$route.params.row.id)
       }, 100)
     }
     //获取统计项(写在获取数据源ID接口中)
@@ -490,11 +490,8 @@ export default {
         params: { id }
       })
       if (res.meta.status === 200) {
-        //判断是不是地图组件
-        if (res.data.statisItem == -1) {
-          this.statisShow = false
-        }
         this.ediFormData = res.data
+        // console.log(`this.ediFormData===${JSON.stringify(this.ediFormData)}`)
         //根据dimension数组长度判断一维还是二纬
         if (res.data.dimensions.length === 2) {
           let m = new Array()
@@ -589,7 +586,6 @@ export default {
     },
     //根据 ID 查询基础图表 option,图形下拉框
     async getChartOption(value) {
-      console.log('韩部长=======')
       this.statisShow = true
       this.form.resetFields()
       console.log(`点击后的value是${value}`)
@@ -637,9 +633,9 @@ export default {
         //   this.currentOption = res[0].chartOption
         this.currentOption = tempData
         this.$message.success('成功')
-        this.drawMychart(this.currentOption)
+        // this.drawMychart(this.currentOption)
         //地图测试
-        // this.drawMychart(this.mapOption)
+        this.drawMychart(this.mapOption)
         //判断一维还是二维
         let tempCondition = eval(`(${res.data[0].dimensionforchart})`)
         if (tempCondition.length != 2) {
@@ -1117,7 +1113,7 @@ export default {
                         : values.xVector
                   }
                 ]),
-                statisItem: this.statisShow ? values.statisItem : -1,
+                statisItem: values.statisItem,
                 // text: values.text,
                 // chartOption: JSON.stringify(this.currentOption)
                 chartOption: this.statisShow ? JSON.stringify(this.currentOption) : JSON.stringify(this.mapOption)

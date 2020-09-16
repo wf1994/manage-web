@@ -1117,7 +1117,7 @@ export default {
                         : values.xVector
                   }
                 ]),
-                statisItem: this.statisShow ? values.statisItem : -1,
+                statisItem: values.statisItem,
                 // text: values.text,
                 // chartOption: JSON.stringify(this.currentOption)
                 chartOption: this.statisShow ? JSON.stringify(this.currentOption) : JSON.stringify(this.mapOption)

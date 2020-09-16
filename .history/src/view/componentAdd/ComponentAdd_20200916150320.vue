@@ -343,10 +343,11 @@ export default {
             type: 'scatter',
             coordinateSystem: 'geo',
             data: [
-              // { name: '吉林', value: [121.5135, 25.0308] },
-              // { name: '吉林', value: [127.9688, 45.368] },
-              { name: '吉林1', value: [110.3467, 41.4899] },
-              { name: '吉林2', value: [116.4551, 40.2539] }
+              { name: '吉林', value: [121.5135, 25.0308] },
+              { name: '吉林', value: [127.9688, 45.368] },
+              { name: '吉林', value: [110.3467, 41.4899] },
+              { name: '吉林', value: [121.5135, 25.0308] },
+              { name: '吉林', value: [116.4551, 40.2539] }
             ]
           },
           {
@@ -357,10 +358,11 @@ export default {
             symbolSize: [50, 50],
             itemStyle: { normal: { color: '#D8BC37' } },
             data: [
-              // { name: '吉林', value: [121.5135, 25.0308] },
-              // { name: '吉林', value: [127.9688, 45.368] },
-              { name: '吉林1', value: [110.3467, 41.4899] },
-              { name: '吉林2', value: [116.4551, 40.2539] }
+              { name: '吉林', value: [121.5135, 25.0308] },
+              { name: '吉林', value: [127.9688, 45.368] },
+              { name: '吉林', value: [110.3467, 41.4899] },
+              { name: '吉林', value: [121.5135, 25.0308] },
+              { name: '吉林', value: [116.4551, 40.2539] }
             ],
             showEffectOn: 'render',
             rippleEffect: { brushType: 'stroke' },
@@ -413,7 +415,6 @@ export default {
     }, 0)
     //编辑回显
     if (this.$route.params.id !== 'add') {
-      console.log('新的传参======= ', this.$route.params)
       setTimeout(() => {
         this.getChartData(this.$route.params.id)
       }, 100)
@@ -490,11 +491,8 @@ export default {
         params: { id }
       })
       if (res.meta.status === 200) {
-        //判断是不是地图组件
-        if (res.data.statisItem == -1) {
-          this.statisShow = false
-        }
         this.ediFormData = res.data
+        // console.log(`this.ediFormData===${JSON.stringify(this.ediFormData)}`)
         //根据dimension数组长度判断一维还是二纬
         if (res.data.dimensions.length === 2) {
           let m = new Array()
@@ -589,7 +587,6 @@ export default {
     },
     //根据 ID 查询基础图表 option,图形下拉框
     async getChartOption(value) {
-      console.log('韩部长=======')
       this.statisShow = true
       this.form.resetFields()
       console.log(`点击后的value是${value}`)
@@ -785,8 +782,7 @@ export default {
                         : values.xVector
                   }
                 ]),
-                // statisItem: values.statisItem
-                statisItem: this.statisShow ? values.statisItem : -1
+                statisItem: values.statisItem
                 // text: values.text
               }
             }
@@ -835,8 +831,7 @@ export default {
                         : values.xVector
                   }
                 ]),
-                // statisItem: values.statisItem
-                statisItem: this.statisShow ? values.statisItem : -1
+                statisItem: values.statisItem
                 // text: values.text
               }
             }
@@ -887,8 +882,6 @@ export default {
           this.$message.success('韩部长suprise')
           this.mapOption.series[0].data = res.data
           this.mapOption.series[1].data = res.data
-          this.drawMychart(this.mapOption)
-          return
         }
         //加判断，条形图
         if (this.seriesFlag == 1) {
@@ -993,8 +986,7 @@ export default {
                 // statisItem: values.statisItem,
                 statisItem: this.statisShow ? values.statisItem : -1,
                 // text: values.text,
-                // chartOption: JSON.stringify(this.currentOption)
-                chartOption: this.statisShow ? JSON.stringify(this.currentOption) : JSON.stringify(this.mapOption)
+                chartOption: JSON.stringify(this.currentOption)
               }
             }
           }
@@ -1117,10 +1109,9 @@ export default {
                         : values.xVector
                   }
                 ]),
-                statisItem: this.statisShow ? values.statisItem : -1,
+                statisItem: values.statisItem,
                 // text: values.text,
-                // chartOption: JSON.stringify(this.currentOption)
-                chartOption: this.statisShow ? JSON.stringify(this.currentOption) : JSON.stringify(this.mapOption)
+                chartOption: JSON.stringify(this.currentOption)
               }
             }
           }

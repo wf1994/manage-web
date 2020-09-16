@@ -637,9 +637,9 @@ export default {
         //   this.currentOption = res[0].chartOption
         this.currentOption = tempData
         this.$message.success('成功')
-        this.drawMychart(this.currentOption)
+        // this.drawMychart(this.currentOption)
         //地图测试
-        // this.drawMychart(this.mapOption)
+        this.drawMychart(this.mapOption)
         //判断一维还是二维
         let tempCondition = eval(`(${res.data[0].dimensionforchart})`)
         if (tempCondition.length != 2) {
@@ -1117,7 +1117,7 @@ export default {
                         : values.xVector
                   }
                 ]),
-                statisItem: this.statisShow ? values.statisItem : -1,
+                statisItem: values.statisItem,
                 // text: values.text,
                 // chartOption: JSON.stringify(this.currentOption)
                 chartOption: this.statisShow ? JSON.stringify(this.currentOption) : JSON.stringify(this.mapOption)

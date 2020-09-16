@@ -343,10 +343,11 @@ export default {
             type: 'scatter',
             coordinateSystem: 'geo',
             data: [
-              // { name: '吉林', value: [121.5135, 25.0308] },
-              // { name: '吉林', value: [127.9688, 45.368] },
-              { name: '吉林1', value: [110.3467, 41.4899] },
-              { name: '吉林2', value: [116.4551, 40.2539] }
+              { name: '吉林', value: [121.5135, 25.0308] },
+              { name: '吉林', value: [127.9688, 45.368] },
+              { name: '吉林', value: [110.3467, 41.4899] },
+              { name: '吉林', value: [121.5135, 25.0308] },
+              { name: '吉林', value: [116.4551, 40.2539] }
             ]
           },
           {
@@ -357,10 +358,11 @@ export default {
             symbolSize: [50, 50],
             itemStyle: { normal: { color: '#D8BC37' } },
             data: [
-              // { name: '吉林', value: [121.5135, 25.0308] },
-              // { name: '吉林', value: [127.9688, 45.368] },
-              { name: '吉林1', value: [110.3467, 41.4899] },
-              { name: '吉林2', value: [116.4551, 40.2539] }
+              { name: '吉林', value: [121.5135, 25.0308] },
+              { name: '吉林', value: [127.9688, 45.368] },
+              { name: '吉林', value: [110.3467, 41.4899] },
+              { name: '吉林', value: [121.5135, 25.0308] },
+              { name: '吉林', value: [116.4551, 40.2539] }
             ],
             showEffectOn: 'render',
             rippleEffect: { brushType: 'stroke' },
@@ -413,7 +415,6 @@ export default {
     }, 0)
     //编辑回显
     if (this.$route.params.id !== 'add') {
-      console.log('新的传参======= ', this.$route.params)
       setTimeout(() => {
         this.getChartData(this.$route.params.id)
       }, 100)
@@ -490,11 +491,8 @@ export default {
         params: { id }
       })
       if (res.meta.status === 200) {
-        //判断是不是地图组件
-        if (res.data.statisItem == -1) {
-          this.statisShow = false
-        }
         this.ediFormData = res.data
+        // console.log(`this.ediFormData===${JSON.stringify(this.ediFormData)}`)
         //根据dimension数组长度判断一维还是二纬
         if (res.data.dimensions.length === 2) {
           let m = new Array()
@@ -589,7 +587,6 @@ export default {
     },
     //根据 ID 查询基础图表 option,图形下拉框
     async getChartOption(value) {
-      console.log('韩部长=======')
       this.statisShow = true
       this.form.resetFields()
       console.log(`点击后的value是${value}`)
@@ -600,6 +597,20 @@ export default {
         //id为 ,文本组件，不需要option
         this.textShow = true
         this.mapShow = false
+        // this.$message.success('文本组件成功')
+        //测试，文本组件的文本信息存在option还是新建字段？
+        // const { data: res } = await this.$http.request({
+        //   methods: 'get',
+        //   url: 'getChartOption',
+        //   params: { id: value }
+        // })
+        // console.log('请求马上发生')
+        // if (res.data.status === 200) {
+        //   let tempData = eval(`(${res.data[0].chartOption})`)
+        //   this.currentOption = tempData
+        //   console.log("文本组件回传")
+        //   console.log(this.currentOption)
+        // }
         //拿到文本数据
         let tempData = '这是文本组件示例，请在下面的文本域输入内容'
         this.currentOption = tempData
@@ -785,8 +796,7 @@ export default {
                         : values.xVector
                   }
                 ]),
-                // statisItem: values.statisItem
-                statisItem: this.statisShow ? values.statisItem : -1
+                statisItem: values.statisItem
                 // text: values.text
               }
             }
@@ -835,8 +845,7 @@ export default {
                         : values.xVector
                   }
                 ]),
-                // statisItem: values.statisItem
-                statisItem: this.statisShow ? values.statisItem : -1
+                statisItem: values.statisItem
                 // text: values.text
               }
             }
@@ -879,17 +888,12 @@ export default {
       })
       if (res.meta.status === 200) {
         // let tempData = eval(`(${res.data[0].chartOption})`)
-        if ('source' in res) {
-          this.currentOption.dataset.source = res.source
-        }
+        this.currentOption.dataset.source = res.source
         //判断，是地图时
-        if ('data' in res) {
-          this.$message.success('韩部长suprise')
-          this.mapOption.series[0].data = res.data
-          this.mapOption.series[1].data = res.data
-          this.drawMychart(this.mapOption)
-          return
-        }
+        // if (res)
+        // this.mapOption.series[0].data = res.data
+        // this.mapOption.series[1].data = res.data
+        // console.log('预览时======', res.source)
         //加判断，条形图
         if (this.seriesFlag == 1) {
           let arr = new Array()
@@ -991,10 +995,9 @@ export default {
                   }
                 ]),
                 // statisItem: values.statisItem,
-                statisItem: this.statisShow ? values.statisItem : -1,
+                statisItem: this.mapShow ? values.statisItem : -1,
                 // text: values.text,
-                // chartOption: JSON.stringify(this.currentOption)
-                chartOption: this.statisShow ? JSON.stringify(this.currentOption) : JSON.stringify(this.mapOption)
+                chartOption: JSON.stringify(this.currentOption)
               }
             }
           }
@@ -1117,10 +1120,9 @@ export default {
                         : values.xVector
                   }
                 ]),
-                statisItem: this.statisShow ? values.statisItem : -1,
+                statisItem: values.statisItem,
                 // text: values.text,
-                // chartOption: JSON.stringify(this.currentOption)
-                chartOption: this.statisShow ? JSON.stringify(this.currentOption) : JSON.stringify(this.mapOption)
+                chartOption: JSON.stringify(this.currentOption)
               }
             }
           }
