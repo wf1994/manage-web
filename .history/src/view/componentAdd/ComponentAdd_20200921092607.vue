@@ -272,7 +272,7 @@
         </div>
         <div class="titleShowOn">
           <span>选择颜色</span>
-          <colorPicker v-model="color" v-on:change="headleChangeColor2" />
+          <colorPicker v-model="color" v-on:change="headleChangeColor" />
         </div>
       </div>
     </div>
@@ -468,13 +468,6 @@ export default {
 
     //修改颜色
     headleChangeColor(color) {
-      console.log("看看color=========---------------");
-      console.log(this.colorOption);
-      this.colorOption.color = color
-      this.drawMychart(this.colorOption)
-      this.currentOption = this.colorOption
-    },
-    headleChangeColor2(color) {
       this.colorOption.color = color
       this.drawMychart(this.colorOption)
       this.currentOption = this.colorOption
