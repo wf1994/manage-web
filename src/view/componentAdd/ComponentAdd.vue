@@ -13,6 +13,7 @@
           labelAlign="left"
         >
           <a-form-item label="图形">
+            <!-- @click.native="hange" -->
             <a-select
               v-decorator="[
                 'chartOption',
@@ -229,11 +230,9 @@
           height: '90%',
           margin: '0 auto'
         }"
-      >
-        <!-- '<p style="color:red">保存文字保存文字保存文字保存文字保存文字保存文字保存文字保存文字保存文字保存文字保存文字保存文字保存文字保存文字保存文字保存文字</p>' -->
-      </div>
+      ></div>
 
-      <div class="baishanDiy">
+      <div class="baishanDiy" v-if="baiStatus">
         <div class="null"></div>
         <div class="titleShowOn">
           <!-- <span>是否显示标题</span> -->
@@ -266,13 +265,9 @@
           </a-radio-group>
         </div>
         <div class="null"></div>
-        <div class="titleShowOn">
+        <div class="titleShowOn" v-if="!isConditionShowY">
           <span>选择颜色</span>
           <colorPicker v-model="color" v-on:change="headleChangeColor" />
-        </div>
-        <div class="titleShowOn">
-          <span>选择颜色</span>
-          <colorPicker v-model="color" v-on:change="headleChangeColor2" />
         </div>
       </div>
     </div>
@@ -347,8 +342,6 @@ export default {
             type: 'scatter',
             coordinateSystem: 'geo',
             data: [
-              // { name: '吉林', value: [121.5135, 25.0308] },
-              // { name: '吉林', value: [127.9688, 45.368] },
               { name: '吉林1', value: [110.3467, 41.4899] },
               { name: '吉林2', value: [116.4551, 40.2539] }
             ]
@@ -361,8 +354,6 @@ export default {
             symbolSize: [50, 50],
             itemStyle: { normal: { color: '#D8BC37' } },
             data: [
-              // { name: '吉林', value: [121.5135, 25.0308] },
-              // { name: '吉林', value: [127.9688, 45.368] },
               { name: '吉林1', value: [110.3467, 41.4899] },
               { name: '吉林2', value: [116.4551, 40.2539] }
             ],
@@ -377,6 +368,7 @@ export default {
       seriesFlag: 0, //series的标志，用于几个条形图柱状图的series的标记
       flag: 0, //初0，预览后为1,先预览再保存
       color: '#ff0000',
+      baiStatus: true, //css自定义区域
       isConditionShowX: true, //x轴纬度、向量显示
       isConditionShowY: true, //y轴纬度、向量显示
       statisShow: true, //统计项，只有地图组件时隐藏
@@ -385,6 +377,7 @@ export default {
       chartOptionData: [], //基础图表下拉框列表
       statisData: [], //统计项
       currentOption: {},
+      // colorSelectShow: true, //修改颜色，一纬显示，二维清除
       colorOption: {}, //修改颜色后的option
       textOption: {}, //标题修改后的option
       xDimensionData: [], //下拉框纬度
@@ -417,7 +410,7 @@ export default {
     }, 0)
     //编辑回显
     if (this.$route.params.id !== 'add') {
-      console.log('新的传参======= ', this.$route.params)
+      // console.log('新的传参======= ', this.$route.params)
       setTimeout(() => {
         this.getChartData(this.$route.params.id)
       }, 100)
@@ -434,6 +427,10 @@ export default {
     }, 1500)
   },
   methods: {
+    hange() {
+      // console.log("===--------hanhanhanhanwawa");
+      this.getChartOptionData()
+    },
     //获取数据源ID（二期新增）
     async getDataSourceId() {
       const { data: res } = await this.$http.request({
@@ -468,8 +465,6 @@ export default {
 
     //修改颜色
     headleChangeColor(color) {
-      console.log("看看color=========---------------");
-      console.log(this.colorOption);
       this.colorOption.color = color
       this.drawMychart(this.colorOption)
       this.currentOption = this.colorOption
@@ -494,13 +489,20 @@ export default {
 
     //根据 组件列表中的ID 查询组件所有信息，点击编辑调用
     async getChartData(id) {
-      // console.log(`this.chartId========${this.chartId}`)
       const { data: res } = await this.$http.request({
         methods: 'get',
         url: 'getComponent',
         params: { id }
       })
+      // this.baiStatus = false
+      //判断是不是表格/文本组件
+        // if (parseInt(res.data.chartId) == 16 || parseInt(res.data.chartId) == 17) {
+        //   this.baiStatus == false
+        // }
       if (res.meta.status === 200) {
+        console.log("回显")
+        console.log(parseInt(res.data.chartId) == 17)
+        
         //判断是不是地图组件
         if (res.data.statisItem == -1) {
           this.statisShow = false
@@ -592,38 +594,26 @@ export default {
       })
       if (res.status === 200) {
         this.statisData = res.data
-        // console.log('this.statisData', this.statisData)
-        // console.log('统计项列表获取成功')
       } else {
         this.$message.error('统计项列表获取失败！')
       }
     },
     //根据 ID 查询基础图表 option,图形下拉框
     async getChartOption(value) {
-      console.log('韩部长=======')
       this.statisShow = true
+      this.baiStatus = true
       this.form.resetFields()
-      console.log(`点击后的value是${value}`)
       this.textShow = false
       this.mapShow = true
-      //判断是地图还是文字组件还是普通组件，地图组件：下面的内容隐藏(mapShow)，文字组件：下面显示文本输入框(textShow)
-      if (value == 16) {
-        //id为 ,文本组件，不需要option
-        this.textShow = true
-        this.mapShow = false
-        //拿到文本数据
-        let tempData = '这是文本组件示例，请在下面的文本域输入内容'
-        this.currentOption = tempData
-        document.getElementById(
-          'mychart'
-        ).innerHTML = `<p>${this.currentOption}</p>`
-        return
-      }
       if (value == 12) {
         //地图
         this.mapShow = true
         this.isConditionShowY = false
         this.statisShow = false
+        this.baiStatus = false
+      }
+      if (value == 16 || value == 17) {
+        this.baiStatus = false
       }
       //如果是柱状条形图等图，基础图id为5、6、7、8
       if (value == 5 || value == 6) {
@@ -644,6 +634,7 @@ export default {
       if (res.meta.status === 200) {
         //   eval(("{}"))  用法
         let tempData = eval(`(${res.data[0].chartOption})`)
+        // console.log(tempData)
         //   let str = tempData.replace(/\s*/g,"").replace(/[\r\n]/g,"")
         //   this.currentOption = res[0].chartOption
         this.currentOption = tempData
@@ -677,11 +668,8 @@ export default {
       const { data: res } = await this.$http.request({
         methods: 'get',
         url: 'getDimensionSelectList',
-        // url: 'getDimensionList',
         params: { datasourceid: parseInt(this.currentDataSourceId) }
       })
-      // console.log(`纬度下拉框-=-=-=-=-=-=-=`)
-      // console.log(res.data)
       if (res.meta.status === 200) {
         this.xDimensionData = res.data
       } else {
@@ -735,14 +723,6 @@ export default {
         if (!err) {
           const _this = this
           // console.log('Received values of form: ', values)
-          //如果是文本组件，直接把form表单的text给dom的innerHTML
-          // console.log(values.chartOption)
-          if (values.chartOption == 16) {
-            document.getElementById('mychart').innerHTML = ''
-            document.getElementById('mychart').innerHTML = values.text
-            this.flag = 1
-            return
-          }
           let parmes = {}
           let dimensionXId = values.xDimension.split(',')[1]
           let dimensionYId =
@@ -754,8 +734,6 @@ export default {
               if (dimensionXId !== dimensionYId) {
                 return this.$message.error('请选择同一数据集下纬度!')
               }
-              // console.log(`编辑=========${values.xVector}`)
-              // console.log(`zhouxingy类型=========${typeof values.xVector}`)
               parmes = {
                 dataId: values.xDimension.split(',')[1],
                 chartId: values.chartOption,
@@ -871,13 +849,7 @@ export default {
     },
     //获取图表数据
     async getPreviewChartOption(parmes) {
-      //如果是文本组件，直接用文本包一个p标签赋值给预览div的dom的innerHTML
-      // if(this.textShow === true) {
-      //   document.getElementById('mychart').innerHTML = `<p>${values.text}</p>`
-      //   return
-      // }
       this.flag = 1
-      // console.log('点击后的parmes看这里-------' + JSON.stringify(parmes))
       //qs.stringify()将对象 序列化成URL的形式，以&进行拼接
       const { data: res } = await this.$http.request({
         methods: 'get',
@@ -886,16 +858,25 @@ export default {
         paramsSerializer: params => {
           return this.$qs.stringify(params, { indices: false })
         }
-        // params: JSON.stringify(parmes)
       })
       if (res.meta.status === 200) {
         // let tempData = eval(`(${res.data[0].chartOption})`)
+        //列表组件标识
+        if ('list' in res) {
+          this.currentOption.series[0].data = res.list
+          console.log('表格组件')
+          console.log(this.currentOption)
+        }
+        //文本组件标识
+        if ('text' in res) {
+          let arr = res.text
+          this.currentOption.graphic[0].style.text = arr.join('\n')
+        }
         if ('source' in res) {
           this.currentOption.dataset.source = res.source
         }
         //判断，是地图时
         if ('data' in res) {
-          this.$message.success('韩部长suprise')
           this.mapOption.series[0].data = res.data
           this.mapOption.series[1].data = res.data
           this.drawMychart(this.mapOption)
@@ -908,8 +889,6 @@ export default {
             arr.push({ type: 'bar', seriesLayoutBy: 'row' })
           }
           this.currentOption.series = arr
-          console.log('预览时修改了series:')
-          console.log(this.currentOption)
         }
         //堆叠图
         if (this.seriesFlag == 2) {
@@ -1005,7 +984,9 @@ export default {
                 statisItem: this.statisShow ? values.statisItem : -1,
                 // text: values.text,
                 // chartOption: JSON.stringify(this.currentOption)
-                chartOption: this.statisShow ? JSON.stringify(this.currentOption) : JSON.stringify(this.mapOption)
+                chartOption: this.statisShow
+                  ? JSON.stringify(this.currentOption)
+                  : JSON.stringify(this.mapOption)
               }
             }
           }
@@ -1055,8 +1036,8 @@ export default {
             return this.$message.error('请先预览!')
           }
           const _this = this
-          console.log('Received values of form: ', values)
-          console.log(this.textShow)
+          // console.log('Received values of form: ', values)
+          // console.log(this.textShow)
           let parmes = {}
           //如果是文本组件，单独处理
           if (this.textShow) {
@@ -1131,7 +1112,9 @@ export default {
                 statisItem: this.statisShow ? values.statisItem : -1,
                 // text: values.text,
                 // chartOption: JSON.stringify(this.currentOption)
-                chartOption: this.statisShow ? JSON.stringify(this.currentOption) : JSON.stringify(this.mapOption)
+                chartOption: this.statisShow
+                  ? JSON.stringify(this.currentOption)
+                  : JSON.stringify(this.mapOption)
               }
             }
           }
